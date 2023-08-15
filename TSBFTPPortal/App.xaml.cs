@@ -36,6 +36,23 @@ namespace TSBFTPPortal
 				try
 				{
 					Directory.CreateDirectory(dataFolderPath);
+
+					// Create the root directory "FTPDashboard"
+					Directory.CreateDirectory(dataFolderPath);
+
+					// Create the reports folder 
+					string reportFolderPath = Path.Combine(dataFolderPath, "Reports");
+					Directory.CreateDirectory(reportFolderPath);
+
+					// Create the scripts folder 
+					string scriptsFolderPath = Path.Combine(dataFolderPath, "Scripts");
+					Directory.CreateDirectory(scriptsFolderPath);
+
+					// Create the Log Folder 
+					string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
+					Directory.CreateDirectory(reportsFolderPath);
+
+
 				}
 				catch (Exception ex) 
 				{
