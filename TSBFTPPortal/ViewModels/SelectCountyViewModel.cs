@@ -1,19 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.IO;
+using System.Windows;
+using System.Windows.Input;
+using TSBFTPPortal.Commands;
 
 namespace TSBFTPPortal.ViewModels
 {
-  public class SelectCountyViewModel
+  public class SelectCountyViewModel : ViewModelBase
   {
     public ObservableCollection<string> CountyNames { get; } = new ObservableCollection<string>();
 
+    private string _selectedCounty;
+    public string SelectedCounty
+    {
+      get { return _selectedCounty; }
+      set
+      {
+        _selectedCounty = value;
+        OnPropertyChanged(nameof(SelectedCounty));
+      }
+    }
+
+    public ICommand ContinueToMainPageCommand { get; private set; }
+
     public SelectCountyViewModel() 
     {
+      ContinueToMainPageCommand = new RelayCommand(ContinueToMainPage);
       LoadCountyNames();
     }
+
+		private void ContinueToMainPage(object obj)
+		{
+			var mainWindowViewModel = new MainWindowViewModel(SelectedCounty);
+			var mainWindow = new MainWindow { DataContext = mainWindowViewModel };
+
+			var currentWindow = Application.Current.MainWindow; // Get a reference to the current window
+			currentWindow.Close(); // Close the current window
+
+			mainWindow.Show();
+
+		}
 
 		private void LoadCountyNames()
 		{
@@ -33,9 +61,7 @@ namespace TSBFTPPortal.ViewModels
             CountyNames.Add(countyName);
           }
         }
-
       }
-
 		}
 	}
 }
