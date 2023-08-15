@@ -4,6 +4,12 @@
              xmlns:local="clr-namespace:TSBFTPPortal"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+		<Style TargetType="TabControl">
+			<Setter Property="Background" Value="Black" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		
+		
     </Application.Resources>
 </Application>
