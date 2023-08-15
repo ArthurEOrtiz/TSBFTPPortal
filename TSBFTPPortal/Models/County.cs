@@ -11,7 +11,7 @@ namespace TSBFTPPortal.Models
 		public int Id { get; set; }
 		public string Name { get; set; }
 		public string AdminSystem { get; set; }
-		public string CamaSystem { get; set; }
+		public string CAMASystem { get; set; }
 
 	}
 }
