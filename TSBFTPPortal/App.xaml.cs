@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Views;
+using Serilog;
 
 namespace TSBFTPPortal
 {
@@ -22,14 +23,26 @@ namespace TSBFTPPortal
 			Window selectCountyView = new SelectCountyView();
 			selectCountyView.Show();
 
+			ConfigureLogger();
 			InitializeLocalAppDataFolder();
+			
+		}
 
+		private void ConfigureLogger()
+		{
+			string loggerFilePath = Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),"TSBFTPPortal/Log", "log.txt");
+
+			Log.Logger = new LoggerConfiguration()
+				.MinimumLevel.Debug()
+				.WriteTo.File(loggerFilePath, rollingInterval: RollingInterval.Day)
+				.CreateLogger();
 		}
 
 		private void InitializeLocalAppDataFolder()
 		{
 			string commonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-			string dataFolderPath = System.IO.Path.Combine(commonAppDataPath, "TSBFTPDashBoard");
+			string dataFolderPath = System.IO.Path.Combine(commonAppDataPath, "TSBFTPPortal");
 
 			if (!Directory.Exists(dataFolderPath))
 			{
@@ -52,11 +65,12 @@ namespace TSBFTPPortal
 					string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
 					Directory.CreateDirectory(reportsFolderPath);
 
+					Log.Information("App folders created");
 
 				}
 				catch (Exception ex) 
 				{
-					throw;
+					Log.Error($"Failed to create directory: {ex.Message}");
 				}
 			}
 
