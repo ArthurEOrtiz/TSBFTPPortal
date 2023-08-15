@@ -1,0 +1,222 @@
+[
+	{
+		"Name": "Ada",
+		"AdminSystem": "Custom",
+		"CAMASystem": "Custom"
+	},
+	{
+		"Name": "Adams",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Bannock",
+		"AdminSystem": "UAD Web",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Bear Lake",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Benewah",
+		"AdminSystem": "UAD Web",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Bingham",
+		"AdminSystem": "CAI",
+		"CAMASystem": "CAI"
+	},
+	{
+		"Name": "Blaine",
+		"AdminSystem": "CAI",
+		"CAMASystem": "CAI"
+	},
+	{
+		"Name": "Boise",
+		"AdminSystem": "CAI",
+		"CAMASystem": "CAI"
+	},
+	{
+		"Name": "Bonner",
+		"AdminSystem": "UAD Web",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Bonneville",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Boundary",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Butte",
+		"AdminSystem": "AS400",
+		"CAMASystem": "AS400"
+	},
+	{
+		"Name": "Camas",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Canyon",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Caribou",
+		"AdminSystem": "CAI",
+		"CAMASystem": "CAI"
+	},
+	{
+		"Name": "Cassia",
+		"AdminSystem": "UAD Web",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Clark",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Clearwater",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Custer",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Elmore",
+		"AdminSystem": "AS400",
+		"CAMASystem": "AS400"
+	},
+	{
+		"Name": "Franklin",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Fremont",
+		"AdminSystem": "CAI",
+		"CAMASystem": "CAI"
+	},
+	{
+		"Name": "Gem",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Gooding",
+		"AdminSystem": "UAD Web",
+		"CAMASystem": "UAD Web"
+	},
+	{
+		"Name": "Idaho",
+		"AdminSystem": "AS400",
+		"CAMASystem": "AS400"
+	},
+	{
+		"Name": "Jefferson",
+		"AdminSystem": "CAI",
+		"CAMASystem": "CAI"
+	},
+	{
+		"Name": "Jerome",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Kootenai",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Latah",
+		"AdminSystem": "AS400",
+		"CAMASystem": "AS400"
+	},
+	{
+		"Name": "Lemhi",
+		"AdminSystem": "AS400",
+		"CAMASystem": "AS400"
+	},
+	{
+		"Name": "Lewis",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Lincoln",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Madison",
+		"AdminSystem": "CAI",
+		"CAMASystem": "CAI"
+	},
+	{
+		"Name": "Minidoka",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Nez Perce",
+		"AdminSystem": "AS400",
+		"CAMASystem": "AS400"
+	},
+	{
+		"Name": "Oneida",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Owyhee",
+		"AdminSystem": "UAD Web",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Payette",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Power",
+		"AdminSystem": "CAI",
+		"CAMASystem": "CAI"
+	},
+	{
+		"Name": "Shoshone",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Teton",
+		"AdminSystem": "AS400",
+		"CAMASystem": "AS400"
+	},
+	{
+		"Name": "Twin Falls",
+		"AdminSystem": "AS400",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Valley",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	},
+	{
+		"Name": "Washington",
+		"AdminSystem": "Aumentum",
+		"CAMASystem": "Proval"
+	}
+]
