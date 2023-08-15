@@ -34,6 +34,7 @@
 
 		<ComboBox 
 			x:Name="ComboBoxCounty"
+			ItemsSource="{Binding CountyNames}"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
 			Grid.Row="2"
