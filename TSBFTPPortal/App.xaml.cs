@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Views;
 using Serilog;
+using TSBFTPPortal.Models;
+using System.Data.SQLite;
 
 namespace TSBFTPPortal
 {
@@ -25,8 +27,60 @@ namespace TSBFTPPortal
 
 			ConfigureLogger();
 			InitializeLocalAppDataFolder();
+			InitializeCountyDataBase();
 			
 		}
+
+		private void InitializeCountyDataBase()
+		{
+			string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Counties.db");
+
+			using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
+			{
+				connection.Open();
+
+				// Create the table
+				string createTableQuery = @"
+            CREATE TABLE IF NOT EXISTS Counties (
+                Name TEXT,
+                AdminSystem TEXT,
+                CAMASystem TEXT
+            );";
+
+				using (var command = new SQLiteCommand(createTableQuery, connection))
+				{
+					command.ExecuteNonQuery();
+				}
+			}
+
+			// Populate the table with data from the JSON file
+			string jsonFilePath = Path.Combine(Environment.CurrentDirectory, "counties.json");
+			string jsonData = File.ReadAllText(jsonFilePath);
+
+			var counties = Newtonsoft.Json.JsonConvert.DeserializeObject<List<County>>(jsonData);
+
+			using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
+			{
+				connection.Open();
+
+				foreach (var county in counties)
+				{
+					string insertQuery = @"
+                INSERT INTO Counties (Name, AdminSystem, CAMASystem)
+                VALUES (@Name, @AdminSystem, @CAMASystem);";
+
+					using (var command = new SQLiteCommand(insertQuery, connection))
+					{
+						command.Parameters.AddWithValue("@Name", county.Name);
+						command.Parameters.AddWithValue("@AdminSystem", county.AdminSystem);
+						command.Parameters.AddWithValue("@CAMASystem", county.CAMASystem);
+
+						command.ExecuteNonQuery();
+					}
+				}
+			}
+		}
+
 
 		private void ConfigureLogger()
 		{
