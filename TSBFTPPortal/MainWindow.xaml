@@ -7,9 +7,13 @@
 				mc:Ignorable="d"
         Title="TSB FTP Portal" 
 				Height="450" 
-				Width="800"
+				Width="600"
 				>
     <Grid>
-		<views:TabControlMainView/>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="auto" />
+		</Grid.RowDefinitions>
+		<views:TabControlMainView Grid.Row="1"/>
 	</Grid>
 </Window>
