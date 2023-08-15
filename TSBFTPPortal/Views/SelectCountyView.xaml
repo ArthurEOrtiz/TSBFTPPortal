@@ -34,6 +34,8 @@
 
 		<ComboBox 
 			x:Name="ComboBoxCounty"
+			ItemsSource="{Binding CountyNames}"
+			SelectedItem="{Binding SelectedCounty}"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
 			Grid.Row="2"
@@ -44,6 +46,7 @@
 
 		<Button
 			x:Name="ButtonCountiueToMainPage"
+			Command="{Binding ContinueToMainPageCommand}"
 			Content="Main Window"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
