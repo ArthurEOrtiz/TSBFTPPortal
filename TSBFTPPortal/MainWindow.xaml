@@ -12,7 +12,7 @@
     <Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
-			<RowDefinition Height="auto" />
+			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<views:TabControlMainView Grid.Row="1"/>
 	</Grid>
