@@ -10,9 +10,11 @@ namespace TSBFTPPortal.ViewModels
 	public class TabControlMainViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
+		public PABTreeViewViewModel PABTreeViewViewModel { get; }
 		public TabControlMainViewModel(County selectedCounty)
 		{
 			SelectedCounty = selectedCounty;
+			PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty);
 		}
 	}
 }
