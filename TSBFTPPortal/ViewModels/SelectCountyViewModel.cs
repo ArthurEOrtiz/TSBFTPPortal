@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using TSBFTPPortal.Commands;
+using TSBFTPPortal.Models;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -33,14 +34,44 @@ namespace TSBFTPPortal.ViewModels
 
 		private void ContinueToMainPage(object obj)
 		{
-			var mainWindowViewModel = new MainWindowViewModel(SelectedCounty);
+      County selectedCountyModel = FindCountyModel(SelectedCounty);
+
+			var mainWindowViewModel = new MainWindowViewModel(selectedCountyModel);
 			var mainWindow = new MainWindow { DataContext = mainWindowViewModel };
 
 			var currentWindow = Application.Current.MainWindow; // Get a reference to the current window
 			currentWindow.Close(); // Close the current window
-
 			mainWindow.Show();
 
+		}
+
+		private County FindCountyModel(string countyName)
+		{
+      County? selectedCounty = null;
+
+			string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Counties.db");
+
+      using ( var connection = new SQLiteConnection($"Data Source={dbPath}; Version=3;"))
+      {
+        connection.Open();
+        string query = $"SELECT * FROM Counties WHERE Name = '{countyName}';";
+
+        using (var command = new SQLiteCommand(query, connection))
+        using (var reader = command.ExecuteReader())
+        {
+          if (reader.Read())
+          {
+            selectedCounty = new County
+            {
+              Name = reader["Name"].ToString(),
+              AdminSystem = reader["AdminSystem"].ToString(),
+              CAMASystem = reader["CAMASystem"].ToString()
+            };
+          }
+        }
+      }
+
+      return selectedCounty;
 		}
 
 		private void LoadCountyNames()

@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TSBFTPPortal.Models;
+
 
 namespace TSBFTPPortal.ViewModels
 {
-  public class MainWindowViewModel
+  public class MainWindowViewModel : ViewModelBase
   {
-    public string SelectedCounty { get; }
-    public MainWindowViewModel(string selectedCounty)
+    public County SelectedCounty { get; set; }
+    public TabControlMainViewModel TabControlMainViewModel { get; }
+    public MainWindowViewModel(County selectedCounty)
     {
       SelectedCounty = selectedCounty;
+      TabControlMainViewModel = new TabControlMainViewModel(selectedCounty);
+      
     }
   }
 }

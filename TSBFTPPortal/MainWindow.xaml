@@ -11,10 +11,10 @@
 				>
     <Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="*" />
+			<RowDefinition Height="auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<TextBlock Text="{Binding SelectedCounty}" Grid.Row="0" />
-		<views:TabControlMainView Grid.Row="1"/>
+		<TextBlock Text="{Binding SelectedCounty.Name}" Grid.Row="0" />
+		<views:TabControlMainView Grid.Row="1" DataContext="{Binding TabControlMainViewModel}"/>
 	</Grid>
 </Window>
