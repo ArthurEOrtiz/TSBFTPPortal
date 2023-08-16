@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace TSBFTPPortal.Views
 {
 	/// <summary>
-	/// Interaction logic for FileListView.xaml
+	/// Interaction logic for PABTreeViewView.xaml
 	/// </summary>
-	public partial class FileListView : UserControl
+	public partial class PABTreeViewView : UserControl
 	{
-		public FileListView()
+		public PABTreeViewView()
 		{
 			InitializeComponent();
 		}

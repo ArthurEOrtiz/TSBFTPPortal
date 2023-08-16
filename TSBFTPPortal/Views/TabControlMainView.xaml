@@ -45,6 +45,7 @@
 				</TabItem.Style>
 			</TabItem>
 			<TabItem Header="PAB">
+				<local:PABTreeViewView />
 			</TabItem>
 			<TabItem Header="GIS">
 			</TabItem>
