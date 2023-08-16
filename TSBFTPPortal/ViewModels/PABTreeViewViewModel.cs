@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace TSBFTPPortal.ViewModels
 {
-	internal class PABTreeViewViewModel
+	public class PABTreeViewViewModel : ViewModelBase
 	{
+
 	}
 }
