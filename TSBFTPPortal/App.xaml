@@ -4,11 +4,31 @@
              xmlns:local="clr-namespace:TSBFTPPortal"
              >
     <Application.Resources>
-		<Style TargetType="TabControl">
+		<!--<Style TargetType="TabControl">
 			<Setter Property="Background" Value="Black" />
 			<Setter Property="Foreground" Value="White" />
 			<Setter Property="BorderThickness" Value="0" />
 		</Style>
+
+		<Style TargetType="TabItem">
+			<Setter Property="Background" Value="Black" />
+			<Setter Property="Foreground" Value="White" />
+			<Style.Triggers>
+				<Trigger Property="IsFocused" Value="True">
+					<Setter Property="Foreground" Value="Black" />
+				</Trigger>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Foreground" Value="Black" />
+					<Setter Property="Background" Value="White" />
+				</Trigger>
+				<Trigger Property="" Value="True">
+					<Setter Property="Background" Value="White" />
+				</Trigger>
+				<Trigger Property="IsSelected" Value="True">
+					<Setter Property="Foreground" Value="Black" />
+				</Trigger>
+			</Style.Triggers>-->
+		<!--</Style>-->
 		
 		
     </Application.Resources>

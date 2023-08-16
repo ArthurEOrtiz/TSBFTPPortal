@@ -11,10 +11,41 @@
 			<TabItem Header="County Specific">
 			</TabItem>
 			<TabItem Header="Admin System">
+				<TabItem.Style>
+					<Style TargetType="TabItem">
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="AS400">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="CAI">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="Custom">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TabItem.Style>
 			</TabItem>
 			<TabItem Header="Cama System">
+				<TabItem.Style>
+					<Style TargetType="TabItem">
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="AS400">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="CAI">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="Custom">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TabItem.Style>
 			</TabItem>
 			<TabItem Header="PAB">
+				<local:PABTreeViewView />
 			</TabItem>
 			<TabItem Header="GIS">
 			</TabItem>
