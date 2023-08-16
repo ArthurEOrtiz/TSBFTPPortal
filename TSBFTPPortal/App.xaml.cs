@@ -32,19 +32,6 @@ namespace TSBFTPPortal
 					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
 					.Build();
 
-			//var host = Host.CreateDefaultBuilder()
-			//		.ConfigureServices((context, services) =>
-			//		{
-			//			// Register IConfiguration as a service
-			//			services.AddSingleton<IConfiguration>(Configuration);
-			//		})
-			//		.Build();
-
-
-			//string ftpServer = Configuration.GetSection("FtpSettings")["Server"];
-			//string username = Configuration["FtpSettings:Username"];
-			//string password = Configuration["FtpSettings:Password"];
-
 
 			Window selectCountyView = new SelectCountyView(Configuration);
 			selectCountyView.Show();

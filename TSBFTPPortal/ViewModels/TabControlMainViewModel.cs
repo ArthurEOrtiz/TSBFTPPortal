@@ -15,9 +15,9 @@ namespace TSBFTPPortal.ViewModels
 			SelectedCounty = selectedCounty;
 			
 
-			string ftpServer = configuration["FtpSettings:Server"];
-			string username = configuration["FtpSettings:Username"];
-			string password = configuration["FtpSettings:Password"];
+			string? ftpServer = configuration["FtpSettings:Server"];
+			string? username = configuration["FtpSettings:Username"];
+			string? password = configuration["FtpSettings:Password"];
 
 
 			IFtpService ftpService = new FtpService(ftpServer, username, password);
