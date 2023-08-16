@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.IO;
@@ -26,8 +27,12 @@ namespace TSBFTPPortal.ViewModels
 
     public ICommand ContinueToMainPageCommand { get; private set; }
 
-    public SelectCountyViewModel() 
+    private readonly IConfiguration _configuration;
+
+    public SelectCountyViewModel(IConfiguration configuration) 
     {
+      _configuration = configuration;
+
       ContinueToMainPageCommand = new RelayCommand(ContinueToMainPage);
       LoadCountyNames();
     }
@@ -36,7 +41,7 @@ namespace TSBFTPPortal.ViewModels
 		{
       County selectedCountyModel = FindCountyModel(SelectedCounty);
 
-			var mainWindowViewModel = new MainWindowViewModel(selectedCountyModel);
+			var mainWindowViewModel = new MainWindowViewModel(selectedCountyModel, _configuration);
 			var mainWindow = new MainWindow { DataContext = mainWindowViewModel };
 
 			var currentWindow = Application.Current.MainWindow; // Get a reference to the current window

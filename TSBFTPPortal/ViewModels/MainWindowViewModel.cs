@@ -1,4 +1,5 @@
-﻿using TSBFTPPortal.Models;
+﻿using Microsoft.Extensions.Configuration;
+using TSBFTPPortal.Models;
 
 
 namespace TSBFTPPortal.ViewModels
@@ -7,10 +8,10 @@ namespace TSBFTPPortal.ViewModels
   {
     public County SelectedCounty { get; set; }
     public TabControlMainViewModel TabControlMainViewModel { get; }
-    public MainWindowViewModel(County selectedCounty)
+    public MainWindowViewModel(County selectedCounty, IConfiguration configuration)
     {
       SelectedCounty = selectedCounty;
-      TabControlMainViewModel = new TabControlMainViewModel(selectedCounty);
+      TabControlMainViewModel = new TabControlMainViewModel(selectedCounty, configuration);
       
     }
   }

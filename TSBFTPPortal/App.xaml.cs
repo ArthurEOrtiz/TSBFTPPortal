@@ -10,6 +10,9 @@ using TSBFTPPortal.Views;
 using Serilog;
 using TSBFTPPortal.Models;
 using System.Data.SQLite;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TSBFTPPortal
 {
@@ -18,11 +21,32 @@ namespace TSBFTPPortal
 	/// </summary>
 	public partial class App : Application
 	{
+		private IConfiguration Configuration;
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
-			Window selectCountyView = new SelectCountyView();
+			// Load configuration from appsettings.json
+			Configuration = new ConfigurationBuilder()
+					.SetBasePath(Directory.GetCurrentDirectory())
+					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+					.Build();
+
+			//var host = Host.CreateDefaultBuilder()
+			//		.ConfigureServices((context, services) =>
+			//		{
+			//			// Register IConfiguration as a service
+			//			services.AddSingleton<IConfiguration>(Configuration);
+			//		})
+			//		.Build();
+
+
+			//string ftpServer = Configuration.GetSection("FtpSettings")["Server"];
+			//string username = Configuration["FtpSettings:Username"];
+			//string password = Configuration["FtpSettings:Password"];
+
+
+			Window selectCountyView = new SelectCountyView(Configuration);
 			selectCountyView.Show();
 
 			ConfigureLogger();
