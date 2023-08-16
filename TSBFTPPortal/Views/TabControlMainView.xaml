@@ -45,7 +45,7 @@
 				</TabItem.Style>
 			</TabItem>
 			<TabItem Header="PAB">
-				<local:PABTreeViewView />
+				<local:PABTreeViewView DataContext="{Binding PABTreeViewViewModel}" />
 			</TabItem>
 			<TabItem Header="GIS">
 			</TabItem>

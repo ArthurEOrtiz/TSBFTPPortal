@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Microsoft.Extensions.Configuration;
+using System.Windows;
 using TSBFTPPortal.ViewModels;
 
 namespace TSBFTPPortal.Views
@@ -8,10 +9,11 @@ namespace TSBFTPPortal.Views
   /// </summary>
   public partial class SelectCountyView : Window
   {
-    public SelectCountyView()
+ 
+    public SelectCountyView(IConfiguration configuration)
     {
       InitializeComponent();
-      DataContext = new SelectCountyViewModel();
+      DataContext = new SelectCountyViewModel(configuration);
     }
   }
 }
