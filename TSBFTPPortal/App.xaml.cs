@@ -26,12 +26,7 @@ namespace TSBFTPPortal
 		{
 			base.OnStartup(e);
 
-			// Load configuration from appsettings.json
-			Configuration = new ConfigurationBuilder()
-					.SetBasePath(Directory.GetCurrentDirectory())
-					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-					.Build();
-
+			ConfigureAppSettings();
 
 			Window selectCountyView = new SelectCountyView(Configuration);
 			selectCountyView.Show();
@@ -39,7 +34,15 @@ namespace TSBFTPPortal
 			ConfigureLogger();
 			InitializeLocalAppDataFolder();
 			InitializeCountyDataBase();
-			
+
+		}
+
+		private void ConfigureAppSettings()
+		{
+			Configuration = new ConfigurationBuilder()
+					.SetBasePath(Directory.GetCurrentDirectory())
+					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+					.Build();
 		}
 
 		private void InitializeCountyDataBase()

@@ -2,6 +2,8 @@
 using Serilog;
 using System;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using TSBFTPPortal.Commands;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -21,15 +23,17 @@ namespace TSBFTPPortal.ViewModels
 		}
 
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
-
-		public PABTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public readonly FtpService _ftpService;
+	
+		public PABTreeViewViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			LoadDirectoriesAndFoldersFromFTP();
+			
 		}
+
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{

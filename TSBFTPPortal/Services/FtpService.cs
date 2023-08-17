@@ -61,5 +61,10 @@ namespace TSBFTPPortal.Services
 				}
 			}
 		}
+
+		public void DownloadFile(string path)
+		{
+			//ftpclient.DownloadFile();
+		}
 	}
 }
