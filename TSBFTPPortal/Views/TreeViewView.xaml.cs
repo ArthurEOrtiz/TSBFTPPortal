@@ -18,9 +18,9 @@ namespace TSBFTPPortal.Views
 	/// <summary>
 	/// Interaction logic for PABTreeViewView.xaml
 	/// </summary>
-	public partial class PABTreeViewView : UserControl
+	public partial class TreeViewView : UserControl
 	{
-		public PABTreeViewView()
+		public TreeViewView()
 		{
 			InitializeComponent();
 		}
