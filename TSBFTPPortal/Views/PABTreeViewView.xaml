@@ -6,8 +6,6 @@
              xmlns:local="clr-namespace:TSBFTPPortal.Views"
 						 xmlns:viewmodels="clr-namespace:TSBFTPPortal.ViewModels"
 						 xmlns:behaviors="clr-namespace:TSBFTPPortal.Behaviors"
-
-
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 	<Grid>
