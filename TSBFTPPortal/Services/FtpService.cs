@@ -82,82 +82,24 @@ namespace TSBFTPPortal.Services
 		{
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
 			{
-				_cancellationTokenSource = new CancellationTokenSource();	
+				_cancellationTokenSource = new CancellationTokenSource();
 				_isCancellationRequested = false;
 				_progressWindow = new ProgressWindow();
-				_progressWindow.DataContext = new ProgressWindowViewModel();
-
-				_progressWindow.Show();
-
-				var viewModel = (ProgressWindowViewModel) _progressWindow.DataContext;
-				viewModel.CancelCommand = new RelayCommand(Cancel);
+				InitializeProgressWindow();
 
 				try
 				{
 					ftpClient.Connect();
+					Log.Information("Connected to Ftp Server for download");
 
-					// Get the file name and extension from the path
 					string fileName = System.IO.Path.GetFileName(path);
 					string fileExtension = Path.GetExtension(path);
 
-					string targetFilePath = string.Empty;
-
-					switch (fileExtension)
-					{
-						case ".rpt":
-							string reportsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Reports");
-							targetFilePath = Path.Combine(reportsFolder, fileName);
-							break;
-
-						case ".sql":
-							string scriptsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Scripts");
-							targetFilePath = Path.Combine(scriptsFolder, fileName);
-							break;
-
-						default:
-							string downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-							targetFilePath = System.IO.Path.Combine(downloadsFolder, fileName);
-							break;
-					}
+					string targetFilePath = GetTargetFilePath(fileName, fileExtension);
 
 					if (targetFilePath != null)
 					{
-						FtpStatus status = await Task.Run(() => ftpClient.DownloadFile(
-								targetFilePath,
-								path,
-								FtpLocalExists.Overwrite,
-								FtpVerify.None,
-								(progressInfo) =>
-								{
-									//Check for cancellation 
-									if (_isCancellationRequested)
-									{
-										_cancellationTokenSource.Cancel();
-										return;
-									}
-
-									double progressPercentage = (double)progressInfo.Progress;
-									_progressWindow.Dispatcher.Invoke(() =>
-									{
-										viewModel.StatusMessage = "Downloading file . . . ";
-										viewModel.ProgressPercentage = progressPercentage;
-									});
-								}), _cancellationTokenSource.Token);
-
-						if (status == FtpStatus.Success)
-						{
-							Log.Information($"File downloaded to: {targetFilePath}");
-
-							if (fileExtension != ".rpt" && fileExtension != ".sql")
-							{
-								Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
-							}
-						}
-						else
-						{
-							Log.Error($"Error downloading file. Status: {status}");
-						}
-
+						await PerformFileDownload(ftpClient, targetFilePath, path);
 					}
 				}
 				catch (OperationCanceledException)
@@ -175,6 +117,81 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
+		private void InitializeProgressWindow()
+		{
+			_progressWindow.DataContext = new ProgressWindowViewModel();
+			_progressWindow.Show();
+			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
+			viewModel.CancelCommand = new RelayCommand(Cancel);
+		}
+
+		private string GetTargetFilePath(string fileName, string fileExtension)
+		{
+			switch (fileExtension)
+			{
+				case ".rpt":
+					string reportsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Reports");
+					return Path.Combine(reportsFolder, fileName);
+
+				case ".sql":
+					string scriptsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Scripts");
+					return Path.Combine(scriptsFolder, fileName);
+
+				default:
+					string downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+					return System.IO.Path.Combine(downloadsFolder, fileName);
+			}
+		}
+
+		private async Task PerformFileDownload(FtpClient ftpClient, string targetFilePath, string remoteFilePath)
+		{
+			FtpStatus status = await Task.Run(() => ftpClient.DownloadFile(
+					targetFilePath,
+					remoteFilePath,
+					FtpLocalExists.Overwrite,
+					FtpVerify.None,
+					progressInfo => UpdateProgress(progressInfo)),
+					_cancellationTokenSource.Token);
+
+			if (status == FtpStatus.Success)
+			{
+				Log.Information($"File downloaded to: {targetFilePath}");
+				string fileExtension = Path.GetExtension(targetFilePath);
+				if (fileExtension != ".rpt" && fileExtension != ".sql")
+				{
+					Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
+				}
+			}
+			else
+			{
+				Log.Error($"Error downloading file. Status: {status}");
+			}
+		}
+
+		private void UpdateProgress(FtpProgress progressInfo)
+		{
+			try
+			{
+				if (_isCancellationRequested)
+				{
+					_cancellationTokenSource.Cancel();
+					return;
+				}
+
+				double progressPercentage = (double)progressInfo.Progress;
+				_progressWindow.Dispatcher.Invoke(() =>
+				{
+					var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
+					viewModel.StatusMessage = "Downloading file . . . ";
+					viewModel.ProgressPercentage = progressPercentage;
+				});
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Progress update error: {ex}");
+			}
+		}
+
 		private void Cancel(object obj)
 		{
 			_isCancellationRequested = true;
@@ -182,5 +199,6 @@ namespace TSBFTPPortal.Services
 			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
 			viewModel.StatusMessage = "Download cancelled.";
 		}
+
 	}
 }
