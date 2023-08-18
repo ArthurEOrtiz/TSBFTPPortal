@@ -6,17 +6,6 @@ namespace TSBFTPPortal.ViewModels
 {
 	public class PABTreeViewViewModel : ViewModelBase
 	{
-		//private ObservableCollection<DirectoryItemViewModel> _directories;
-		//public ObservableCollection<DirectoryItemViewModel> Directories
-		//{
-		//	get { return _directories; }
-		//	set
-		//	{
-		//		_directories = value;
-		//		OnPropertyChanged(nameof(Directories));
-		//	}
-		//}
-
 		public County SelectedCounty { get; }
 		public readonly IFtpService _ftpService;
 	
@@ -28,7 +17,6 @@ namespace TSBFTPPortal.ViewModels
 			LoadDirectoriesAndFoldersFromFTP();
 			
 		}
-
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{

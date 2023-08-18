@@ -18,7 +18,6 @@ namespace TSBFTPPortal.ViewModels
 
 		}
 
-
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
 			string rootPath = $"/GIS/{SelectedCounty.Name.ToUpper()}/";
