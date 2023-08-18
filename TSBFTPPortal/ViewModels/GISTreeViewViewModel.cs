@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -11,17 +6,6 @@ namespace TSBFTPPortal.ViewModels
 {
 	public class GISTreeViewViewModel : ViewModelBase
 	{
-		private ObservableCollection<DirectoryItemViewModel> _directories;
-		public ObservableCollection<DirectoryItemViewModel> Directories
-		{
-			get { return _directories; }
-			set
-			{
-				_directories = value;
-				OnPropertyChanged(nameof(Directories));
-			}
-		}
-
 		public County SelectedCounty { get; }
 		public readonly IFtpService _ftpService;
 

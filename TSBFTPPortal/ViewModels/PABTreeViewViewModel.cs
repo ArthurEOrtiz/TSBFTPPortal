@@ -1,9 +1,4 @@
-﻿using FluentFTP;
-using Serilog;
-using System;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using TSBFTPPortal.Commands;
+﻿using System.Collections.ObjectModel;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -11,16 +6,16 @@ namespace TSBFTPPortal.ViewModels
 {
 	public class PABTreeViewViewModel : ViewModelBase
 	{
-		private ObservableCollection<DirectoryItemViewModel> _directories;
-		public ObservableCollection<DirectoryItemViewModel> Directories
-		{
-			get { return _directories; }
-			set
-			{
-				_directories = value;
-				OnPropertyChanged(nameof(Directories));
-			}
-		}
+		//private ObservableCollection<DirectoryItemViewModel> _directories;
+		//public ObservableCollection<DirectoryItemViewModel> Directories
+		//{
+		//	get { return _directories; }
+		//	set
+		//	{
+		//		_directories = value;
+		//		OnPropertyChanged(nameof(Directories));
+		//	}
+		//}
 
 		public County SelectedCounty { get; }
 		public readonly IFtpService _ftpService;
