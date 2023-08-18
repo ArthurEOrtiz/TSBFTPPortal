@@ -5,12 +5,12 @@ using TSBFTPPortal.Services;
 
 namespace TSBFTPPortal.ViewModels
 {
-	public class CamaReportsTreeViewViewModel : ViewModelBase
+	public class CamaScriptsTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
 		public readonly IFtpService _ftpService;
 
-		public CamaReportsTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public CamaScriptsTreeViewViewModel(County selectedCounty, IFtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
@@ -20,20 +20,19 @@ namespace TSBFTPPortal.ViewModels
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/FTP_DASHBOARD/CAMA/{SelectedCounty.CAMASystem.ToUpper()}/REPORTS/";
+			string rootPath = $"/FTP_DASHBOARD/CAMA/{SelectedCounty.CAMASystem.ToUpper()}/SCRIPTS/";
 
 			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
 			foreach (DirectoryItemViewModel item in items)
 			{
-				
+
 				string fileExtension = Path.GetExtension(item.Path);
-				if (fileExtension == ".rpt")
+				if (fileExtension == ".sql")
 				{
 					Directories.Add(item);
 				}
 			}
-	
 		}
 	}
 }

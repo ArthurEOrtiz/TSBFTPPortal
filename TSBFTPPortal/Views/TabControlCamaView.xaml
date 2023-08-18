@@ -11,8 +11,12 @@
 			<TabItem Header="Reports">
 				<local:TreeViewView DataContext="{Binding CamaReportsTreeViewViewModel}"/>
 			</TabItem>
-			<TabItem Header="Scripts"></TabItem>
-			<TabItem Header="Documents"></TabItem>
+			<TabItem Header="Scripts">
+				<local:TreeViewView DataContext="{Binding CamaScriptsTreeViewViewModel}" />
+			</TabItem>
+			<TabItem Header="Documents">
+				<local:TreeViewView DataContext="{Binding CamaDocumentsTreeViewViewModel}" />
+			</TabItem>
 		</TabControl>
 	</Grid>
 </UserControl>
