@@ -51,6 +51,7 @@
 				<views:TreeViewView DataContext="{Binding GISTreeViewViewModel}" />
 			</TabItem>
 			<TabItem Header="PTR">
+				<views:TreeViewView DataContext="{Binding PTRTreeViewViewModel}" />
 			</TabItem>
 		</TabControl>
 	</Grid>
