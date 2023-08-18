@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -7,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentFTP;
 using Serilog;
-using SQLitePCL;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
