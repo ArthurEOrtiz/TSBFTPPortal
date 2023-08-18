@@ -90,7 +90,7 @@ namespace TSBFTPPortal.Services
 					ftpClient.Connect();
 					Log.Information("Connected to Ftp Server for download");
 
-					string fileName = System.IO.Path.GetFileName(path);
+					string fileName = Path.GetFileName(path);
 					string fileExtension = Path.GetExtension(path);
 
 					string targetFilePath = GetTargetFilePath(fileName, fileExtension);
