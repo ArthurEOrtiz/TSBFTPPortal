@@ -4,23 +4,23 @@ using TSBFTPPortal.Services;
 
 namespace TSBFTPPortal.ViewModels
 {
-	public class PABTreeViewViewModel : ViewModelBase
+	public class GISTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
 		public readonly IFtpService _ftpService;
-	
-		public PABTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+
+		public GISTreeViewViewModel(County selectedCounty, IFtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			LoadDirectoriesAndFoldersFromFTP();
-			
+
 		}
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/PAB/{SelectedCounty.Name.ToUpper()}/";
+			string rootPath = $"/GIS/{SelectedCounty.Name.ToUpper()}/";
 
 			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
