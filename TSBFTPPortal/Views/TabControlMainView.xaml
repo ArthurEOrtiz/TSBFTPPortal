@@ -28,6 +28,7 @@
 				</TabItem.Style>
 			</TabItem>
 			<TabItem Header="Cama System">
+				<views:TabControlCamaView DataContext="{Binding TabControlCamaViewModel}"/>
 				<TabItem.Style>
 					<Style TargetType="TabItem">
 						<Style.Triggers>
