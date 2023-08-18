@@ -3,9 +3,12 @@ using System.CodeDom;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentFTP;
 using Serilog;
+using SQLitePCL;
+using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
 
@@ -16,6 +19,9 @@ namespace TSBFTPPortal.Services
 		private readonly string _ftpServer;
 		private readonly string _username;
 		private readonly string _password;
+		private CancellationTokenSource _cancellationTokenSource;
+		private bool _isCancellationRequested;
+		private ProgressWindow _progressWindow;
 
 		public FtpService(string ftpServer, string username, string password)
 		{
@@ -76,8 +82,15 @@ namespace TSBFTPPortal.Services
 		{
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
 			{
-				ProgressWindow progressWindow = new ProgressWindow();
-				progressWindow.Show();
+				_cancellationTokenSource = new CancellationTokenSource();	
+				_isCancellationRequested = false;
+				_progressWindow = new ProgressWindow();
+				_progressWindow.DataContext = new ProgressWindowViewModel();
+
+				_progressWindow.Show();
+
+				var viewModel = (ProgressWindowViewModel) _progressWindow.DataContext;
+				viewModel.CancelCommand = new RelayCommand(Cancel);
 
 				try
 				{
@@ -116,13 +129,20 @@ namespace TSBFTPPortal.Services
 								FtpVerify.None,
 								(progressInfo) =>
 								{
-									double progressPercentage = (double)progressInfo.Progress;
-									progressWindow.Dispatcher.Invoke(() =>
+									//Check for cancellation 
+									if (_isCancellationRequested)
 									{
-										var viewModel = (ProgressWindowViewModel)progressWindow.DataContext;
+										_cancellationTokenSource.Cancel();
+										return;
+									}
+
+									double progressPercentage = (double)progressInfo.Progress;
+									_progressWindow.Dispatcher.Invoke(() =>
+									{
+										viewModel.StatusMessage = "Downloading file . . . ";
 										viewModel.ProgressPercentage = progressPercentage;
 									});
-								}));
+								}), _cancellationTokenSource.Token);
 
 						if (status == FtpStatus.Success)
 						{
@@ -140,17 +160,27 @@ namespace TSBFTPPortal.Services
 
 					}
 				}
+				catch (OperationCanceledException)
+				{
+					Log.Information("Download cancelled.");
+				}
 				catch (Exception ex)
 				{
 					Log.Error($"Error downloading file: {ex.Message}");
 				}
 				finally
 				{
-					progressWindow.Close();
+					_progressWindow.Close();
 				}
 			}
 		}
 
-
+		private void Cancel(object obj)
+		{
+			_isCancellationRequested = true;
+			_cancellationTokenSource.Cancel();
+			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
+			viewModel.StatusMessage = "Download cancelled.";
+		}
 	}
 }

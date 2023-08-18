@@ -1,5 +1,8 @@
-﻿using System.Windows.Input;
+﻿using System.Threading;
+using System.Windows;
+using System.Windows.Input;
 using TSBFTPPortal.Commands;
+using TSBFTPPortal.Views;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -27,16 +30,31 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-		public ICommand CancelCommand { get; } 
+		private ICommand _cancelCommand;
+		public ICommand CancelCommand
+		{
+			get => _cancelCommand;
+			set
+			{
+				_cancelCommand = value;
+				OnPropertyChanged(nameof(CancelCommand));
+			}
+		}
+		
+
+
+		private CancellationTokenSource _cancellationTokenSource;
 
 		public ProgressWindowViewModel()
 		{
 			CancelCommand = new RelayCommand(Cancel);
+			_cancellationTokenSource = new CancellationTokenSource();
 		}
 
 		private void Cancel(object obj)
 		{
-			//throw new NotImplementedException();
+			_cancellationTokenSource.Cancel();
+			StatusMessage = "Download cancelled";
 		}
 	}
 }

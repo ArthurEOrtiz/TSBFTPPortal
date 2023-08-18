@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TSBFTPPortal.Views"
         mc:Ignorable="d"
-        Title="Progress" Height="150" Width="400">
+        Title="Progress" Height="200" Width="400">
     <Grid>
 		  <ProgressBar Value="{Binding ProgressPercentage}" Height="30" VerticalAlignment="Top" Margin="20"/>
-		  <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,50"/>
+		<TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,50"/>
 		  <Button Content="Cancel" Command="{Binding CancelCommand}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,20,20,20"/>
 	</Grid>
 </Window>
