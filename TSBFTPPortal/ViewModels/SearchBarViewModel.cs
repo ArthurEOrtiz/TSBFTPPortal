@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 
@@ -35,56 +36,67 @@ namespace TSBFTPPortal.ViewModels
 				AllDirectories.Add(d);
 			}
 		}
-		//private void PerformSearch()
-		//{
-		//	foreach (var d in AllDirectories)
-		//	{
-		//		d.IsVisible = string.IsNullOrEmpty(SearchText) || d.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-		//	}
-		//}
-		//private void PerformSearch()
-		//{
-		//	foreach (var d in AllDirectories)
-		//	{
-		//		d.IsVisible = IsItemVisible(d, SearchText);
-		//	}
-		//}
+
+
 		private void PerformSearch()
 		{
 			foreach (var d in AllDirectories)
 			{
-				if (string.IsNullOrEmpty(SearchText))
-				{
-					// When the search text is empty, make all items visible
-					d.IsVisible = true;
-				}
-				else
-				{
-					d.IsVisible = IsItemVisible(d, SearchText);
-				}
+				// Check if the item matches the search criteria
+				bool matchesSearch = IsItemVisible(d, SearchText);
+
+				// Set the IsVisible property
+				d.IsVisible = matchesSearch;
 			}
 		}
 
-
 		private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
 		{
-			// Check if the current item's name matches the search text
-			if (!string.IsNullOrEmpty(searchText) && item.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+			if (string.IsNullOrEmpty(searchText))
+			{
+				// When the search text is empty, make all items visible
+				foreach (var childItem in item.Items)
+				{
+					childItem.IsVisible = true;
+				}
+
+				return true;
+			}
+
+			if (item.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
 			{
 				return true;
 			}
 
-			// Recursively check child items (subdirectories and files)
+			// Check if any child item matches the search text
+			bool hasMatchingChild = false;
 			foreach (var childItem in item.Items)
 			{
 				if (IsItemVisible(childItem, searchText))
 				{
-					return true; // At least one child item matches the search text
+					hasMatchingChild = true;
+					childItem.IsVisible = true; // Make the matching child item visible
 				}
+				else
+				{
+					childItem.IsVisible = false; // Make non-matching child items not visible
+				}
+			}
+
+			if (hasMatchingChild)
+			{
+				return true; // At least one child item matches the search text
 			}
 
 			return false; // No matches found in this item or its children
 		}
+
+
+
+
+
+
+
 
 
 	}
