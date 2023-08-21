@@ -23,7 +23,9 @@ namespace TSBFTPPortal.ViewModels
 			_ftpService = ftpService;
 			CamaReportsTreeViewViewModel = new CamaReportsTreeViewViewModel(selectedCounty, ftpService);
 			CamaScriptsTreeViewViewModel = new CamaScriptsTreeViewViewModel(selectedCounty, ftpService);
-			CamaDocumentsTreeViewViewModel = new CamaDocumentsTreeViewViewModel(selectedCounty, ftpService);	
+			CamaDocumentsTreeViewViewModel = new CamaDocumentsTreeViewViewModel(selectedCounty, ftpService);
+
+
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.Linq;
 using System.Windows;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
@@ -27,7 +28,6 @@ namespace TSBFTPPortal.ViewModels
 			GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService);
 			PTRTreeViewViewModel = new PTRTreeViewViewModel(SelectedCounty, ftpService);
 			TabControlCamaViewModel = new TabControlCamaViewModel(SelectedCounty, ftpService);
-			
 		}
 	}
 }

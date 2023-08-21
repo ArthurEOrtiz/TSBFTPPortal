@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.Linq;
 using TSBFTPPortal.Models;
 
 
@@ -14,6 +15,12 @@ namespace TSBFTPPortal.ViewModels
       SelectedCounty = selectedCounty;
       TabControlMainViewModel = new TabControlMainViewModel(selectedCounty, configuration);
       SearchBarViewModel = new SearchBarViewModel();
+      SearchBarViewModel.SetAllDirectories(TabControlMainViewModel.GISTreeViewViewModel.Directories
+        .Concat(TabControlMainViewModel.PABTreeViewViewModel.Directories)
+        .Concat(TabControlMainViewModel.PTRTreeViewViewModel.Directories)
+        .Concat(TabControlMainViewModel.TabControlCamaViewModel.CamaScriptsTreeViewViewModel.Directories)
+        .Concat(TabControlMainViewModel.TabControlCamaViewModel.CamaReportsTreeViewViewModel.Directories)
+        .Concat(TabControlMainViewModel.TabControlCamaViewModel.CamaDocumentsTreeViewViewModel.Directories));
       
     }
   }
