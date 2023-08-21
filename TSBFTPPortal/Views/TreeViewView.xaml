@@ -22,7 +22,11 @@
 					<Setter Property="IsExpanded" Value="True" />
 					<Setter Property="IsSelected" Value="False" />
 					<Setter Property="behaviors:DoubleClickBehavior.Command" Value="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource Self}}" />
-
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding IsVisible}" Value="False">
+							<Setter Property="Visibility" Value="Collapsed" />
+						</DataTrigger>
+					</Style.Triggers>
 				</Style>
 			</TreeView.ItemContainerStyle>
 		</TreeView>

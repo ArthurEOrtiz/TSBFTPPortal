@@ -13,6 +13,17 @@ namespace TSBFTPPortal.ViewModels
 		public string? Path { get; set; }
 		public bool IsDirectory { get; set; }
 		public bool IsFile => !IsDirectory;
+		private bool _isVisible = true;
+		public bool IsVisible
+		{
+			get => _isVisible;
+			set
+			{
+				_isVisible = value;
+				OnPropertyChanged(nameof(IsVisible));
+			}
+		}
+
 		public ObservableCollection<DirectoryItemViewModel> Items { get; } = new ObservableCollection<DirectoryItemViewModel>();
 		public ICommand DownloadCommand { get; private set; }
 		private readonly IFtpService _ftpService;
@@ -33,7 +44,7 @@ namespace TSBFTPPortal.ViewModels
 				}
 				catch (Exception ex)
 				{
-					Log.Error($"Error downloadinf file: {ex.Message}");
+					Log.Error($"Error downloading file: {ex.Message}");
 				}
 			}
 		}

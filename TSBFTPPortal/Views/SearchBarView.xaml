@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="TSBFTPPortal.Views.SearchBarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TSBFTPPortal.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="200">
+	<UserControl.Resources>
+		<Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
+			<Setter Property="Foreground" Value="Black" />
+			<Style.Triggers>
+				<Trigger Property="Text" Value="">
+					<Setter Property="Foreground" Value="Gray" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+	</UserControl.Resources>
+	<Grid>
+		<TextBox Style="{StaticResource PlaceholderTextBoxStyle}" 
+						 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+						 HorizontalAlignment="Stretch" 
+						 VerticalAlignment="Center">
+			<TextBox.Template>
+				<ControlTemplate TargetType="{x:Type TextBox}">
+					<Grid>
+						<!-- Placeholder TextBlock -->
+						<TextBlock Text="Search FTP files . . " 
+											 Foreground="Gray"
+											 Margin="5,0"
+                       Visibility="Collapsed"
+                       x:Name="PlaceholderTextBlock" />
+						<!-- Actual TextBox -->
+						<ScrollViewer x:Name="PART_ContentHost" 
+													SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="Text" Value="">
+							<Setter TargetName="PlaceholderTextBlock" 
+											Property="Visibility" 
+											Value="Visible" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</TextBox.Template>
+		</TextBox>
+
+		
+	</Grid>
+</UserControl>
