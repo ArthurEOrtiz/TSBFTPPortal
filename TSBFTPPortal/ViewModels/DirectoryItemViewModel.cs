@@ -33,7 +33,7 @@ namespace TSBFTPPortal.ViewModels
 				}
 				catch (Exception ex)
 				{
-					Log.Error($"Error downloadinf file: {ex.Message}");
+					Log.Error($"Error downloading file: {ex.Message}");
 				}
 			}
 		}
