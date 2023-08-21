@@ -24,6 +24,17 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
+		private bool _isHighlighted = false;
+		public bool IsHighlighted
+		{
+			get => _isHighlighted;
+			set
+			{
+				_isHighlighted = value;
+				OnPropertyChanged(nameof(IsHighlighted));
+			}
+		}
+
 		public ObservableCollection<DirectoryItemViewModel> Items { get; } = new ObservableCollection<DirectoryItemViewModel>();
 		public ICommand DownloadCommand { get; private set; }
 		private readonly IFtpService _ftpService;

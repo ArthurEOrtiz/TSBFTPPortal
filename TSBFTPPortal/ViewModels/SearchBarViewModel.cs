@@ -57,13 +57,15 @@ namespace TSBFTPPortal.ViewModels
 				foreach (var childItem in item.Items)
 				{
 					childItem.IsVisible = true;
+					childItem.IsHighlighted = false;
 				}
-
+				item.IsHighlighted = false;
 				return true;
 			}
 
 			if (item.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
 			{
+				item.IsHighlighted = true;
 				return true;
 			}
 
@@ -75,9 +77,11 @@ namespace TSBFTPPortal.ViewModels
 				{
 					hasMatchingChild = true;
 					childItem.IsVisible = true; // Make the matching child item visible
+					childItem.IsHighlighted = true;
 				}
 				else
 				{
+					childItem.IsVisible = false;
 					childItem.IsVisible = false; // Make non-matching child items not visible
 				}
 			}
