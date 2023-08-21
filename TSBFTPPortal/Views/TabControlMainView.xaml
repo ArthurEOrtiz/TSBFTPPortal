@@ -11,6 +11,7 @@
 			<TabItem Header="County Specific">
 			</TabItem>
 			<TabItem Header="Admin System">
+				<views:TabControlAdminView DataContext="{Binding TabControlAdminViewModel}" />
 				<TabItem.Style>
 					<Style TargetType="TabItem">
 						<Style.Triggers>
