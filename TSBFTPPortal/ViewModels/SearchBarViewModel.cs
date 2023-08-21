@@ -37,7 +37,6 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-
 		private void PerformSearch()
 		{
 			foreach (var d in AllDirectories)
@@ -90,14 +89,6 @@ namespace TSBFTPPortal.ViewModels
 
 			return false; // No matches found in this item or its children
 		}
-
-
-
-
-
-
-
-
 
 	}
 }
