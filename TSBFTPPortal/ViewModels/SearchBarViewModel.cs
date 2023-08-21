@@ -35,12 +35,57 @@ namespace TSBFTPPortal.ViewModels
 				AllDirectories.Add(d);
 			}
 		}
+		//private void PerformSearch()
+		//{
+		//	foreach (var d in AllDirectories)
+		//	{
+		//		d.IsVisible = string.IsNullOrEmpty(SearchText) || d.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+		//	}
+		//}
+		//private void PerformSearch()
+		//{
+		//	foreach (var d in AllDirectories)
+		//	{
+		//		d.IsVisible = IsItemVisible(d, SearchText);
+		//	}
+		//}
 		private void PerformSearch()
 		{
 			foreach (var d in AllDirectories)
 			{
-				d.IsVisible = string.IsNullOrEmpty(SearchText) || d.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+				if (string.IsNullOrEmpty(SearchText))
+				{
+					// When the search text is empty, make all items visible
+					d.IsVisible = true;
+				}
+				else
+				{
+					d.IsVisible = IsItemVisible(d, SearchText);
+				}
 			}
 		}
+
+
+		private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
+		{
+			// Check if the current item's name matches the search text
+			if (!string.IsNullOrEmpty(searchText) && item.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+
+			// Recursively check child items (subdirectories and files)
+			foreach (var childItem in item.Items)
+			{
+				if (IsItemVisible(childItem, searchText))
+				{
+					return true; // At least one child item matches the search text
+				}
+			}
+
+			return false; // No matches found in this item or its children
+		}
+
+
 	}
 }
