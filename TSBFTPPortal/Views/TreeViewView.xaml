@@ -26,6 +26,9 @@
 						<DataTrigger Binding="{Binding IsVisible}" Value="False">
 							<Setter Property="Visibility" Value="Collapsed" />
 						</DataTrigger>
+						<DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+							<Setter Property="Background" Value="Yellow" />
+						</DataTrigger>
 					</Style.Triggers>
 				</Style>
 			</TreeView.ItemContainerStyle>
