@@ -29,8 +29,6 @@ namespace TSBFTPPortal.ViewModels
 				}
 			};
 
-
-
 			LoadDirectoriesAndFoldersFromFTP();
 		}
 
@@ -52,8 +50,6 @@ namespace TSBFTPPortal.ViewModels
 		{
 			foreach (var directory in Directories)
 			{
-				//bool isVisible = IsVisibleRecursive(directory);
-				//directory.IsVisible = isVisible;
 				UpdateDirectoryVisibility(directory);
 			}
 		}
