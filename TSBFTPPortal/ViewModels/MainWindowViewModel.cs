@@ -2,7 +2,6 @@
 using System.Linq;
 using TSBFTPPortal.Models;
 
-
 namespace TSBFTPPortal.ViewModels
 {
   public class MainWindowViewModel : ViewModelBase
