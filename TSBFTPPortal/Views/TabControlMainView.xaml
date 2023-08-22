@@ -9,6 +9,7 @@
     <Grid>
 		<TabControl x:Name="TabControlMain">
 			<TabItem Header="County Specific">
+				<views:TreeViewView DataContext="{Binding CountySpecificTreeViewViewModel}"/>
 			</TabItem>
 			<TabItem Header="Admin System">
 				<views:TabControlAdminView DataContext="{Binding TabControlAdminViewModel}" />

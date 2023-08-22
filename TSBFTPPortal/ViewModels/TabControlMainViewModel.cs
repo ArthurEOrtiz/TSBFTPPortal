@@ -9,6 +9,7 @@ namespace TSBFTPPortal.ViewModels
 	public class TabControlMainViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
+		public CountySpecificTreeViewViewModel CountySpecificTreeViewViewModel { get; }
 		public PABTreeViewViewModel PABTreeViewViewModel { get; }
 		public GISTreeViewViewModel GISTreeViewViewModel { get; }
 		public PTRTreeViewViewModel PTRTreeViewViewModel { get; }
@@ -25,6 +26,8 @@ namespace TSBFTPPortal.ViewModels
 
 
 			IFtpService ftpService = new FtpService(ftpServer, username, password);
+
+			CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService);
 			PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty, ftpService);
 			GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService);
 			PTRTreeViewViewModel = new PTRTreeViewViewModel(SelectedCounty, ftpService);
