@@ -13,6 +13,7 @@ namespace TSBFTPPortal.ViewModels
 		public GISTreeViewViewModel GISTreeViewViewModel { get; }
 		public PTRTreeViewViewModel PTRTreeViewViewModel { get; }
 		public TabControlCamaViewModel TabControlCamaViewModel { get; }
+		public TabControlAdminViewModel TabControlAdminViewModel { get; }
 		public TabControlMainViewModel(County selectedCounty, IConfiguration configuration)
 		{
 			SelectedCounty = selectedCounty;
@@ -28,6 +29,7 @@ namespace TSBFTPPortal.ViewModels
 			GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService);
 			PTRTreeViewViewModel = new PTRTreeViewViewModel(SelectedCounty, ftpService);
 			TabControlCamaViewModel = new TabControlCamaViewModel(SelectedCounty, ftpService);
+			TabControlAdminViewModel = new TabControlAdminViewModel(SelectedCounty,ftpService);
 		}
 	}
 }
