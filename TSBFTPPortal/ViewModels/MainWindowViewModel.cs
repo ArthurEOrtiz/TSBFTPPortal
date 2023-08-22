@@ -15,7 +15,8 @@ namespace TSBFTPPortal.ViewModels
       TabControlMainViewModel = new TabControlMainViewModel(selectedCounty, configuration);
      
       SearchBarViewModel = new SearchBarViewModel();
-      SearchBarViewModel.SetAllDirectories(TabControlMainViewModel.GISTreeViewViewModel.Directories
+      SearchBarViewModel.SetAllDirectories(TabControlMainViewModel.CountySpecificTreeViewViewModel.Directories
+        .Concat(TabControlMainViewModel.GISTreeViewViewModel.Directories)
         .Concat(TabControlMainViewModel.PABTreeViewViewModel.Directories)
         .Concat(TabControlMainViewModel.PTRTreeViewViewModel.Directories)
         .Concat(TabControlMainViewModel.TabControlCamaViewModel.CamaScriptsTreeViewViewModel.Directories)
