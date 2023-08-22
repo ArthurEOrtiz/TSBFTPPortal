@@ -26,8 +26,7 @@ namespace TSBFTPPortal.ViewModels
         .Concat(TabControlMainViewModel.TabControlAdminViewModel.AdminScriptsTreeViewViewModel.Directories)
         .Concat(TabControlMainViewModel.TabControlAdminViewModel.AdminDocumentsTreeViewViewModel.Directories)
         .Concat(TabControlMainViewModel.TabControlAdminViewModel.TabControlAdminAppsViewModel.AdminAppTimberTreeViewViewModel.Directories)
-        .Concat(TabControlMainViewModel.TabControlAdminViewModel.TabControlAdminAppsViewModel
-        .AdminAppDataExtractTreeViewViewModel.Directories));
+        .Concat(TabControlMainViewModel.TabControlAdminViewModel.TabControlAdminAppsViewModel.AdminAppDataExtractTreeViewViewModel.Directories));
     }
   }
 }
