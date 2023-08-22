@@ -12,10 +12,16 @@
 				
 				<Grid>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="70*" />
+						<ColumnDefinition Width="30*" />
 					</Grid.ColumnDefinitions>
-					<views:TreeViewView DataContext="{Binding CountySpecificTreeViewViewModel}"/>
+					<views:TreeViewView 
+						Grid.Column="0"
+						DataContext="{Binding CountySpecificTreeViewViewModel}"/>
+					<views:FilterTreeViewView 
+						Grid.Column="1"
+						Margin="5"
+						DataContext="{Binding FilterTreeViewViewModel}"/>
 				</Grid>
 				
 			</TabItem>
