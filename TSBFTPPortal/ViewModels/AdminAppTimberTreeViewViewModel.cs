@@ -5,12 +5,12 @@ using TSBFTPPortal.Services;
 
 namespace TSBFTPPortal.ViewModels
 {
-	public class AdminDocumentsTreeViewViewModel : ViewModelBase
+	public class AdminAppTimberTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
 		public readonly IFtpService _ftpService;
 
-		public AdminDocumentsTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public AdminAppTimberTreeViewViewModel(County selectedCounty, IFtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
@@ -20,14 +20,14 @@ namespace TSBFTPPortal.ViewModels
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/FTP_DASHBOARD/ADMIN/{SelectedCounty.AdminSystem.ToUpper()}/DOCUMENTS/";
+			string rootPath = $"/FTP_DASHBOARD/ADMIN/{SelectedCounty.AdminSystem.ToUpper()}/APPS/TIMBER_EXPORTS/";
 
 			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
 			foreach (DirectoryItemViewModel item in items)
 			{
 				string fileExtension = Path.GetExtension(item.Path);
-				if (fileExtension != ".rpt" && fileExtension != ".sql")
+				if (fileExtension == ".sql" || fileExtension == "")
 				{
 					Directories.Add(item);
 				}

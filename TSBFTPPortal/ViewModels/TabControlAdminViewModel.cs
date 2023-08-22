@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TSBFTPPortal.Models;
+﻿using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
 namespace TSBFTPPortal.ViewModels
@@ -15,6 +10,7 @@ namespace TSBFTPPortal.ViewModels
 		public AdminReportsTreeViewViewModel AdminReportsTreeViewViewModel { get; }
 		public AdminScriptsTreeViewViewModel AdminScriptsTreeViewViewModel { get; }
 		public AdminDocumentsTreeViewViewModel AdminDocumentsTreeViewViewModel { get; }
+		public TabControlAdminAppsViewModel TabControlAdminAppsViewModel { get; }
 
 		public TabControlAdminViewModel(County selectedCounty, IFtpService ftpService)
 		{
@@ -24,6 +20,7 @@ namespace TSBFTPPortal.ViewModels
 			AdminReportsTreeViewViewModel = new AdminReportsTreeViewViewModel(selectedCounty, _ftpService);
 			AdminScriptsTreeViewViewModel = new AdminScriptsTreeViewViewModel(selectedCounty, _ftpService);
 			AdminDocumentsTreeViewViewModel = new AdminDocumentsTreeViewViewModel(selectedCounty, _ftpService);
+			TabControlAdminAppsViewModel = new TabControlAdminAppsViewModel(selectedCounty, _ftpService);
 		}
 	}
 }

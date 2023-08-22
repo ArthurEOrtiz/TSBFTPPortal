@@ -18,7 +18,7 @@
 				<local:TreeViewView DataContext="{Binding AdminDocumentsTreeViewViewModel}" />
 			</TabItem>
 			<TabItem Header="Apps">
-				
+				<local:TabControlAdminAppsView DataContext="{Binding TabControlAdminAppsViewModel}"/>
 			</TabItem>
 		</TabControl>
     </Grid>
