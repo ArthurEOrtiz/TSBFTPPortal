@@ -7,9 +7,9 @@ namespace TSBFTPPortal.ViewModels
 	public class PTRTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 
-		public PTRTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public PTRTreeViewViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;

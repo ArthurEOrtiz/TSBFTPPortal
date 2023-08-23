@@ -12,12 +12,12 @@ namespace TSBFTPPortal.ViewModels
 	public class TabControlCamaViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 		public CamaReportsTreeViewViewModel CamaReportsTreeViewViewModel { get; }
 		public CamaScriptsTreeViewViewModel CamaScriptsTreeViewViewModel { get; }
 		public CamaDocumentsTreeViewViewModel CamaDocumentsTreeViewViewModel { get; }
 
-		public TabControlCamaViewModel(County selectedCounty, IFtpService ftpService)
+		public TabControlCamaViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;

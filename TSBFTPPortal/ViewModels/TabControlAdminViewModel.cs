@@ -6,13 +6,13 @@ namespace TSBFTPPortal.ViewModels
 	public class TabControlAdminViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 		public AdminReportsTreeViewViewModel AdminReportsTreeViewViewModel { get; }
 		public AdminScriptsTreeViewViewModel AdminScriptsTreeViewViewModel { get; }
 		public AdminDocumentsTreeViewViewModel AdminDocumentsTreeViewViewModel { get; }
 		public TabControlAdminAppsViewModel TabControlAdminAppsViewModel { get; }
 
-		public TabControlAdminViewModel(County selectedCounty, IFtpService ftpService)
+		public TabControlAdminViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;

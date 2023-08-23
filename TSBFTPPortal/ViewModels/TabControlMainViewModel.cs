@@ -23,7 +23,7 @@ namespace TSBFTPPortal.ViewModels
 			string? username = configuration["FtpSettings:Username"];
 			string? password = configuration["FtpSettings:Password"];
 
-			IFtpService ftpService = new FtpService(ftpServer, username, password);
+			FtpService ftpService = new FtpService(ftpServer, username, password);
 
 			FilterTreeViewViewModel = new FilterTreeViewViewModel();
 

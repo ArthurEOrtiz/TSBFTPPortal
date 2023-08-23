@@ -37,9 +37,9 @@ namespace TSBFTPPortal.ViewModels
 
 		public ObservableCollection<DirectoryItemViewModel> Items { get; } = new ObservableCollection<DirectoryItemViewModel>();
 		public ICommand DownloadCommand { get; private set; }
-		private readonly IFtpService _ftpService;
+		private readonly FtpService _ftpService;
 
-		public DirectoryItemViewModel(IFtpService ftpService)
+		public DirectoryItemViewModel(FtpService ftpService)
 		{
 			_ftpService = ftpService;
 			DownloadCommand = new RelayCommand(Download);

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -13,9 +8,9 @@ namespace TSBFTPPortal.ViewModels
 	public class AdminScriptsTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 
-		public AdminScriptsTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public AdminScriptsTreeViewViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;

@@ -8,9 +8,9 @@ namespace TSBFTPPortal.ViewModels
 	public class AdminAppTimberTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 
-		public AdminAppTimberTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public AdminAppTimberTreeViewViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;

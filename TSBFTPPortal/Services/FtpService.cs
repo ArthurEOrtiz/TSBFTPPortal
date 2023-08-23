@@ -12,7 +12,7 @@ using TSBFTPPortal.Views;
 
 namespace TSBFTPPortal.Services
 {
-	public class FtpService : IFtpService
+	public class FtpService
 	{
 		private readonly string _ftpServer;
 		private readonly string _username;

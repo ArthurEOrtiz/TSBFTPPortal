@@ -8,9 +8,9 @@ namespace TSBFTPPortal.ViewModels
 	public class AdminDocumentsTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 
-		public AdminDocumentsTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public AdminDocumentsTreeViewViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
