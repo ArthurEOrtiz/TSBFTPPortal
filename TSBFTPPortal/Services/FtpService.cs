@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Sources;
 using FluentFTP;
 using Serilog;
 using TSBFTPPortal.Commands;
@@ -150,9 +151,36 @@ namespace TSBFTPPortal.Services
 			{
 				Log.Information($"File downloaded to: {targetFilePath}");
 				string fileExtension = Path.GetExtension(targetFilePath);
+
 				if (fileExtension != ".rpt" && fileExtension != ".sql")
 				{
-					Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
+					try
+					{
+						Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
+						Log.Information($"Download successful: {fileExtension}");
+					}
+					catch(Exception ex)
+					{
+						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
+					}
+				}
+
+				if (fileExtension == ".rpt")
+				{
+					try
+					{
+						_ = Task.Run(() => 
+						{
+							new CrystalReportsViewerService(targetFilePath).ExecuteProgram();
+							Log.Information($"Report successfully downloaded : {targetFilePath}");
+						});
+					  
+					}
+					catch (Exception ex)
+					{
+						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
+					}
+					
 				}
 			}
 			else

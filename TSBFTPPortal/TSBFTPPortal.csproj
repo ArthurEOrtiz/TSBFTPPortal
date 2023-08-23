@@ -37,4 +37,10 @@
     <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\CrystalReportsViewer_02.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
