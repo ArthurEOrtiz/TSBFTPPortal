@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="TSBFTPPortal.Views.FilterTreeViewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TSBFTPPortal.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="100">
+    <Grid>
+		<StackPanel Orientation="Vertical" >
+			<CheckBox 
+        Content="Reports"
+        HorizontalAlignment="Left"
+				IsChecked="{Binding IsReportsSelected}"
+      />
+
+			<CheckBox
+        Content="Scripts"
+        HorizontalAlignment="Left"
+				IsChecked="{Binding IsScriptsSelected}"
+      />
+			<CheckBox
+				Content="Documents"
+				HorizontalAlignment="Left"
+				IsChecked="{Binding IsDocumentsSelected}"
+		  />
+		</StackPanel>
+
+	</Grid>
+</UserControl>
