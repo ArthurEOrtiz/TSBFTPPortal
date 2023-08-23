@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Views;
 using Serilog;
 using TSBFTPPortal.Models;
 using System.Data.SQLite;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
+
 
 namespace TSBFTPPortal
 {
@@ -22,6 +17,8 @@ namespace TSBFTPPortal
 	public partial class App : Application
 	{
 		private IConfiguration Configuration;
+		private readonly string ReportsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Reports");
+		private readonly string ScriptsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Scripts");
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
@@ -34,6 +31,39 @@ namespace TSBFTPPortal
 			Window selectCountyView = new SelectCountyView(Configuration);
 			selectCountyView.Show();
 
+			Current.Exit += Current_Exit;
+		}
+
+		private void Current_Exit(object sender, ExitEventArgs e)
+		{
+
+			DeleteDirectoryContents(ReportsFolderPath);
+			DeleteDirectoryContents(ScriptsFolderPath);
+
+
+			// Close and flush the logger
+			Log.Information("Program Closed");
+			Log.CloseAndFlush();
+		}
+
+		private void DeleteDirectoryContents(string directoryPath)
+		{
+			if (Directory.Exists(directoryPath))
+			{
+				// Delete all files inside the directory
+				string[] files = Directory.GetFiles(directoryPath);
+				foreach (string file in files)
+				{
+					File.Delete(file);
+				}
+
+				// Delete all directories inside the directory (recursively)
+				string[] directories = Directory.GetDirectories(directoryPath);
+				foreach (string directory in directories)
+				{
+					Directory.Delete(directory, true);
+				}
+			}
 		}
 
 		private void ConfigureAppSettings()
@@ -115,7 +145,7 @@ namespace TSBFTPPortal
 		private void InitializeLocalAppDataFolder()
 		{
 			string commonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-			string dataFolderPath = System.IO.Path.Combine(commonAppDataPath, "TSBFTPPortal");
+			string dataFolderPath = Path.Combine(commonAppDataPath, "TSBFTPPortal");
 
 			if (!Directory.Exists(dataFolderPath))
 			{
@@ -127,12 +157,10 @@ namespace TSBFTPPortal
 					Directory.CreateDirectory(dataFolderPath);
 
 					// Create the reports folder 
-					string reportFolderPath = Path.Combine(dataFolderPath, "Reports");
-					Directory.CreateDirectory(reportFolderPath);
+					Directory.CreateDirectory(ReportsFolderPath);
 
 					// Create the scripts folder 
-					string scriptsFolderPath = Path.Combine(dataFolderPath, "Scripts");
-					Directory.CreateDirectory(scriptsFolderPath);
+					Directory.CreateDirectory(ScriptsFolderPath);
 
 					// Create the Log Folder 
 					string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
