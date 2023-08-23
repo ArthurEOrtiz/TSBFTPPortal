@@ -30,7 +30,7 @@ namespace TSBFTPPortal.Services
 				{
 					process.WaitForExit();
 					int exitCode = process.ExitCode;
-					// Handle the exit code or perform any other necessary actions
+					Log.Information($"Crystal Reports Viewer successful");
 				}
 			}
 			catch (Exception ex)
