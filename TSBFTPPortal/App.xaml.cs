@@ -26,14 +26,13 @@ namespace TSBFTPPortal
 		{
 			base.OnStartup(e);
 
-			ConfigureAppSettings();
-
-			Window selectCountyView = new SelectCountyView(Configuration);
-			selectCountyView.Show();
-
-			ConfigureLogger();
 			InitializeLocalAppDataFolder();
 			InitializeCountyDataBase();
+			ConfigureAppSettings();
+			ConfigureLogger();
+			
+			Window selectCountyView = new SelectCountyView(Configuration);
+			selectCountyView.Show();
 
 		}
 
