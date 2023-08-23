@@ -45,13 +45,13 @@ namespace TSBFTPPortal.ViewModels
 			DownloadCommand = new RelayCommand(Download);
 		}
 
-		private void Download(object obj)
+		private async void Download(object obj)
 		{
 			if (IsFile && !string.IsNullOrEmpty(Path)) 
 			{ 
 				try
 				{
-					_ftpService.DownloadFile(Path);
+					await _ftpService.DownloadFileAsync(Path);
 				}
 				catch (Exception ex)
 				{

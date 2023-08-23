@@ -71,11 +71,6 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		public void DownloadFile(string path)
-		{
-			 _ = DownloadFileAsync(path);
-		}
-
 		public async Task DownloadFileAsync(string path)
 		{
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
@@ -177,6 +172,7 @@ namespace TSBFTPPortal.Services
 				}
 
 				double progressPercentage = (double)progressInfo.Progress;
+				
 				_progressWindow.Dispatcher.Invoke(() =>
 				{
 					var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
