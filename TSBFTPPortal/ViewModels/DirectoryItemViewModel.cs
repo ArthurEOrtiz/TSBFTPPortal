@@ -37,21 +37,21 @@ namespace TSBFTPPortal.ViewModels
 
 		public ObservableCollection<DirectoryItemViewModel> Items { get; } = new ObservableCollection<DirectoryItemViewModel>();
 		public ICommand DownloadCommand { get; private set; }
-		private readonly IFtpService _ftpService;
+		private readonly FtpService _ftpService;
 
-		public DirectoryItemViewModel(IFtpService ftpService)
+		public DirectoryItemViewModel(FtpService ftpService)
 		{
 			_ftpService = ftpService;
 			DownloadCommand = new RelayCommand(Download);
 		}
 
-		private void Download(object obj)
+		private async void Download(object obj)
 		{
 			if (IsFile && !string.IsNullOrEmpty(Path)) 
 			{ 
 				try
 				{
-					_ftpService.DownloadFile(Path);
+					await _ftpService.DownloadFileAsync(Path);
 				}
 				catch (Exception ex)
 				{

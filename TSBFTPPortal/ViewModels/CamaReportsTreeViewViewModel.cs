@@ -8,9 +8,9 @@ namespace TSBFTPPortal.ViewModels
 	public class CamaReportsTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 
-		public CamaReportsTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public CamaReportsTreeViewViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;

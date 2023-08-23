@@ -9,10 +9,10 @@ namespace TSBFTPPortal.ViewModels
 	public class CountySpecificTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 		public FilterTreeViewViewModel FilterTreeViewViewModel { get; }
 
-		public CountySpecificTreeViewViewModel(County selectedCounty, IFtpService ftpService, FilterTreeViewViewModel filterTreeViewViewModel)
+		public CountySpecificTreeViewViewModel(County selectedCounty, FtpService ftpService, FilterTreeViewViewModel filterTreeViewViewModel)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;

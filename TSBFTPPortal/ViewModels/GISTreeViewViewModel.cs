@@ -7,9 +7,9 @@ namespace TSBFTPPortal.ViewModels
 	public class GISTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly IFtpService _ftpService;
+		public readonly FtpService _ftpService;
 
-		public GISTreeViewViewModel(County selectedCounty, IFtpService ftpService)
+		public GISTreeViewViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
