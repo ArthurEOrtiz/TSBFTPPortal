@@ -30,7 +30,6 @@ namespace TSBFTPPortal.ViewModels
 
 		public void SetAllDirectories(IEnumerable<DirectoryItemViewModel> directories)
 		{
-			AllDirectories.Clear();
 			foreach (var d in directories)
 			{
 				AllDirectories.Add(d);
