@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
 using FluentFTP;
 using Serilog;
 using TSBFTPPortal.Commands;
@@ -133,7 +132,7 @@ namespace TSBFTPPortal.Services
 
 				default:
 					string downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-					return System.IO.Path.Combine(downloadsFolder, fileName);
+					return Path.Combine(downloadsFolder, fileName);
 			}
 		}
 
@@ -180,7 +179,22 @@ namespace TSBFTPPortal.Services
 					{
 						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
 					}
-					
+				}
+				
+				if (fileExtension == ".sql")
+				{
+					try
+					{
+						_ = Task.Run(() => 
+						{
+							new ScriptRunnerService(targetFilePath).ExecuteProgram();
+							Log.Information($"Script successfully downloaded: {targetFilePath}");
+						});
+					}
+					catch (Exception ex)
+					{
+						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
+					}
 				}
 			}
 			else

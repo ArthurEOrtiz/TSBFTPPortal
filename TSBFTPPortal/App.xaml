@@ -4,14 +4,7 @@
              xmlns:local="clr-namespace:TSBFTPPortal"
              >
 	<Application.Resources>
-		<!--<Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
-			<Setter Property="Foreground" Value="Black" />
-			<Style.Triggers>
-				<Trigger Property="Text" Value="">
-					<Setter Property="Foreground" Value="Gray" />
-				</Trigger>
-			</Style.Triggers>
-		</Style>-->
+
 
 	</Application.Resources>
 </Application>
