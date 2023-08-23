@@ -24,6 +24,9 @@
 		</Grid.ColumnDefinitions>
 		<TextBlock 
 			Text="{Binding SelectedCounty.Name}" 
+			Margin="5"
+			FontSize="14"
+			FontWeight="Bold"
 			Grid.Row="0" />
 			
 		<views:SearchBarView 
