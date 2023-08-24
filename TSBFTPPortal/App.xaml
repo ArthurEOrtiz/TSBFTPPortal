@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:TSBFTPPortal"
              >
 	<Application.Resources>
-
+		<BitmapImage x:Key="AppIcon" UriSource="C:\Users\arortiz\Desktop\Projects\TSBFTPPortal\TSBFTPPortal\Resources\TSBIcon.png" />
 
 	</Application.Resources>
 </Application>
