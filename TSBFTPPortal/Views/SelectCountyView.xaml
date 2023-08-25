@@ -42,7 +42,7 @@
 			Grid.Row="2"
 			HorizontalAlignment="Center"
 			Width="230"
-			Height="30"
+			Height="25"
 			Background="Black"
 			/>
 

@@ -26,9 +26,13 @@
 		<TextBlock 
 			Text="{Binding SelectedCounty.Name}" 
 			Margin="5"
-			FontSize="14"
-			FontWeight="Bold"
+			FontSize="18"
 			Grid.Row="0" />
+		<views:ThemeToggleView 
+			DataContext="{Binding ToggleThemeViewModel}"
+			Grid.Column="1"
+			HorizontalContentAlignment="Right"
+			Margin="3"/>
 
 		<views:SearchBarView 
 			Grid.Row="1"

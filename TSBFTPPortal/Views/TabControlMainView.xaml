@@ -6,9 +6,12 @@
              xmlns:views="clr-namespace:TSBFTPPortal.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="800">
+	<UserControl.Resources>
+		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+	</UserControl.Resources>
     <Grid>
 		<TabControl x:Name="TabControlMain" >
-			<TabItem Header="County Specific">
+			<TabItem Header="County Specific" Style="{DynamicResource TabItemStyling}">
 				
 				<Grid>
 					<Grid.ColumnDefinitions>
@@ -25,50 +28,19 @@
 				</Grid>
 				
 			</TabItem>
-			<TabItem Header="Admin System" >
+			<TabItem Header="Admin System" Style="{DynamicResource TabItemStyling}" Visibility="{Binding IsAdminSystemTabVisible,Converter={StaticResource BooleanToVisibilityConverter}}" >
 				<views:TabControlAdminView DataContext="{Binding TabControlAdminViewModel}" />
-				<TabItem.Style>
-					<Style TargetType="TabItem" BasedOn="{StaticResource TabItemStyling}">
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="AS400">
-								<Setter Property="Visibility" Value="Collapsed" />
-							</DataTrigger>
-							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="CAI">
-								<Setter Property="Visibility" Value="Collapsed" />
-							</DataTrigger>
-							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="Custom">
-								<Setter Property="Visibility" Value="Collapsed" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</TabItem.Style>
 			</TabItem>
-			<TabItem Header="Cama System">
+			<TabItem Header="Cama System" Style="{DynamicResource TabItemStyling}" Visibility="{Binding IsCamaSystemTabVisible, Converter={StaticResource BooleanToVisibilityConverter}}"> 
 				<views:TabControlCamaView DataContext="{Binding TabControlCamaViewModel}"/>
-				<TabItem.Style>
-					<Style TargetType="TabItem" BasedOn="{StaticResource TabItemStyling}">
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="AS400">
-								<Setter Property="Visibility" Value="Collapsed" />
-							</DataTrigger>
-							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="CAI">
-								<Setter Property="Visibility" Value="Collapsed" />
-							</DataTrigger>
-							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="Custom">
-								<Setter Property="Visibility" Value="Collapsed" />
-							</DataTrigger>
-							
-						</Style.Triggers>
-					</Style>
-				</TabItem.Style>
 			</TabItem>
-			<TabItem Header="PAB">
+			<TabItem Header="PAB" Style="{DynamicResource TabItemStyling}">
 				<views:TreeViewView DataContext="{Binding PABTreeViewViewModel}" />
 			</TabItem>
-			<TabItem Header="GIS">
+			<TabItem Header="GIS" Style="{DynamicResource TabItemStyling}">
 				<views:TreeViewView DataContext="{Binding GISTreeViewViewModel}" />
 			</TabItem>
-			<TabItem Header="PTR">
+			<TabItem Header="PTR" Style="{DynamicResource TabItemStyling}">
 				<views:TreeViewView DataContext="{Binding PTRTreeViewViewModel}" />
 			</TabItem>
 		</TabControl>
