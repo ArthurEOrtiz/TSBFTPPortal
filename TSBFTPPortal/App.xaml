@@ -169,9 +169,6 @@
 							<Trigger Property="HasItems" Value="false">
 								<Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
 							</Trigger>
-							<!--<Trigger Property="IsEnabled" Value="false">
-								<Setter Property="Foreground" Value="blue"/>
-							</Trigger>-->
 							<Trigger Property="IsGrouping" Value="true">
 								<Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
 							</Trigger>
@@ -179,10 +176,6 @@
 								<Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0"/>
 								<Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0"/>
 							</Trigger>
-							<!--<Trigger Property="IsEditable" Value="true">
-								<Setter Property="IsTabStop" Value="false"/>
-								<Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
-							</Trigger>-->
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
 				</Setter.Value>
