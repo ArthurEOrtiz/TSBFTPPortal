@@ -19,7 +19,7 @@
 			<Setter Property="Background" Value="#1C1C21" />
 		</Style>
 		
-		<Style x:Key="TabItemStyling" TargetType="{x:Type TabItem}">
+		<Style x:Key="TabItemStyling" TargetType="TabItem">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type TabItem}">
@@ -45,31 +45,29 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type TabItem}">
+		<Style x:Key="TabItemStylingDynamic" TargetType="{x:Type TabItem}" BasedOn="{StaticResource TabItemStyling}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type TabItem}">
-						<Grid>
-							<Border Name="Border">
-								<ContentPresenter VerticalAlignment="Center" 
-																	Margin="5"
-																	HorizontalAlignment="Center"
-																	ContentSource="Header" >
-								</ContentPresenter>
-							</Border>
-						</Grid>
 						<ControlTemplate.Triggers>
-							<Trigger Property="IsSelected" Value="True">
-								<Setter TargetName="Border" Property="Background" Value="#5B5B6E" />
-							</Trigger>
-							<Trigger Property="IsSelected" Value="False">
-								<Setter TargetName="Border" Property="Background" Value="#33333D" />
-							</Trigger>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="AS400">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="CAI">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="Custom">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+							
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
+			
 		</Style>
+
+	
 
 		<Style TargetType="TreeView">
 			<Setter Property="Background" Value="#5B5B6E" />

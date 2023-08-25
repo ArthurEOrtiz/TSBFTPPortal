@@ -8,10 +8,10 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
 		<TabControl x:Name="TabControlAdminApps">
-			<TabItem Header="Timber">
+			<TabItem Header="Timber" Style="{DynamicResource TabItemStyling}">
 				<local:TreeViewView DataContext="{Binding AdminAppTimberTreeViewViewModel}" />
 			</TabItem>
-			<TabItem Header="Data Extract">
+			<TabItem Header="Data Extract" Style="{DynamicResource TabItemStyling}">
 				<local:TreeViewView DataContext="{Binding AdminAppDataExtractTreeViewViewModel}"/>
 			</TabItem>
 		</TabControl>  

@@ -8,16 +8,16 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
 		<TabControl x:Name="TabControlAdmin">
-			<TabItem Header="Reports">
+			<TabItem Header="Reports" Style="{DynamicResource TabItemStyling}">
 				<local:TreeViewView DataContext="{Binding AdminReportsTreeViewViewModel}" />
 			</TabItem>
-			<TabItem Header="Scripts">
+			<TabItem Header="Scripts" Style="{DynamicResource TabItemStyling}">
 				<local:TreeViewView DataContext="{Binding AdminScriptsTreeViewViewModel}" />
 			</TabItem>
-			<TabItem Header="Documents">
+			<TabItem Header="Documents" Style="{DynamicResource TabItemStyling}">
 				<local:TreeViewView DataContext="{Binding AdminDocumentsTreeViewViewModel}" />
 			</TabItem>
-			<TabItem Header="Apps">
+			<TabItem Header="Apps" Style="{DynamicResource TabItemStyling}">
 				<local:TabControlAdminAppsView DataContext="{Binding TabControlAdminAppsViewModel}"/>
 			</TabItem>
 		</TabControl>
