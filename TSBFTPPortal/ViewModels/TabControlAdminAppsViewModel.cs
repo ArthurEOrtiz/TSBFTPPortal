@@ -1,4 +1,5 @@
-﻿using TSBFTPPortal.Models;
+﻿using System.Linq;
+using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
 namespace TSBFTPPortal.ViewModels
@@ -7,16 +8,21 @@ namespace TSBFTPPortal.ViewModels
 	{
 		public County SelectedCounty { get; }
 		public readonly FtpService _ftpService;
+		public SearchBarViewModel SearchBarViewModel { get; set; }
 		public AdminAppTimberTreeViewViewModel AdminAppTimberTreeViewViewModel { get; }
 		public AdminAppDataExtractTreeViewViewModel AdminAppDataExtractTreeViewViewModel { get; }	
 
-		public TabControlAdminAppsViewModel(County selectedCounty, FtpService ftpService)
+		public TabControlAdminAppsViewModel(County selectedCounty, FtpService ftpService, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
+			SearchBarViewModel = searchBarViewModel;
+
 			AdminAppTimberTreeViewViewModel = new AdminAppTimberTreeViewViewModel(selectedCounty, _ftpService);
 			AdminAppDataExtractTreeViewViewModel = new AdminAppDataExtractTreeViewViewModel(selectedCounty, _ftpService);
 
+			SearchBarViewModel.SetAllDirectories(AdminAppTimberTreeViewViewModel.Directories
+				.Concat(AdminAppDataExtractTreeViewViewModel.Directories));
 		}
 	}
 }

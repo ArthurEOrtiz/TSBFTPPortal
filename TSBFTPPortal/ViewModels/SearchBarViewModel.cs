@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
-
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -30,7 +27,6 @@ namespace TSBFTPPortal.ViewModels
 
 		public void SetAllDirectories(IEnumerable<DirectoryItemViewModel> directories)
 		{
-			AllDirectories.Clear();
 			foreach (var d in directories)
 			{
 				AllDirectories.Add(d);

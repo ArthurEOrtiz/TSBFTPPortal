@@ -6,18 +6,9 @@
              xmlns:local="clr-namespace:TSBFTPPortal.Views"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="200">
-	<UserControl.Resources>
-		<Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
-			<Setter Property="Foreground" Value="Black" />
-			<Style.Triggers>
-				<Trigger Property="Text" Value="">
-					<Setter Property="Foreground" Value="Gray" />
-				</Trigger>
-			</Style.Triggers>
-		</Style>
-	</UserControl.Resources>
+
 	<Grid>
-		<TextBox Style="{StaticResource PlaceholderTextBoxStyle}" 
+		<TextBox Style="{DynamicResource PlaceholderTextBoxStyle}" 
 						 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
 						 HorizontalAlignment="Stretch" 
 						 VerticalAlignment="Center">
