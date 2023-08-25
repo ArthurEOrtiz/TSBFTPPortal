@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="800">
     <Grid>
-		<TabControl x:Name="TabControlMain">
+		<TabControl x:Name="TabControlMain" >
 			<TabItem Header="County Specific">
 				
 				<Grid>
@@ -25,10 +25,10 @@
 				</Grid>
 				
 			</TabItem>
-			<TabItem Header="Admin System">
+			<TabItem Header="Admin System" >
 				<views:TabControlAdminView DataContext="{Binding TabControlAdminViewModel}" />
 				<TabItem.Style>
-					<Style TargetType="TabItem">
+					<Style TargetType="TabItem" BasedOn="{StaticResource TabItemStyling}">
 						<Style.Triggers>
 							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="AS400">
 								<Setter Property="Visibility" Value="Collapsed" />
@@ -46,7 +46,7 @@
 			<TabItem Header="Cama System">
 				<views:TabControlCamaView DataContext="{Binding TabControlCamaViewModel}"/>
 				<TabItem.Style>
-					<Style TargetType="TabItem">
+					<Style TargetType="TabItem" BasedOn="{StaticResource TabItemStyling}">
 						<Style.Triggers>
 							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="AS400">
 								<Setter Property="Visibility" Value="Collapsed" />
@@ -57,6 +57,7 @@
 							<DataTrigger Binding="{Binding SelectedCounty.CAMASystem}" Value="Custom">
 								<Setter Property="Visibility" Value="Collapsed" />
 							</DataTrigger>
+							
 						</Style.Triggers>
 					</Style>
 				</TabItem.Style>

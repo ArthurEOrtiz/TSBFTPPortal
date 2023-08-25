@@ -42,7 +42,8 @@
 			Grid.Row="2"
 			HorizontalAlignment="Center"
 			Width="230"
-			Height="20"
+			Height="30"
+			Background="Black"
 			/>
 
 		<Button

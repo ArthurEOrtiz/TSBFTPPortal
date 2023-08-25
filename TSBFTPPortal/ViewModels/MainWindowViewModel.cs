@@ -14,7 +14,7 @@ namespace TSBFTPPortal.ViewModels
       SelectedCounty = selectedCounty;
 			SearchBarViewModel = new SearchBarViewModel();
 			TabControlMainViewModel = new TabControlMainViewModel(selectedCounty, configuration, SearchBarViewModel);
-     
+    
     }
   }
 }
