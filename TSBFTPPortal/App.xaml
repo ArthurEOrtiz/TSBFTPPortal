@@ -4,11 +4,5 @@
 						 >
 	<Application.Resources>
 		<BitmapImage x:Key="AppIcon" UriSource="/Resources/TSBIcon.png" />
-		<!--<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="/Themes/LightTheme.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-			<BitmapImage x:Key="AppIcon" UriSource="/Resources/TSBIcon.png" />
-		</ResourceDictionary>-->
 	</Application.Resources>
 </Application>
