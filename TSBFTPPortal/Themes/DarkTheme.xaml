@@ -49,12 +49,11 @@
 		<Setter Property="Foreground" Value="White" />
 	</Style>
 
-	<Style TargetType="TextBox">
-		<Setter Property="Foreground" Value="White" />
-	</Style>
+
 
 	<Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
 		<Setter Property="Foreground" Value="White" />
+		<Setter Property="CaretBrush" Value="White" />
 		<Style.Triggers>
 			<Trigger Property="Text" Value="">
 				<Setter Property="Foreground" Value="Gray" />
@@ -151,5 +150,7 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+
+	
 
 </ResourceDictionary>
