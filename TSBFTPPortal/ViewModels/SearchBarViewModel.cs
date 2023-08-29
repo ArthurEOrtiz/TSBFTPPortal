@@ -77,8 +77,8 @@ namespace TSBFTPPortal.ViewModels
 				}
 				else
 				{
-					childItem.IsVisible = false;
 					childItem.IsVisible = false; // Make non-matching child items not visible
+					childItem.IsHighlighted = false; 
 				}
 			}
 
@@ -87,7 +87,9 @@ namespace TSBFTPPortal.ViewModels
 				return true; // At least one child item matches the search text
 			}
 
+			item.IsHighlighted = false;
 			return false; // No matches found in this item or its children
+			
 		}
 
 	}
