@@ -87,7 +87,7 @@ namespace TSBFTPPortal.ViewModels
 				return true; // At least one child item matches the search text
 			}
 
-			item.IsHighlighted = false;
+		
 			return false; // No matches found in this item or its children
 			
 		}
