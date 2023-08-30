@@ -4,6 +4,7 @@ using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
 using System.Linq;
+using Serilog;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -37,7 +38,16 @@ namespace TSBFTPPortal.ViewModels
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/COUNTIES/{SelectedCounty.Name.ToUpper()}/";
+			string rootPath = string.Empty;
+			if (SelectedCounty != null && SelectedCounty.Name != null)
+			{
+				rootPath = $"/COUNTIES/{SelectedCounty.Name.ToUpper()}/";
+			}
+			else
+			{
+				Log.Error("County Specific, SelectCounty is null");
+			}
+			
 
 			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
@@ -153,8 +163,6 @@ namespace TSBFTPPortal.ViewModels
 			return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true &&
 						 !directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
-
-
 
 	}
 }
