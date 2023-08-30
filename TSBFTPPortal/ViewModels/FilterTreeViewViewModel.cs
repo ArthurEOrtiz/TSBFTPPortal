@@ -4,7 +4,7 @@ namespace TSBFTPPortal.Views
 {
 	public class FilterTreeViewViewModel : ViewModelBase
 	{
-		private bool _isReportsSelected = true;
+		private bool _isReportsSelected;
 		public bool IsReportsSelected
 		{
 			get => _isReportsSelected;
@@ -18,7 +18,7 @@ namespace TSBFTPPortal.Views
 			}
 		}
 
-		private bool _isScriptsSelected = true;
+		private bool _isScriptsSelected;
 		public bool IsScriptsSelected
 		{
 			get => _isScriptsSelected;
@@ -32,7 +32,7 @@ namespace TSBFTPPortal.Views
 			}
 		}
 
-		private bool _isDocumentsSelected = true;
+		private bool _isDocumentsSelected;
 		public bool IsDocumentsSelected
 		{
 			get => _isDocumentsSelected;

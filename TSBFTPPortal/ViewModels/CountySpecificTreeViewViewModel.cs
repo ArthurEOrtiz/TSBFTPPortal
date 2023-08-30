@@ -146,9 +146,25 @@ namespace TSBFTPPortal.ViewModels
 
 		private bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
-			return !directory.IsDirectory && directory.Name != null &&
-					!directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) ==true ||
-					!directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
+			if (!directory.IsDirectory && directory.Name != null)
+			{
+				return !directory.IsDirectory && directory.Name != null &&
+					directory.Name?.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".docx", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".rft", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".html", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".htm", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".odt", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".xls", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".ods", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".ppt", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".pptx", StringComparison.OrdinalIgnoreCase) == true ||
+					directory.Name?.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) == true;
+			}
+
+			return false;		
 		}
 
 		public void UpdateDirectoryVisibility()
