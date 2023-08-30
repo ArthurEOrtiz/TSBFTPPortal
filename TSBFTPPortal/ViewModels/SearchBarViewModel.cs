@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -23,6 +24,7 @@ namespace TSBFTPPortal.ViewModels
 		public SearchBarViewModel()
 		{
 			AllDirectories = new ObservableCollection<DirectoryItemViewModel>();
+			_searchText = string.Empty; // Initializing search text with an empty string. 
 		}
 
 		public void SetAllDirectories(IEnumerable<DirectoryItemViewModel> directories)
@@ -45,49 +47,55 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
+		private void ResetAllItems(DirectoryItemViewModel item)
+		{
+			item.IsVisible = true;
+			item.IsHighlighted = false;
+
+			foreach (var childItem in item.Items)
+			{
+				ResetAllItems(childItem);
+			}
+		}
+
+
 		private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
 		{
 			if (string.IsNullOrEmpty(searchText))
 			{
-				// When the search text is empty, make all items visible
-				foreach (var childItem in item.Items)
-				{
-					childItem.IsVisible = true;
-					childItem.IsHighlighted = false;
-				}
-				item.IsHighlighted = false;
+				ResetAllItems(item);
 				return true;
 			}
 
-			if (item.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-			{
-				item.IsHighlighted = true;
-				return true;
-			}
+			bool hasMatchingChild = false;
 
 			// Check if any child item matches the search text
-			bool hasMatchingChild = false;
 			foreach (var childItem in item.Items)
 			{
-				if (IsItemVisible(childItem, searchText))
-				{
-					hasMatchingChild = true;
-					childItem.IsVisible = true; // Make the matching child item visible
-					childItem.IsHighlighted = true;
-				}
-				else
-				{
-					childItem.IsVisible = false;
-					childItem.IsVisible = false; // Make non-matching child items not visible
-				}
+				bool childMatches = IsItemVisible(childItem, searchText);
+				hasMatchingChild |= childMatches;
+
+				// Set visibility and highlight for the child item
+				childItem.IsVisible = childMatches;
+				childItem.IsHighlighted = childMatches;
 			}
 
-			if (hasMatchingChild)
+			// Check if the parent item matches the search text
+			bool parentMatches = item.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
+
+			if (parentMatches)
 			{
-				return true; // At least one child item matches the search text
+				// If the parent item matches, highlight it
+				item.IsHighlighted = true;
+			}
+			else
+			{
+				// If the parent item doesn't match, set highlight based on child matches
+				item.IsHighlighted = hasMatchingChild;
 			}
 
-			return false; // No matches found in this item or its children
+			// Return whether the parent or any child matches the search text
+			return parentMatches || hasMatchingChild;
 		}
 
 	}

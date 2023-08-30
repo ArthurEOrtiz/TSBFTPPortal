@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
+using System.Linq;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -11,13 +12,15 @@ namespace TSBFTPPortal.ViewModels
 		public County SelectedCounty { get; }
 		public readonly FtpService _ftpService;
 		public FilterTreeViewViewModel FilterTreeViewViewModel { get; }
+		public SearchBarViewModel SearchBarViewModel { get; }
 
-		public CountySpecificTreeViewViewModel(County selectedCounty, FtpService ftpService, FilterTreeViewViewModel filterTreeViewViewModel)
+		public CountySpecificTreeViewViewModel(County selectedCounty, FtpService ftpService, FilterTreeViewViewModel filterTreeViewViewModel, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			FilterTreeViewViewModel = filterTreeViewViewModel;
+			SearchBarViewModel = searchBarViewModel;
 
 			FilterTreeViewViewModel.PropertyChanged += (sender, e) =>
 			{
@@ -42,15 +45,42 @@ namespace TSBFTPPortal.ViewModels
 			{
 				Directories.Add(item);
 			}
-
-			ApplyFiltering();
 		}
 
 		public void ApplyFiltering()
 		{
 			foreach (var directory in Directories)
 			{
-				UpdateDirectoryVisibility(directory);
+				if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
+				{
+					UpdateDirectoryVisibility(directory);
+				}
+				else
+				{
+					if (directory.IsVisible && directory.IsHighlighted)
+					{
+						UpdateDirectoryVisibilitySearchedDirectories(directory);
+					}
+				}
+			}
+		}
+
+		private void UpdateDirectoryVisibilitySearchedDirectories(DirectoryItemViewModel directory)
+		{
+			bool isVisible = IsVisibleRecursive(directory);
+			directory.IsVisible = isVisible;
+
+			// Update child items recursively
+			foreach (var subDirectory in directory.Items)
+			{
+				if (subDirectory.IsHighlighted)
+				{
+					UpdateDirectoryVisibilitySearchedDirectories(subDirectory);
+				}
+				else
+				{
+					subDirectory.IsVisible = false;
+				}
 			}
 		}
 
@@ -85,13 +115,18 @@ namespace TSBFTPPortal.ViewModels
 				isVisible = true;
 			}
 
+			if (directory.IsDirectory)
+			{
+				isVisible = true;
+			}
+
 			foreach (var subDirectory in directory.Items)
 			{
 				bool isSubVisible = IsVisibleRecursive(subDirectory);
 				if (isSubVisible)
 				{
 					isVisible = true;
-				
+					
 				}
 				else
 				{
@@ -104,29 +139,30 @@ namespace TSBFTPPortal.ViewModels
 
 		private bool IsReportsDirectory(DirectoryItemViewModel directory)
 		{
-			return !directory.IsDirectory && directory.Name != null && directory.Name.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase);
+			return directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
+
 
 		private bool IsScriptsDirectory(DirectoryItemViewModel directory)
 		{
-			return !directory.IsDirectory && directory.Name != null && directory.Name.EndsWith(".sql", StringComparison.OrdinalIgnoreCase);
+			return directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true;
 		}
 
 		private bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
-			return !directory.IsDirectory && directory.Name != null &&
-					!directory.Name.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) &&
-					!directory.Name.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase);
+			return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true &&
+						 !directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
 
-		public void UpdateDirectoryVisibility()
-		{
-			foreach (var directory in Directories)
-			{
-				bool isVisible = IsVisibleRecursive(directory);
-				directory.IsVisible = isVisible;
-			}
-		}
+
+		//public void UpdateDirectoryVisibility()
+		//{
+		//	foreach (var directory in Directories)
+		//	{
+		//		bool isVisible = IsVisibleRecursive(directory);
+		//		directory.IsVisible = isVisible;
+		//	}
+		//}
 
 	}
 }
