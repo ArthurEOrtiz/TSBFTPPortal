@@ -45,8 +45,6 @@ namespace TSBFTPPortal.ViewModels
 			{
 				Directories.Add(item);
 			}
-
-			ApplyFiltering();
 		}
 
 		public void ApplyFiltering()
@@ -148,7 +146,7 @@ namespace TSBFTPPortal.ViewModels
 		{
 			if (!directory.IsDirectory && directory.Name != null)
 			{
-				return !directory.IsDirectory && directory.Name != null &&
+				return 
 					directory.Name?.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) == true ||
 					directory.Name?.EndsWith(".docx", StringComparison.OrdinalIgnoreCase) == true ||
 					directory.Name?.EndsWith(".rft", StringComparison.OrdinalIgnoreCase) == true ||
