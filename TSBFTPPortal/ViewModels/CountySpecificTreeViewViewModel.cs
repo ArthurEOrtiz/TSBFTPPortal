@@ -50,7 +50,11 @@ namespace TSBFTPPortal.ViewModels
 		{
 			foreach (var directory in Directories)
 			{
-				UpdateDirectoryVisibility(directory);
+				if (directory.IsVisible)
+				{
+					UpdateDirectoryVisibility(directory);
+				}
+				
 			}
 		}
 
