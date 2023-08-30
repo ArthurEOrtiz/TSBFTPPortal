@@ -57,7 +57,7 @@ namespace TSBFTPPortal.ViewModels
 				}
 				else
 				{
-					if (directory.IsVisible && directory.IsHighlighted)
+					if (directory.IsHighlighted)
 					{
 						UpdateDirectoryVisibilitySearchedDirectories(directory);
 					}
@@ -155,14 +155,6 @@ namespace TSBFTPPortal.ViewModels
 		}
 
 
-		//public void UpdateDirectoryVisibility()
-		//{
-		//	foreach (var directory in Directories)
-		//	{
-		//		bool isVisible = IsVisibleRecursive(directory);
-		//		directory.IsVisible = isVisible;
-		//	}
-		//}
 
 	}
 }
