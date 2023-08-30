@@ -75,7 +75,7 @@ namespace TSBFTPPortal.ViewModels
 			// Update child items recursively
 			foreach (var subDirectory in directory.Items)
 			{
-				if (subDirectory.IsHighlighted && subDirectory.IsVisible)
+				if (subDirectory.IsHighlighted)
 				{
 					UpdateDirectoryVisibilitySearchedDirectories(subDirectory);
 				}
@@ -123,7 +123,7 @@ namespace TSBFTPPortal.ViewModels
 				if (isSubVisible)
 				{
 					isVisible = true;
-				
+
 				}
 				else
 				{
@@ -147,8 +147,8 @@ namespace TSBFTPPortal.ViewModels
 		private bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
 			return !directory.IsDirectory && directory.Name != null &&
-					!directory.Name.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) &&
-					!directory.Name.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase);
+					!directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) ==true ||
+					!directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
 
 		public void UpdateDirectoryVisibility()
