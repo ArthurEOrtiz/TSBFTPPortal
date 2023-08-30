@@ -58,63 +58,6 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-		//private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
-		//{
-		//	if (string.IsNullOrEmpty(searchText))
-		//	{
-		//		ResetAllItems(item);
-		//		return true;
-		//	}
-
-		//	if (item.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true)
-		//	{
-		//		item.IsHighlighted = true;
-		//		return true;
-		//		// The problem is here, if the parent Item contains a match for the search text is does not check the child items 
-		//	}
-
-		//	// Check if any child item matches the search text
-		//	bool hasMatchingChild = item.Items.Any(childItem => IsItemVisible(childItem, searchText));
-
-		//	// Set visibility and highlight accordingly
-		//	foreach (var childItem in item.Items)
-		//	{
-		//		childItem.IsVisible = hasMatchingChild && IsItemVisible(childItem, searchText);
-		//		childItem.IsHighlighted = hasMatchingChild && IsItemVisible(childItem, searchText);
-		//	}
-
-		//	return hasMatchingChild;
-		//}
-
-		//private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
-		//{
-		//	if (string.IsNullOrEmpty(searchText))
-		//	{
-		//		ResetAllItems(item);
-		//		return true;
-		//	}
-
-		//	bool matchesSearchText = item.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
-
-		//	// Check if any child item matches the search text
-		//	bool hasMatchingChild = item.Items.Any(childItem => IsItemVisible(childItem, searchText));
-
-		//	// If the item itself matches the search text, set IsHighlighted and return true
-		//	if (matchesSearchText)
-		//	{
-		//		item.IsHighlighted = true;
-		//		return true;
-		//	}
-
-		//	// Set visibility and highlight accordingly for child items
-		//	foreach (var childItem in item.Items)
-		//	{
-		//		childItem.IsVisible = hasMatchingChild && IsItemVisible(childItem, searchText);
-		//		childItem.IsHighlighted = hasMatchingChild && IsItemVisible(childItem, searchText);
-		//	}
-
-		//	return hasMatchingChild;
-		//}
 
 		private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
 		{
@@ -154,9 +97,6 @@ namespace TSBFTPPortal.ViewModels
 			// Return whether the parent or any child matches the search text
 			return parentMatches || hasMatchingChild;
 		}
-
-
-
 
 	}
 }

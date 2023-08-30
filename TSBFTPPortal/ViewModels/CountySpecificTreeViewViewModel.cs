@@ -75,9 +75,13 @@ namespace TSBFTPPortal.ViewModels
 			// Update child items recursively
 			foreach (var subDirectory in directory.Items)
 			{
-				if (subDirectory.IsHighlighted)
+				if (subDirectory.IsHighlighted && subDirectory.IsVisible)
 				{
 					UpdateDirectoryVisibilitySearchedDirectories(subDirectory);
+				}
+				else
+				{
+					subDirectory.IsVisible = false;
 				}
 			}
 		}
