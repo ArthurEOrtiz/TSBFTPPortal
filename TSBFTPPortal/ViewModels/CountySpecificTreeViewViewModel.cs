@@ -115,13 +115,18 @@ namespace TSBFTPPortal.ViewModels
 				isVisible = true;
 			}
 
+			if (directory.IsDirectory)
+			{
+				isVisible = true;
+			}
+
 			foreach (var subDirectory in directory.Items)
 			{
 				bool isSubVisible = IsVisibleRecursive(subDirectory);
 				if (isSubVisible)
 				{
 					isVisible = true;
-
+					
 				}
 				else
 				{
@@ -134,32 +139,24 @@ namespace TSBFTPPortal.ViewModels
 
 		private bool IsReportsDirectory(DirectoryItemViewModel directory)
 		{
-			return !directory.IsDirectory && directory.Name != null && directory.Name.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase);
+			if (directory.Name != null)
+			{
+				return directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
+			}
+			return false;
 		}
 
 		private bool IsScriptsDirectory(DirectoryItemViewModel directory)
 		{
-			return !directory.IsDirectory && directory.Name != null && directory.Name.EndsWith(".sql", StringComparison.OrdinalIgnoreCase);
+			return directory.Name != null && directory.Name.EndsWith(".sql", StringComparison.OrdinalIgnoreCase);
 		}
 
 		private bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
-			if (!directory.IsDirectory && directory.Name != null)
+			if (directory.Name != null)
 			{
-				return 
-					directory.Name?.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".docx", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".rft", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".html", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".htm", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".odt", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".xls", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".ods", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".ppt", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".pptx", StringComparison.OrdinalIgnoreCase) == true ||
-					directory.Name?.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) == true;
+				return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true ||
+					!directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 			}
 
 			return false;		
