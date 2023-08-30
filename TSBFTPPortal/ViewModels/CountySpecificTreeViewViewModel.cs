@@ -139,37 +139,30 @@ namespace TSBFTPPortal.ViewModels
 
 		private bool IsReportsDirectory(DirectoryItemViewModel directory)
 		{
-			if (directory.Name != null)
-			{
-				return directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
-			}
-			return false;
+			return directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
+
 
 		private bool IsScriptsDirectory(DirectoryItemViewModel directory)
 		{
-			return directory.Name != null && directory.Name.EndsWith(".sql", StringComparison.OrdinalIgnoreCase);
+			return directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true;
 		}
 
 		private bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
-			if (directory.Name != null)
-			{
-				return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true ||
-					!directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
-			}
-
-			return false;		
+			return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true &&
+						 !directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
 
-		public void UpdateDirectoryVisibility()
-		{
-			foreach (var directory in Directories)
-			{
-				bool isVisible = IsVisibleRecursive(directory);
-				directory.IsVisible = isVisible;
-			}
-		}
+
+		//public void UpdateDirectoryVisibility()
+		//{
+		//	foreach (var directory in Directories)
+		//	{
+		//		bool isVisible = IsVisibleRecursive(directory);
+		//		directory.IsVisible = isVisible;
+		//	}
+		//}
 
 	}
 }
