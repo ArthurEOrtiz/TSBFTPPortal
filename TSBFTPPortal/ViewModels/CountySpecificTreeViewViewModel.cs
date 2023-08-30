@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
+using System.Linq;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -11,13 +12,15 @@ namespace TSBFTPPortal.ViewModels
 		public County SelectedCounty { get; }
 		public readonly FtpService _ftpService;
 		public FilterTreeViewViewModel FilterTreeViewViewModel { get; }
+		public SearchBarViewModel SearchBarViewModel { get; }
 
-		public CountySpecificTreeViewViewModel(County selectedCounty, FtpService ftpService, FilterTreeViewViewModel filterTreeViewViewModel)
+		public CountySpecificTreeViewViewModel(County selectedCounty, FtpService ftpService, FilterTreeViewViewModel filterTreeViewViewModel, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			FilterTreeViewViewModel = filterTreeViewViewModel;
+			SearchBarViewModel = searchBarViewModel;
 
 			FilterTreeViewViewModel.PropertyChanged += (sender, e) =>
 			{
@@ -46,15 +49,51 @@ namespace TSBFTPPortal.ViewModels
 			ApplyFiltering();
 		}
 
+		//public void ApplyFiltering()
+		//{
+		//	foreach (var directory in Directories)
+		//	{
+		//		if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
+		//		{
+		//			UpdateDirectoryVisibility(directory);
+		//		}
+		//		else
+		//		{
+		//			if (directory.IsVisible && directory.IsHighlighted) UpdateDirectoryVisibility(directory);
+		//		}
+		//	}
+		//}
+
 		public void ApplyFiltering()
 		{
 			foreach (var directory in Directories)
 			{
-				if (directory.IsVisible)
+				if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
 				{
 					UpdateDirectoryVisibility(directory);
 				}
-				
+				else
+				{
+					if (directory.IsVisible && directory.IsHighlighted)
+					{
+						UpdateDirectoryVisibilitySearchedDirectories(directory);
+					}
+				}
+			}
+		}
+
+		private void UpdateDirectoryVisibilitySearchedDirectories(DirectoryItemViewModel directory)
+		{
+			bool isVisible = IsVisibleRecursive(directory);
+			directory.IsVisible = isVisible;
+
+			// Update child items recursively
+			foreach (var subDirectory in directory.Items)
+			{
+				if (subDirectory.IsHighlighted)
+				{
+					UpdateDirectoryVisibilitySearchedDirectories(subDirectory);
+				}
 			}
 		}
 

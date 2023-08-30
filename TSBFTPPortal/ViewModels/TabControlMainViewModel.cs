@@ -67,7 +67,7 @@ namespace TSBFTPPortal.ViewModels
 			FilterTreeViewViewModel = new FilterTreeViewViewModel();
 			SearchBarViewModel = searchBarViewModel;
 
-			CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService, FilterTreeViewViewModel);
+			CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService, FilterTreeViewViewModel, SearchBarViewModel);
 
 			PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty, ftpService);
 			GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService);

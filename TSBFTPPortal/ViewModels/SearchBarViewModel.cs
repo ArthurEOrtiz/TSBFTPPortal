@@ -58,48 +58,6 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-		//private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
-		//{
-		//	if (string.IsNullOrEmpty(searchText))
-		//	{
-		//		ResetAllItems(item);
-		//		return true;
-		//	}
-
-		//	if (item.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true)
-		//	{
-		//		item.IsHighlighted = true;
-		//		return true;
-		//	}
-
-		//	// Check if any child item matches the search text
-		//	bool hasMatchingChild = false;
-		//	foreach (var childItem in item.Items)
-		//	{
-		//		if (IsItemVisible(childItem, searchText))
-		//		{
-		//			hasMatchingChild = true;
-		//			childItem.IsVisible = true; // Make the matching child item visible
-		//			childItem.IsHighlighted = true;
-		//		}
-		//		else
-		//		{
-		//			childItem.IsVisible = false; // Make non-matching child items not visible
-		//			childItem.IsHighlighted = false;
-		//		}
-		//	}
-
-		//	if (hasMatchingChild)
-		//	{
-		//		return true; // At least one child item matches the search text
-		//	}
-
-
-		//	return false; // No matches found in this item or its children
-
-		//}
-
-
 		private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
 		{
 			if (string.IsNullOrEmpty(searchText))
@@ -126,7 +84,5 @@ namespace TSBFTPPortal.ViewModels
 
 			return hasMatchingChild;
 		}
-
-
 	}
 }
