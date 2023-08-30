@@ -49,21 +49,6 @@ namespace TSBFTPPortal.ViewModels
 			ApplyFiltering();
 		}
 
-		//public void ApplyFiltering()
-		//{
-		//	foreach (var directory in Directories)
-		//	{
-		//		if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
-		//		{
-		//			UpdateDirectoryVisibility(directory);
-		//		}
-		//		else
-		//		{
-		//			if (directory.IsVisible && directory.IsHighlighted) UpdateDirectoryVisibility(directory);
-		//		}
-		//	}
-		//}
-
 		public void ApplyFiltering()
 		{
 			foreach (var directory in Directories)
