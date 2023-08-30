@@ -147,18 +147,18 @@ namespace TSBFTPPortal.ViewModels
 			return isVisible;
 		}
 
-		private bool IsReportsDirectory(DirectoryItemViewModel directory)
+		private static bool IsReportsDirectory(DirectoryItemViewModel directory)
 		{
 			return directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
 
 
-		private bool IsScriptsDirectory(DirectoryItemViewModel directory)
+		private static bool IsScriptsDirectory(DirectoryItemViewModel directory)
 		{
 			return directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true;
 		}
 
-		private bool IsDocumentsDirectory(DirectoryItemViewModel directory)
+		private static bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
 			return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true &&
 						 !directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;

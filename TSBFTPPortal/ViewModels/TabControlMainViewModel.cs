@@ -70,7 +70,7 @@ namespace TSBFTPPortal.ViewModels
 
 			if (ftpServer != null && username != null && password != null)
 			{
-				FtpService ftpService = new FtpService(ftpServer, username, password);
+				FtpService ftpService = new(ftpServer, username, password);
 				CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService, FilterTreeViewViewModel, SearchBarViewModel);
 				PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty, ftpService);
 				GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService);

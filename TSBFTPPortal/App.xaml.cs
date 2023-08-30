@@ -100,10 +100,8 @@ namespace TSBFTPPortal
 											CAMASystem TEXT
 									);";
 
-					using (var command = new SQLiteCommand(createTableQuery, connection))
-					{
-						command.ExecuteNonQuery();
-					}
+					using var command = new SQLiteCommand(createTableQuery, connection);
+					command.ExecuteNonQuery();
 				}
 				// Populate the table with data from the JSON file
 				PopulateDataBase(dbPath);
@@ -117,37 +115,32 @@ namespace TSBFTPPortal
 
 			var counties = Newtonsoft.Json.JsonConvert.DeserializeObject<List<County>>(jsonData);
 
-			using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
-			{
-				connection.Open();
+			using var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;");
+			connection.Open();
 
-				if (counties != null)
+			if (counties != null)
+			{
+				foreach (var county in counties)
 				{
-					foreach (var county in counties)
-					{
-						string insertQuery = @"
+					string insertQuery = @"
 											INSERT INTO Counties (Name, AdminSystem, CAMASystem)
 											VALUES (@Name, @AdminSystem, @CAMASystem);";
 
-						using (var command = new SQLiteCommand(insertQuery, connection))
-						{
-							command.Parameters.AddWithValue("@Name", county.Name);
-							command.Parameters.AddWithValue("@AdminSystem", county.AdminSystem);
-							command.Parameters.AddWithValue("@CAMASystem", county.CAMASystem);
+					using var command = new SQLiteCommand(insertQuery, connection);
+					command.Parameters.AddWithValue("@Name", county.Name);
+					command.Parameters.AddWithValue("@AdminSystem", county.AdminSystem);
+					command.Parameters.AddWithValue("@CAMASystem", county.CAMASystem);
 
-							command.ExecuteNonQuery();
-						}
-					}
+					command.ExecuteNonQuery();
 				}
-				else
-				{
-					Log.Error("Counties failed to deserialize from Json.");
-				}
-				
+			}
+			else
+			{
+				Log.Error("Counties failed to deserialize from Json.");
 			}
 		}
 
-		private void ConfigureLogger()
+		private static void ConfigureLogger()
 		{
 			string loggerFilePath = Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal/Log", "log.txt");
