@@ -1,8 +1,6 @@
 ﻿using System.Threading;
-using System.Windows;
 using System.Windows.Input;
 using TSBFTPPortal.Commands;
-using TSBFTPPortal.Views;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -47,7 +45,8 @@ namespace TSBFTPPortal.ViewModels
 
 		public ProgressWindowViewModel()
 		{
-			CancelCommand = new RelayCommand(Cancel);
+			_statusMessage = string.Empty;
+			_cancelCommand = new RelayCommand(Cancel);
 			_cancellationTokenSource = new CancellationTokenSource();
 		}
 

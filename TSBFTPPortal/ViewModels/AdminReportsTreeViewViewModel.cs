@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Serilog;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -25,18 +21,44 @@ namespace TSBFTPPortal.ViewModels
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/FTP_DASHBOARD/ADMIN/{SelectedCounty.AdminSystem.ToUpper()}/REPORTS/";
+			string rootPath = GetRootPath();
 
-			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath) ;
+			ObservableCollection<DirectoryItemViewModel> items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
 			foreach (DirectoryItemViewModel item in items)
 			{
-				string fileExtension = Path.GetExtension(item.Path);
-				if (fileExtension == ".rpt" || fileExtension == "") 
+				if (item.Path != null)
 				{
-					Directories.Add(item);
+					string fileExtension = Path.GetExtension(item.Path);
+					if (fileExtension == ".rpt" || item.IsDirectory)
+					{
+						Directories.Add(item);
+					}
+					else
+					{
+						Log.Error($"Invalid file, {item.Name}, in Admin Reports!");
+					}
+				}
+				else
+				{
+					Log.Error($"Admin Reports, Could not find path for {item.Name}!");
 				}
 			}
+		}
+
+		private string GetRootPath()
+		{
+			string rootPath = string.Empty;
+			if (SelectedCounty != null && SelectedCounty.AdminSystem != null)
+			{
+				rootPath = $"/FTP_DASHBOARD/ADMIN/{SelectedCounty.AdminSystem.ToUpper()}/REPORTS/";
+			}
+			else
+			{
+				Log.Error("Admin Reports, Select County is null!");
+			}
+
+			return rootPath;
 		}
 	}
 }

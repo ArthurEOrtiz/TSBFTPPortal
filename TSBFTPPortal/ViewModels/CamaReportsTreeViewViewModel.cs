@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Serilog;
+using System.Collections.ObjectModel;
 using System.IO;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
@@ -20,20 +21,44 @@ namespace TSBFTPPortal.ViewModels
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/FTP_DASHBOARD/CAMA/{SelectedCounty.CAMASystem.ToUpper()}/REPORTS/";
+			string rootPath = GetRootPath();
 
-			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			ObservableCollection<DirectoryItemViewModel> items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
 			foreach (DirectoryItemViewModel item in items)
 			{
-				
-				string fileExtension = Path.GetExtension(item.Path);
-				if (fileExtension == ".rpt")
+				if (item.Path != null)
 				{
-					Directories.Add(item);
+					string fileExtension = Path.GetExtension(item.Path);
+					if (fileExtension == ".rpt" || item.IsDirectory)
+					{
+						Directories.Add(item);
+					}
+					else
+					{
+						Log.Error($"Invalid file, {item.Name}, in Cama Reports!");
+					}
+				}
+				else
+				{
+					Log.Error($"Cama Reports, Could not find path for {item.Name}!");
 				}
 			}
-	
+		}
+
+		private string GetRootPath()
+		{
+			string rootPath = string.Empty;
+			if (SelectedCounty != null && SelectedCounty.CAMASystem != null)
+			{
+				rootPath = $"/FTP_DASHBOARD/CAMA/{SelectedCounty.CAMASystem.ToUpper()}/REPORTS/";
+			}
+			else
+			{
+				Log.Error("Cama Reports, Select County is null!");
+			}
+
+			return rootPath;
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Serilog;
+using System.Collections.ObjectModel;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -8,26 +9,42 @@ namespace TSBFTPPortal.ViewModels
 	{
 		public County SelectedCounty { get; }
 		public readonly FtpService _ftpService;
-	
+
 		public PABTreeViewViewModel(County selectedCounty, FtpService ftpService)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			LoadDirectoriesAndFoldersFromFTP();
-			
+
 		}
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/PAB/{SelectedCounty.Name.ToUpper()}/";
+			string rootPath = GetRootPath();
 
-			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			ObservableCollection<DirectoryItemViewModel> items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
-			foreach (var item in items)
+			foreach (DirectoryItemViewModel item in items)
 			{
 				Directories.Add(item);
 			}
+		}
+
+		private string GetRootPath()
+		{
+			string rootPath = string.Empty;
+
+			if (SelectedCounty != null && SelectedCounty.Name != null)
+			{
+				rootPath = $"/PAB/{SelectedCounty.Name.ToUpper()}/";
+			}
+			else
+			{
+				Log.Error("PAB, Select County is null");
+			}
+
+			return rootPath;
 		}
 	}
 }

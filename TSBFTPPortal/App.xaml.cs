@@ -136,7 +136,7 @@ namespace TSBFTPPortal
 			}
 			else
 			{
-				Log.Error("Counties failed to deserialize from Json.");
+				Log.Error("Counties failed to de-serialize from JSON file.");
 			}
 		}
 

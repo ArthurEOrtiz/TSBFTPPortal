@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Serilog;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -34,12 +35,23 @@ namespace TSBFTPPortal.Behaviors
 
 		private static void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
-			var control = sender as Control;
-			var command = GetCommand(control);
-
-			if (control != null && command != null && command.CanExecute(null))
+			Control? control = sender as Control;
+			if (control != null)
 			{
-				command.Execute(null);
+				ICommand command = GetCommand(control);
+
+				if (command != null && command.CanExecute(null))
+				{
+					command.Execute(null);
+				}
+				else
+				{
+					Log.Error("OnMouseDoubleClick, command is null!");
+				}
+			}
+			else
+			{
+				Log.Error("OnMouseDoubleClick, control is null!");
 			}
 		}
 	}
