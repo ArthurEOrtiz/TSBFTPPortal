@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Serilog;
 using System.Linq;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
@@ -9,13 +10,13 @@ namespace TSBFTPPortal.ViewModels
 	public class TabControlMainViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public CountySpecificTreeViewViewModel CountySpecificTreeViewViewModel { get; }
+		public CountySpecificTreeViewViewModel? CountySpecificTreeViewViewModel { get; }
 		public FilterTreeViewViewModel FilterTreeViewViewModel { get; }
-		public PABTreeViewViewModel PABTreeViewViewModel { get; }
-		public GISTreeViewViewModel GISTreeViewViewModel { get; }
-		public PTRTreeViewViewModel PTRTreeViewViewModel { get; }
-		public TabControlCamaViewModel TabControlCamaViewModel { get; }
-		public TabControlAdminViewModel TabControlAdminViewModel { get; }
+		public PABTreeViewViewModel? PABTreeViewViewModel { get; }
+		public GISTreeViewViewModel? GISTreeViewViewModel { get; }
+		public PTRTreeViewViewModel? PTRTreeViewViewModel { get; }
+		public TabControlCamaViewModel? TabControlCamaViewModel { get; }
+		public TabControlAdminViewModel? TabControlAdminViewModel { get; }
 		public SearchBarViewModel SearchBarViewModel { get; }
 
 		private bool _isAdminSystemTabVisible = false;
@@ -24,7 +25,7 @@ namespace TSBFTPPortal.ViewModels
 			get => _isAdminSystemTabVisible;
 			set
 			{
-				if(_isAdminSystemTabVisible != value)
+				if (_isAdminSystemTabVisible != value)
 				{
 					_isAdminSystemTabVisible = value;
 					OnPropertyChanged(nameof(IsAdminSystemTabVisible));
@@ -38,10 +39,10 @@ namespace TSBFTPPortal.ViewModels
 			get => _isCamaSystemTabVisible;
 			set
 			{
-				if(_isCamaSystemTabVisible != value)
+				if (_isCamaSystemTabVisible != value)
 				{
 					_isCamaSystemTabVisible = value;
-					OnPropertyChanged(nameof(IsCamaSystemTabVisible));	
+					OnPropertyChanged(nameof(IsCamaSystemTabVisible));
 				}
 			}
 		}
@@ -58,27 +59,37 @@ namespace TSBFTPPortal.ViewModels
 															 && selectedCounty.CAMASystem != "CAI"
 															 && selectedCounty.CAMASystem != "Custom";
 
+			FilterTreeViewViewModel = new FilterTreeViewViewModel();
+			SearchBarViewModel = searchBarViewModel;
+
 			string? ftpServer = configuration["FtpSettings:Server"];
 			string? username = configuration["FtpSettings:Username"];
 			string? password = configuration["FtpSettings:Password"];
 
-			FtpService ftpService = new FtpService(ftpServer, username, password);
 
-			FilterTreeViewViewModel = new FilterTreeViewViewModel();
-			SearchBarViewModel = searchBarViewModel;
 
-			CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService, FilterTreeViewViewModel, SearchBarViewModel);
+			if (ftpServer != null && username != null && password != null)
+			{
+				FtpService ftpService = new(ftpServer, username, password);
+				CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService, FilterTreeViewViewModel, SearchBarViewModel);
+				PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty, ftpService);
+				GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService);
+				PTRTreeViewViewModel = new PTRTreeViewViewModel(SelectedCounty, ftpService);
+				TabControlCamaViewModel = new TabControlCamaViewModel(SelectedCounty, ftpService, SearchBarViewModel);
+				TabControlAdminViewModel = new TabControlAdminViewModel(SelectedCounty, ftpService, SearchBarViewModel);
 
-			PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty, ftpService);
-			GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService);
-			PTRTreeViewViewModel = new PTRTreeViewViewModel(SelectedCounty, ftpService);
-			TabControlCamaViewModel = new TabControlCamaViewModel(SelectedCounty, ftpService, SearchBarViewModel);
-			TabControlAdminViewModel = new TabControlAdminViewModel(SelectedCounty,ftpService, SearchBarViewModel);
-
-			SearchBarViewModel.SetAllDirectories(CountySpecificTreeViewViewModel.Directories
+				SearchBarViewModel.SetAllDirectories(CountySpecificTreeViewViewModel.Directories
 			 .Concat(GISTreeViewViewModel.Directories)
 			 .Concat(PABTreeViewViewModel.Directories)
 			 .Concat(PTRTreeViewViewModel.Directories));
+
+			}
+			else
+			{
+				Log.Error("FTP Service parameters are null");
+			}
+
+
 		}
 	}
 }

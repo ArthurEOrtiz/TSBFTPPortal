@@ -1,11 +1,11 @@
-﻿using System;
+﻿using FluentFTP;
+using Serilog;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentFTP;
-using Serilog;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
@@ -26,9 +26,12 @@ namespace TSBFTPPortal.Services
 			_ftpServer = ftpServer;
 			_username = username;
 			_password = password;
+			_cancellationTokenSource = new CancellationTokenSource();
+			_isCancellationRequested = false;
+			_progressWindow = new ProgressWindow();
 		}
 
-		public ObservableCollection<DirectoryItemViewModel> LoadDirectoriesAndFilesFromFTP( string rootPath)
+		public ObservableCollection<DirectoryItemViewModel> LoadDirectoriesAndFilesFromFTP(string rootPath)
 		{
 			var items = new ObservableCollection<DirectoryItemViewModel>();
 
@@ -75,9 +78,9 @@ namespace TSBFTPPortal.Services
 		{
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
 			{
-				_cancellationTokenSource = new CancellationTokenSource();
-				_isCancellationRequested = false;
-				_progressWindow = new ProgressWindow();
+				//_cancellationTokenSource = new CancellationTokenSource();
+				//_isCancellationRequested = false;
+				//_progressWindow = new ProgressWindow();
 				InitializeProgressWindow();
 
 				try
@@ -158,7 +161,7 @@ namespace TSBFTPPortal.Services
 						Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
 						Log.Information($"Download successful: {fileExtension}");
 					}
-					catch(Exception ex)
+					catch (Exception ex)
 					{
 						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
 					}
@@ -168,24 +171,24 @@ namespace TSBFTPPortal.Services
 				{
 					try
 					{
-						_ = Task.Run(() => 
+						_ = Task.Run(() =>
 						{
 							new CrystalReportsViewerService(targetFilePath).ExecuteProgram();
 							Log.Information($"Report successfully downloaded : {targetFilePath}");
 						});
-					  
+
 					}
 					catch (Exception ex)
 					{
 						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
 					}
 				}
-				
+
 				if (fileExtension == ".sql")
 				{
 					try
 					{
-						_ = Task.Run(() => 
+						_ = Task.Run(() =>
 						{
 							new ScriptRunnerService(targetFilePath).ExecuteProgram();
 							Log.Information($"Script successfully downloaded: {targetFilePath}");
@@ -214,7 +217,7 @@ namespace TSBFTPPortal.Services
 				}
 
 				double progressPercentage = (double)progressInfo.Progress;
-				
+
 				_progressWindow.Dispatcher.Invoke(() =>
 				{
 					var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;

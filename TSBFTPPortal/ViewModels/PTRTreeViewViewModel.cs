@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Serilog;
+using System.Collections.ObjectModel;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -20,14 +21,30 @@ namespace TSBFTPPortal.ViewModels
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/PTR/{SelectedCounty.Name.ToUpper()}/";
+			string rootPath = GetRootPath();
 
-			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			ObservableCollection<DirectoryItemViewModel> items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
-			foreach (var item in items)
+			foreach (DirectoryItemViewModel item in items)
 			{
 				Directories.Add(item);
 			}
+		}
+
+		private string GetRootPath()
+		{
+			string rootPath = string.Empty;
+
+			if (SelectedCounty != null && SelectedCounty.Name != null)
+			{
+				rootPath = $"/PTR/{SelectedCounty.Name.ToUpper()}/";
+			}
+			else
+			{
+				Log.Error("PTR, Select County is null");
+			}
+
+			return rootPath;
 		}
 	}
 }

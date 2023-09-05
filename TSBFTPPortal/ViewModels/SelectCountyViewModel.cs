@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
@@ -12,12 +13,12 @@ namespace TSBFTPPortal.ViewModels
 {
   public class SelectCountyViewModel : ViewModelBase
   {
-    public ObservableCollection<string> CountyNames { get; } = new ObservableCollection<string>();
+    public ObservableCollection<string> CountyNames { get; } 
 
     private string _selectedCounty;
     public string SelectedCounty
     {
-      get { return _selectedCounty; }
+      get => _selectedCounty; 
       set
       {
         _selectedCounty = value;
@@ -32,7 +33,8 @@ namespace TSBFTPPortal.ViewModels
     public SelectCountyViewModel(IConfiguration configuration) 
     {
       _configuration = configuration;
-
+      _selectedCounty = string.Empty;
+      CountyNames = new ObservableCollection<string>();
       ContinueToMainPageCommand = new RelayCommand(ContinueToMainPage);
       LoadCountyNames();
     }
@@ -50,7 +52,7 @@ namespace TSBFTPPortal.ViewModels
 
 		}
 
-		private County FindCountyModel(string countyName)
+		private static County FindCountyModel(string countyName)
 		{
       County? selectedCounty = null;
 
@@ -73,6 +75,16 @@ namespace TSBFTPPortal.ViewModels
               CAMASystem = reader["CAMASystem"].ToString()
             };
           }
+          else
+          {
+            selectedCounty = new County
+            {
+              Name = string.Empty,
+              AdminSystem = string.Empty,
+              CAMASystem = string.Empty,
+            };
+            Log.Error($"County {countyName} was not found in the database!");
+          }
         }
       }
 
@@ -93,8 +105,15 @@ namespace TSBFTPPortal.ViewModels
         {
           while (reader.Read())
           {
-            string countyName = reader["Name"].ToString();
-            CountyNames.Add(countyName);
+            string? countyName = reader["Name"].ToString();
+            if (countyName != null)
+            {
+							CountyNames.Add(countyName);
+						}
+            else
+            {
+              Log.Error($"Error loading {countyName}!");
+            }
           }
         }
       }

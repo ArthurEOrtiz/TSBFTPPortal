@@ -8,7 +8,7 @@ namespace TSBFTPPortal.ViewModels
 		private ObservableCollection<DirectoryItemViewModel> _directories;
 		public ObservableCollection<DirectoryItemViewModel> Directories
 		{
-			get { return _directories; }
+			get => _directories; 
 			set
 			{
 				_directories = value;
@@ -20,6 +20,11 @@ namespace TSBFTPPortal.ViewModels
 		protected void OnPropertyChanged(string? propertyName)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public ViewModelBase()
+		{
+			_directories = new ObservableCollection<DirectoryItemViewModel>();
 		}
 	}
 }

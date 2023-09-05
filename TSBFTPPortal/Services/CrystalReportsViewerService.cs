@@ -26,11 +26,18 @@ namespace TSBFTPPortal.Services
 
 			try
 			{
-				using (Process process = Process.Start(startInfo))
+				using (Process? process = Process.Start(startInfo))
 				{
-					process.WaitForExit();
-					int exitCode = process.ExitCode;
-					Log.Information($"Crystal Reports Viewer successful");
+					if (process != null)
+					{
+						process.WaitForExit();
+						int exitCode = process.ExitCode;
+						Log.Information($"Crystal Reports Viewer successful");
+					}
+					else
+					{
+						Log.Error("Crystal Report Viewer process is null!");
+					}
 				}
 			}
 			catch (Exception ex)

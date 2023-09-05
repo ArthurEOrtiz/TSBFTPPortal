@@ -7,9 +7,9 @@ namespace TSBFTPPortal.Services
 {
 	public class ScriptRunnerService
 	{
-		private string? FilePath { get; set; }
+		private string FilePath { get; set; }
 
-		public ScriptRunnerService(string? filePath)
+		public ScriptRunnerService(string filePath)
 		{
 			FilePath = filePath;
 		}

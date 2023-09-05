@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Serilog;
+using System.Collections.ObjectModel;
 using System.IO;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
@@ -20,18 +21,45 @@ namespace TSBFTPPortal.ViewModels
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
-			string rootPath = $"/FTP_DASHBOARD/ADMIN/{SelectedCounty.AdminSystem.ToUpper()}/APPS/TIMBER_EXPORTS/";
+			string rootPath = GetRootPath();
 
-			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			ObservableCollection<DirectoryItemViewModel> items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
 			foreach (DirectoryItemViewModel item in items)
 			{
-				string fileExtension = Path.GetExtension(item.Path);
-				if (fileExtension == ".sql" || fileExtension == "")
+				if (item.Path != null)
 				{
-					Directories.Add(item);
+					string fileExtension = Path.GetExtension(item.Path);
+					if (fileExtension == ".sql" || item.IsDirectory)
+					{
+						Directories.Add(item);
+					}
+					else
+					{
+						Log.Error($"Invalid File, {item.Name}, in Admin Apps Timber Exports!");
+					}
 				}
+				else
+				{
+					Log.Error($"Admin Timber Exports, Could not find path for {item.Name}!");
+				}
+			
 			}
+		}
+
+		private string GetRootPath()
+		{
+			string rootPath = string.Empty;
+			if (SelectedCounty != null && SelectedCounty.AdminSystem != null)
+			{
+				rootPath = $"/FTP_DASHBOARD/ADMIN/{SelectedCounty.AdminSystem.ToUpper()}/APPS/TIMBER_EXPORTS/";
+			}
+			else
+			{
+				Log.Error("Admin Apps Timber Export, Select County is null");
+			}
+
+			return rootPath;
 		}
 	}
 }
