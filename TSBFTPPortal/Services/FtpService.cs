@@ -78,9 +78,7 @@ namespace TSBFTPPortal.Services
 		{
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
 			{
-				//_cancellationTokenSource = new CancellationTokenSource();
-				//_isCancellationRequested = false;
-				//_progressWindow = new ProgressWindow();
+
 				InitializeProgressWindow();
 
 				try
