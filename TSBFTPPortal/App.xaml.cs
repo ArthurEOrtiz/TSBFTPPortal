@@ -1,11 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Models;
+using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
 
 
@@ -19,17 +23,21 @@ namespace TSBFTPPortal
 		private IConfiguration? Configuration;
 		private readonly string ReportsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Reports");
 		private readonly string ScriptsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Scripts");
+		private FtpService? _ftpService;
 
 
-		protected override void OnStartup(StartupEventArgs e)
+
+
+		protected async override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
 			ConfigureLogger();
 			Log.Information($"\nProgram Started\n***************************");
-			InitializeLocalAppDataFolder();
-			InitializeCountyDataBase();
 			ConfigureAppSettings();
+			InitializeLocalAppDataFolder();
+			await InitializeCountyDataBaseAsync();
+			
 			
 
 			if (Configuration != null)
@@ -45,6 +53,18 @@ namespace TSBFTPPortal
 
 
 			Application.Current.Exit += Current_Exit;
+		}
+
+		private static void ConfigureLogger()
+		{
+			Log.Information("Configuring logger.");
+			string loggerFilePath = Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal/Log", "log.txt");
+
+			Log.Logger = new LoggerConfiguration()
+				.MinimumLevel.Debug()
+				.WriteTo.File(loggerFilePath, rollingInterval: RollingInterval.Day)
+				.CreateLogger();
 		}
 
 		private void InitializeLocalAppDataFolder()
@@ -84,12 +104,58 @@ namespace TSBFTPPortal
 			}
 		}
 
-		private static void InitializeCountyDataBase()
+		//private async Task InitializeCountyDataBaseAsync()
+		//{
+		//	Log.Information("Initializing County Data Base");
+		//	string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Counties.db");
+
+		//	if (!File.Exists(dbPath))
+		//	{
+		//		using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
+		//		{
+		//			connection.Open();
+
+		//			// Create the table
+		//			string createTableQuery = @"
+		//							CREATE TABLE IF NOT EXISTS Counties (
+		//									Name TEXT,
+		//									AdminSystem TEXT,
+		//									CAMASystem TEXT
+		//							);";
+
+		//			using var command = new SQLiteCommand(createTableQuery, connection);
+		//			command.ExecuteNonQuery();
+		//		}
+		//		// Populate the table with data from the JSON file
+		//		await PopulateDataBase(dbPath);
+		//	}
+		//}
+		private async Task InitializeCountyDataBaseAsync()
 		{
 			Log.Information("Initializing County Data Base");
 			string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Counties.db");
 
-			if (!File.Exists(dbPath))
+			if (File.Exists(dbPath))
+			{
+				// Check if the database content matches the expected JSON data
+				string expectedJsonData = await ReadJsonFileAsync("/FTP_DASHBOARD/countyData.json");
+				string existingJsonData = await ReadDataFromDatabase(dbPath);
+
+				// Normalize JSON strings by removing spaces and tabs
+				expectedJsonData = RemoveWhitespace(expectedJsonData);
+				existingJsonData = RemoveWhitespace(existingJsonData);
+
+				if (expectedJsonData != existingJsonData)
+				{
+					Log.Information("Database content does not match the expected JSON data. Re-populating the database.");
+					await PopulateDataBase(dbPath, expectedJsonData);
+				}
+				else
+				{
+					Log.Information("Database content matches the expected JSON data. No need to re-populate.");
+				}
+			}
+			else
 			{
 				using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
 				{
@@ -97,51 +163,113 @@ namespace TSBFTPPortal
 
 					// Create the table
 					string createTableQuery = @"
-									CREATE TABLE IF NOT EXISTS Counties (
-											Name TEXT,
-											AdminSystem TEXT,
-											CAMASystem TEXT
-									);";
+                CREATE TABLE IF NOT EXISTS Counties (
+                        Name TEXT,
+                        AdminSystem TEXT,
+                        CAMASystem TEXT
+                );";
 
 					using var command = new SQLiteCommand(createTableQuery, connection);
 					command.ExecuteNonQuery();
 				}
+
 				// Populate the table with data from the JSON file
-				PopulateDataBase(dbPath);
+				await PopulateDataBase(dbPath, await ReadJsonFileAsync("/FTP_DASHBOARD/countyData.json"));
 			}
 		}
 
-		private static void PopulateDataBase(string dbPath)
+		private string RemoveWhitespace(string input)
 		{
-			string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "countiesInitialData.json");
-			string jsonData = File.ReadAllText(jsonFilePath);
+			return new string(input.Where(c => !char.IsWhiteSpace(c)).ToArray());
+		}
 
-			var counties = Newtonsoft.Json.JsonConvert.DeserializeObject<List<County>>(jsonData);
-
-			using var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;");
-			connection.Open();
-
-			if (counties != null)
+		private async Task<string> ReadDataFromDatabase(string dbPath)
+		{
+			using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
 			{
-				foreach (var county in counties)
+				connection.Open();
+
+				string selectQuery = "SELECT Name, AdminSystem, CAMASystem FROM Counties";
+				using var command = new SQLiteCommand(selectQuery, connection);
+				using var reader = command.ExecuteReader();
+
+				List<County> counties = new List<County>();
+
+				while (reader.Read())
 				{
-					string insertQuery = @"
-											INSERT INTO Counties (Name, AdminSystem, CAMASystem)
-											VALUES (@Name, @AdminSystem, @CAMASystem);";
-
-					using var command = new SQLiteCommand(insertQuery, connection);
-					command.Parameters.AddWithValue("@Name", county.Name);
-					command.Parameters.AddWithValue("@AdminSystem", county.AdminSystem);
-					command.Parameters.AddWithValue("@CAMASystem", county.CAMASystem);
-
-					command.ExecuteNonQuery();
+					counties.Add(new County
+					{
+						Name = reader.GetString(0),
+						AdminSystem = reader.GetString(1),
+						CAMASystem = reader.GetString(2)
+					});
 				}
+
+				// Create a custom data structure matching the desired format
+				var customData = counties.Select(c => new
+				{
+					Name = c.Name,
+					AdminSystem = c.AdminSystem,
+					CAMASystem = c.CAMASystem
+				}).ToList();
+
+				// Serialize the data into the desired JSON format
+				string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(customData, Newtonsoft.Json.Formatting.Indented);
+				return jsonData;
+			}
+		}
+
+
+
+		public async Task<string> ReadJsonFileAsync(string path)
+		{
+			string jsonContent = await _ftpService.ReadJsonFileFromFTPAsync(path);
+			if (jsonContent != null)
+			{
+				// Process the JSON content as needed
+				return jsonContent;
 			}
 			else
 			{
-				Log.Error("Counties failed to de-serialize from JSON file.");
+				// Handle the case where reading the JSON file failed
+				return "Error reading JSON file.";
 			}
 		}
+
+		private async Task PopulateDataBase(string dbPath, string jsonData)
+		{
+			List<County> counties = JsonConvert.DeserializeObject<List<County>>(jsonData);
+
+			using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
+			{
+				connection.Open();
+
+				// Clear existing data in the Counties table
+				string clearTableQuery = "DELETE FROM Counties";
+				using (var clearCommand = new SQLiteCommand(clearTableQuery, connection))
+				{
+					clearCommand.ExecuteNonQuery();
+				}
+
+				foreach (var county in counties)
+				{
+					// Insert the updated records into the database
+					string insertQuery = "INSERT INTO Counties (Name, AdminSystem, CAMASystem) VALUES (@Name, @AdminSystem, @CAMASystem)";
+					using (var insertCommand = new SQLiteCommand(insertQuery, connection))
+					{
+						insertCommand.Parameters.AddWithValue("@Name", county.Name);
+						insertCommand.Parameters.AddWithValue("@AdminSystem", county.AdminSystem);
+						insertCommand.Parameters.AddWithValue("@CAMASystem", county.CAMASystem);
+						insertCommand.ExecuteNonQuery();
+					}
+				}
+			}
+		}
+
+
+
+
+
 
 		private void ConfigureAppSettings()
 		{
@@ -150,19 +278,15 @@ namespace TSBFTPPortal
 					.SetBasePath(Directory.GetCurrentDirectory())
 					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
 					.Build();
-			Log.Information($"Configuration: {Configuration}");
-		}
 
-		private static void ConfigureLogger()
-		{
-			Log.Information("Configuring logger.");
-			string loggerFilePath = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal/Log", "log.txt");
+			string? ftpServer = Configuration["FtpSettings:Server"];
+			string? userName = Configuration["FtpSettings:UserName"];
+			string? password = Configuration["FtpSettings:Password"];
 
-			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.Debug()
-				.WriteTo.File(loggerFilePath, rollingInterval: RollingInterval.Day)
-				.CreateLogger();
+			if(ftpServer != null && userName != null && password != null)
+			{
+				_ftpService = new FtpService(ftpServer, userName, password);
+			}
 		}
 
 		private void Current_Exit(object sender, ExitEventArgs e)
@@ -201,11 +325,6 @@ namespace TSBFTPPortal
 				}
 			}
 		}
-
-		
-
-
-
 	
 	}
 }

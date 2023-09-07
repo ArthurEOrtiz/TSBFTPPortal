@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
+using Newtonsoft.Json;
+using System.Net;
+using System.Text;
 
 namespace TSBFTPPortal.Services
 {
@@ -26,8 +29,8 @@ namespace TSBFTPPortal.Services
 			_ftpServer = ftpServer;
 			_username = username;
 			_password = password;
-
 		}
+
 
 		public ObservableCollection<DirectoryItemViewModel> LoadDirectoriesAndFilesFromFTP(string rootPath)
 		{
@@ -238,6 +241,36 @@ namespace TSBFTPPortal.Services
 			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
 			viewModel.StatusMessage = "Download cancelled.";
 		}
+
+		public async Task<string> ReadJsonFileFromFTPAsync(string path)
+		{
+			using (var ftpClient = new FtpClient(_ftpServer, new NetworkCredential(_username, _password)))
+			{
+				try
+				{
+					ftpClient.Connect();
+					Log.Information("Connected to FTP Server for JSON file reading");
+
+					using (var stream = await Task.Run(() => ftpClient.OpenRead(path)))
+					{
+						using (var memoryStream = new MemoryStream())
+						{
+							await stream.CopyToAsync(memoryStream);
+							return Encoding.UTF8.GetString(memoryStream.ToArray());
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Log.Error($"Error reading JSON file from FTP: {ex.Message}");
+					return null;
+				}
+			}
+		}
+
+
+
+
 
 	}
 }
