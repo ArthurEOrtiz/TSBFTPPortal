@@ -19,17 +19,22 @@ namespace TSBFTPPortal
 		private IConfiguration? Configuration;
 		private readonly string ReportsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Reports");
 		private readonly string ScriptsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Scripts");
+
+
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
+			ConfigureLogger();
+			Log.Information($"\nProgram Started\n***************************");
 			InitializeLocalAppDataFolder();
 			InitializeCountyDataBase();
 			ConfigureAppSettings();
-			ConfigureLogger();
+			
 
 			if (Configuration != null)
 			{
+				
 				Window selectCountyView = new SelectCountyView(Configuration);
 				selectCountyView.Show();
 			}
@@ -39,51 +44,49 @@ namespace TSBFTPPortal
 			}
 
 
-			Current.Exit += Current_Exit;
+			Application.Current.Exit += Current_Exit;
 		}
 
-		private void Current_Exit(object sender, ExitEventArgs e)
+		private void InitializeLocalAppDataFolder()
 		{
 
-			DeleteDirectoryContents(ReportsFolderPath);
-			DeleteDirectoryContents(ScriptsFolderPath);
+			Log.Information("Initializing Local App Folder");
 
+			string commonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+			string dataFolderPath = Path.Combine(commonAppDataPath, "TSBFTPPortal");
 
-			// Close and flush the logger
-			Log.Information("Program Closed");
-			Log.CloseAndFlush();
-		}
-
-		private static void DeleteDirectoryContents(string directoryPath)
-		{
-			if (Directory.Exists(directoryPath))
+			if (!Directory.Exists(dataFolderPath))
 			{
-				// Delete all files inside the directory
-				string[] files = Directory.GetFiles(directoryPath);
-				foreach (string file in files)
+				try
 				{
-					File.Delete(file);
-				}
+					Directory.CreateDirectory(dataFolderPath);
 
-				// Delete all directories inside the directory (recursively)
-				string[] directories = Directory.GetDirectories(directoryPath);
-				foreach (string directory in directories)
+					// Create the root directory "FTPDashboard"
+					Directory.CreateDirectory(dataFolderPath);
+
+					// Create the reports folder 
+					Directory.CreateDirectory(ReportsFolderPath);
+
+					// Create the scripts folder 
+					Directory.CreateDirectory(ScriptsFolderPath);
+
+					// Create the Log Folder 
+					string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
+					Directory.CreateDirectory(reportsFolderPath);
+
+					Log.Information("App folders created");
+
+				}
+				catch (Exception ex)
 				{
-					Directory.Delete(directory, true);
+					Log.Error($"Failed to create directory: {ex.Message}");
 				}
 			}
 		}
 
-		private void ConfigureAppSettings()
-		{
-			Configuration = new ConfigurationBuilder()
-					.SetBasePath(Directory.GetCurrentDirectory())
-					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-					.Build();
-		}
-
 		private static void InitializeCountyDataBase()
 		{
+			Log.Information("Initializing County Data Base");
 			string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Counties.db");
 
 			if (!File.Exists(dbPath))
@@ -140,8 +143,19 @@ namespace TSBFTPPortal
 			}
 		}
 
+		private void ConfigureAppSettings()
+		{
+			Log.Information("Configuring App settings.");
+			Configuration = new ConfigurationBuilder()
+					.SetBasePath(Directory.GetCurrentDirectory())
+					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+					.Build();
+			Log.Information($"Configuration: {Configuration}");
+		}
+
 		private static void ConfigureLogger()
 		{
+			Log.Information("Configuring logger.");
 			string loggerFilePath = Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal/Log", "log.txt");
 
@@ -151,39 +165,47 @@ namespace TSBFTPPortal
 				.CreateLogger();
 		}
 
-		private void InitializeLocalAppDataFolder()
+		private void Current_Exit(object sender, ExitEventArgs e)
 		{
-			string commonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-			string dataFolderPath = Path.Combine(commonAppDataPath, "TSBFTPPortal");
+			Log.Information("Exiting App.");
 
-			if (!Directory.Exists(dataFolderPath))
+			DeleteDirectoryContents(ReportsFolderPath);
+			DeleteDirectoryContents(ScriptsFolderPath);
+
+			// Close and flush the logger
+			Log.Information($"\nProgram Closed\n***************************");
+			Log.CloseAndFlush();
+
+			Application.Current.Shutdown();
+		}
+
+		private static void DeleteDirectoryContents(string directoryPath)
+		{
+			Log.Information($"Deleting files at : {directoryPath}");
+			if (Directory.Exists(directoryPath))
 			{
-				try
+				// Delete all files inside the directory
+				string[] files = Directory.GetFiles(directoryPath);
+				foreach (string file in files)
 				{
-					Directory.CreateDirectory(dataFolderPath);
-
-					// Create the root directory "FTPDashboard"
-					Directory.CreateDirectory(dataFolderPath);
-
-					// Create the reports folder 
-					Directory.CreateDirectory(ReportsFolderPath);
-
-					// Create the scripts folder 
-					Directory.CreateDirectory(ScriptsFolderPath);
-
-					// Create the Log Folder 
-					string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
-					Directory.CreateDirectory(reportsFolderPath);
-
-					Log.Information("App folders created");
-
+					File.Delete(file);
+					Log.Information($"Deleted: {file}");
 				}
-				catch (Exception ex)
+
+				// Delete all directories inside the directory (recursively)
+				string[] directories = Directory.GetDirectories(directoryPath);
+				foreach (string directory in directories)
 				{
-					Log.Error($"Failed to create directory: {ex.Message}");
+					Directory.Delete(directory, true);
+					Log.Information($"Deleted: {directory}");
 				}
 			}
-
 		}
+
+		
+
+
+
+	
 	}
 }
