@@ -3,9 +3,6 @@
 										xmlns:local="clr-namespace:TSBFTPPortal" 
 										xmlns:views="clr-namespace:TSBFTPPortal.Views">
 
-
 	<Color x:Key="ToggleButtonDynamicColor">Black</Color>
-
-
 
 </ResourceDictionary>

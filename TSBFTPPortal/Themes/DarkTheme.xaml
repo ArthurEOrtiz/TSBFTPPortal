@@ -149,10 +149,6 @@
 		</Setter>
 	</Style>
 
-
 	<Color x:Key="ToggleButtonDynamicColor">White</Color>
-	
-	
-
 
 </ResourceDictionary>

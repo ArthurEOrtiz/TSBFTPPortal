@@ -115,7 +115,7 @@
                     (SolidColorBrush.Color)"
                                                 >
 														<EasingColorKeyFrame KeyTime="0"
-                                         Value="LightGray" />
+                                         Value="{DynamicResource TreeViewItemSelection}" />
 													</ColorAnimationUsingKeyFrames>
 												</Storyboard>
 											</VisualState>
