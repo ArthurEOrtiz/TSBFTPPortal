@@ -45,7 +45,7 @@
                 Margin="1,1,1,1"
                 Data="M 4 0 L 8 4 L 4 8 Z">
 								<Path.Fill>
-									<SolidColorBrush Color="Black" />
+									<SolidColorBrush Color="{DynamicResource ToggleButtonDynamicColor}" />
 								</Path.Fill>
 							</Path>
 							<Path x:Name="Expanded"
@@ -55,7 +55,7 @@
                 Data="M 0 4 L 8 4 L 4 8 Z"
                 Visibility="Hidden">
 								<Path.Fill>
-									<SolidColorBrush Color="Black" />
+									<SolidColorBrush Color="{DynamicResource ToggleButtonDynamicColor}" />
 								</Path.Fill>
 							</Path>
 						</Grid>
@@ -145,7 +145,7 @@
 										</VisualStateGroup>
 									</VisualStateManager.VisualStateGroups>
 									<ToggleButton x:Name="Expander"
-                        Style="{StaticResource ExpandCollapseToggleStyle}"
+                        Style="{DynamicResource ExpandCollapseToggleStyle}"
                         ClickMode="Press"
                         IsChecked="{Binding IsExpanded, 
             RelativeSource={RelativeSource TemplatedParent}}"/>

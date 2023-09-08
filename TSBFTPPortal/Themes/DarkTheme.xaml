@@ -150,7 +150,7 @@
 	</Style>
 
 
-	<!--<SolidColorBrush x:Key="ToggleButtonDynamicColor" Color="White"/>-->
+	<Color x:Key="ToggleButtonDynamicColor">White</Color>
 	
 	
 

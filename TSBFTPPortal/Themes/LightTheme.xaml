@@ -4,7 +4,7 @@
 										xmlns:views="clr-namespace:TSBFTPPortal.Views">
 
 
-	<!--<SolidColorBrush x:Key="ToggleButtonDynamicColor" Color="Black"/>-->
+	<Color x:Key="ToggleButtonDynamicColor">Black</Color>
 
 
 
