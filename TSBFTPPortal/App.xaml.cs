@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Models;
