@@ -8,7 +8,6 @@
              >
     <Grid>
 		<ToggleButton x:Name="ThemeToggle"
-									
 									IsChecked="{Binding IsDarkTheme, Mode=TwoWay}"
 									Width="100" 
 									Height="25">
