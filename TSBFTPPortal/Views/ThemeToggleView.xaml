@@ -8,9 +8,39 @@
              >
     <Grid>
 		<ToggleButton x:Name="ThemeToggle"
-									Content="Toggle Theme" 
 									IsChecked="{Binding IsDarkTheme, Mode=TwoWay}"
 									Width="100" 
-									Height="25"/>
+									Height="25">
+			<ToggleButton.Template>
+				<ControlTemplate TargetType="ToggleButton">
+					<Grid>
+						<!-- Background in Normal state -->
+						<Border x:Name="NormalBackground" Background="LightGray">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+						</Border>
+						<!-- Background in Checked state -->
+						<Border x:Name="CheckedBackground" Background="#5B5B6E" Visibility="Collapsed">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+						</Border>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<!-- Change the appearance in Checked state -->
+						<Trigger Property="IsChecked" Value="True">
+							<Setter TargetName="NormalBackground" Property="Visibility" Value="Collapsed" />
+							<Setter TargetName="CheckedBackground" Property="Visibility" Value="Visible" />
+							<Setter Property="Content" Value="Light Mode" />
+						</Trigger>
+
+						<Trigger Property="IsChecked" Value="False">
+							<Setter TargetName="NormalBackground" Property="Visibility" Value="Visible" />
+							<Setter TargetName="CheckedBackground" Property="Visibility" Value="Collapsed" />
+							<Setter Property="Content" Value="Dark Mode" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</ToggleButton.Template>
+
+
+		</ToggleButton>
 	</Grid>
 </UserControl>

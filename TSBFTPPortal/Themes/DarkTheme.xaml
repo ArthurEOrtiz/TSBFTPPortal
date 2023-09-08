@@ -49,8 +49,6 @@
 		<Setter Property="Foreground" Value="White" />
 	</Style>
 
-
-
 	<Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
 		<Setter Property="Foreground" Value="White" />
 		<Setter Property="CaretBrush" Value="White" />
@@ -151,6 +149,6 @@
 		</Setter>
 	</Style>
 
-	
+	<Color x:Key="ToggleButtonDynamicColor">White</Color>
 
 </ResourceDictionary>
