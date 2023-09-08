@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
+using System.Net;
+using System.Text;
 
 namespace TSBFTPPortal.Services
 {
@@ -17,19 +19,17 @@ namespace TSBFTPPortal.Services
 		private readonly string _ftpServer;
 		private readonly string _username;
 		private readonly string _password;
-		private CancellationTokenSource _cancellationTokenSource;
+		private CancellationTokenSource? _cancellationTokenSource;
 		private bool _isCancellationRequested;
-		private ProgressWindow _progressWindow;
+		private ProgressWindow? _progressWindow;
 
 		public FtpService(string ftpServer, string username, string password)
 		{
 			_ftpServer = ftpServer;
 			_username = username;
 			_password = password;
-			_cancellationTokenSource = new CancellationTokenSource();
-			_isCancellationRequested = false;
-			_progressWindow = new ProgressWindow();
 		}
+
 
 		public ObservableCollection<DirectoryItemViewModel> LoadDirectoriesAndFilesFromFTP(string rootPath)
 		{
@@ -76,11 +76,13 @@ namespace TSBFTPPortal.Services
 
 		public async Task DownloadFileAsync(string path)
 		{
+		
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
 			{
-				//_cancellationTokenSource = new CancellationTokenSource();
-				//_isCancellationRequested = false;
-				//_progressWindow = new ProgressWindow();
+				_cancellationTokenSource = new CancellationTokenSource();
+				_isCancellationRequested = false;
+				_progressWindow = new ProgressWindow();
+				_progressWindow.Show();
 				InitializeProgressWindow();
 
 				try
@@ -121,7 +123,7 @@ namespace TSBFTPPortal.Services
 			viewModel.CancelCommand = new RelayCommand(Cancel);
 		}
 
-		private string GetTargetFilePath(string fileName, string fileExtension)
+		private static string GetTargetFilePath(string fileName, string fileExtension)
 		{
 			switch (fileExtension)
 			{
@@ -237,6 +239,28 @@ namespace TSBFTPPortal.Services
 			_cancellationTokenSource.Cancel();
 			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
 			viewModel.StatusMessage = "Download cancelled.";
+		}
+
+		public async Task<string?> ReadJsonFileFromFTPAsync(string path)
+		{
+			using (var ftpClient = new FtpClient(_ftpServer, new NetworkCredential(_username, _password)))
+			{
+				try
+				{
+					ftpClient.Connect();
+					Log.Information("Connected to FTP Server for JSON file reading");
+
+					using var stream = await Task.Run(() => ftpClient.OpenRead(path));
+					using var memoryStream = new MemoryStream();
+					await stream.CopyToAsync(memoryStream);
+					return Encoding.UTF8.GetString(memoryStream.ToArray());
+				}
+				catch (Exception ex)
+				{
+					Log.Error($"Error reading JSON file from FTP: {ex.Message}");
+					return null;
+				}
+			}
 		}
 
 	}

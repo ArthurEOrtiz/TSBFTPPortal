@@ -38,8 +38,6 @@ namespace TSBFTPPortal.ViewModels
 				OnPropertyChanged(nameof(CancelCommand));
 			}
 		}
-		
-
 
 		private CancellationTokenSource _cancellationTokenSource;
 
