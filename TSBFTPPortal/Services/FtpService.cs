@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
-using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 
@@ -124,7 +123,7 @@ namespace TSBFTPPortal.Services
 			viewModel.CancelCommand = new RelayCommand(Cancel);
 		}
 
-		private string GetTargetFilePath(string fileName, string fileExtension)
+		private static string GetTargetFilePath(string fileName, string fileExtension)
 		{
 			switch (fileExtension)
 			{
@@ -242,7 +241,7 @@ namespace TSBFTPPortal.Services
 			viewModel.StatusMessage = "Download cancelled.";
 		}
 
-		public async Task<string> ReadJsonFileFromFTPAsync(string path)
+		public async Task<string?> ReadJsonFileFromFTPAsync(string path)
 		{
 			using (var ftpClient = new FtpClient(_ftpServer, new NetworkCredential(_username, _password)))
 			{
@@ -251,14 +250,10 @@ namespace TSBFTPPortal.Services
 					ftpClient.Connect();
 					Log.Information("Connected to FTP Server for JSON file reading");
 
-					using (var stream = await Task.Run(() => ftpClient.OpenRead(path)))
-					{
-						using (var memoryStream = new MemoryStream())
-						{
-							await stream.CopyToAsync(memoryStream);
-							return Encoding.UTF8.GetString(memoryStream.ToArray());
-						}
-					}
+					using var stream = await Task.Run(() => ftpClient.OpenRead(path));
+					using var memoryStream = new MemoryStream();
+					await stream.CopyToAsync(memoryStream);
+					return Encoding.UTF8.GetString(memoryStream.ToArray());
 				}
 				catch (Exception ex)
 				{
@@ -267,10 +262,6 @@ namespace TSBFTPPortal.Services
 				}
 			}
 		}
-
-
-
-
 
 	}
 }

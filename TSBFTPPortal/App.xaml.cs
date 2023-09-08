@@ -46,12 +46,11 @@ namespace TSBFTPPortal
 				Log.Error($"Configuration is null");
 			}
 
-			Application.Current.Exit += Current_Exit;
+			Current.Exit += Current_Exit;
 		}
 
 		private static void ConfigureLogger()
 		{
-			Log.Information("Configuring logger.");
 			string loggerFilePath = Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal/Log", "log.txt");
 
@@ -59,6 +58,8 @@ namespace TSBFTPPortal
 				.MinimumLevel.Debug()
 				.WriteTo.File(loggerFilePath, rollingInterval: RollingInterval.Day)
 				.CreateLogger();
+
+			Log.Information("Logger Configured.");
 		}
 
 		private void ConfigureAppSettings()
@@ -209,16 +210,15 @@ namespace TSBFTPPortal
 
 			if (_ftpService != null)
 			{
-				 jsonContent = await _ftpService.ReadJsonFileFromFTPAsync(path);
+				jsonContent = await _ftpService.ReadJsonFileFromFTPAsync(path);
 			}
 			else
 			{
-				Log.Error("FTP Service in App.xaml.cs is null");
+				Log.Error("Ftp Service is null!");
 			}
-			
+		
 			if (jsonContent != null)
 			{
-				// Process the JSON content as needed
 				return jsonContent;
 			}
 			else
@@ -269,7 +269,7 @@ namespace TSBFTPPortal
 			Log.Information($"\nProgram Closed\n***************************");
 			Log.CloseAndFlush();
 
-			Application.Current.Shutdown();
+			Current.Shutdown();
 		}
 
 		private static void DeleteDirectoryContents(string directoryPath)
