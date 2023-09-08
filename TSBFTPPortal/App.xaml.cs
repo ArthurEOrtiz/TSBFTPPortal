@@ -30,13 +30,14 @@ namespace TSBFTPPortal
 		protected async override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
-
+			
 			ConfigureLogger();
 
 			Log.Information($"\nProgram Started\n***************************");
 
-			ConfigureAppSettings();
 			InitializeLocalAppDataFolder();
+			ConfigureAppSettings();
+			
 			await InitializeCountyDataBaseAsync();
 
 			if (Configuration != null)
@@ -97,32 +98,65 @@ namespace TSBFTPPortal
 
 			if (!Directory.Exists(dataFolderPath))
 			{
+				Log.Error("App Folder does not exist, creating directories!");
 				try
 				{
-					Directory.CreateDirectory(dataFolderPath);
 
 					// Create the root directory "FTPDashboard"
 					Directory.CreateDirectory(dataFolderPath);
-
-					// Create the reports folder 
-					Directory.CreateDirectory(ReportsFolderPath);
-
-					// Create the scripts folder 
-					Directory.CreateDirectory(ScriptsFolderPath);
-
-					// Create the Log Folder 
-					//string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
-					//Directory.CreateDirectory(reportsFolderPath);
-					Directory.CreateDirectory(LogFolderPath);
-
-					Log.Information("App folders created");
+					Log.Information($"Created root directory at : {dataFolderPath}");
 
 				}
 				catch (Exception ex)
 				{
-					Log.Error($"Failed to create directory: {ex.Message}");
+					Log.Error($"Failed to create root directory: {ex.Message}");
+				}			
+			}
+
+			if (!Directory.Exists(ReportsFolderPath))
+			{
+				try
+				{
+					// Create the reports folder 
+					Directory.CreateDirectory(ReportsFolderPath);
+					Log.Information("Created reports directory");
+				}
+				catch (Exception ex)
+				{
+					Log.Error($"Failed to create reports directory: {ex.Message}");
 				}
 			}
+
+			if(!Directory.Exists(ScriptsFolderPath))
+			{
+				try
+				{
+					// Create the scripts folder 
+					Directory.CreateDirectory(ScriptsFolderPath);
+					Log.Information("Created scripts directory.");
+
+
+				}
+				catch (Exception ex)
+				{
+					Log.Error($"Failed to create scripts directory: {ex.Message}");
+				}
+			}
+			
+			if (!Directory.Exists(LogFolderPath))
+			{
+				try
+				{
+					// Create the Log Folder 
+					Directory.CreateDirectory(LogFolderPath);
+					Log.Information("Created log directory.");
+				}
+				catch (Exception ex)
+				{
+					Log.Error($"Failed to create log directory: {ex.Message}");
+				}
+			}
+		
 		}
 
 		private async Task InitializeCountyDataBaseAsync()
