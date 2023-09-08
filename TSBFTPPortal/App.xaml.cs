@@ -25,9 +25,6 @@ namespace TSBFTPPortal
 		private readonly string ScriptsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Scripts");
 		private FtpService? _ftpService;
 
-
-
-
 		protected async override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
@@ -104,32 +101,6 @@ namespace TSBFTPPortal
 			}
 		}
 
-		//private async Task InitializeCountyDataBaseAsync()
-		//{
-		//	Log.Information("Initializing County Data Base");
-		//	string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Counties.db");
-
-		//	if (!File.Exists(dbPath))
-		//	{
-		//		using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
-		//		{
-		//			connection.Open();
-
-		//			// Create the table
-		//			string createTableQuery = @"
-		//							CREATE TABLE IF NOT EXISTS Counties (
-		//									Name TEXT,
-		//									AdminSystem TEXT,
-		//									CAMASystem TEXT
-		//							);";
-
-		//			using var command = new SQLiteCommand(createTableQuery, connection);
-		//			command.ExecuteNonQuery();
-		//		}
-		//		// Populate the table with data from the JSON file
-		//		await PopulateDataBase(dbPath);
-		//	}
-		//}
 		private async Task InitializeCountyDataBaseAsync()
 		{
 			Log.Information("Initializing County Data Base");
@@ -219,8 +190,6 @@ namespace TSBFTPPortal
 			}
 		}
 
-
-
 		public async Task<string> ReadJsonFileAsync(string path)
 		{
 			string jsonContent = await _ftpService.ReadJsonFileFromFTPAsync(path);
@@ -265,11 +234,6 @@ namespace TSBFTPPortal
 				}
 			}
 		}
-
-
-
-
-
 
 		private void ConfigureAppSettings()
 		{
@@ -325,6 +289,5 @@ namespace TSBFTPPortal
 				}
 			}
 		}
-	
 	}
 }
