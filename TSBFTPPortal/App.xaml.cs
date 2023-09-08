@@ -6,13 +6,12 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
+using TSBFTPPortal.Properties;
 
 namespace TSBFTPPortal
 {
@@ -30,22 +29,26 @@ namespace TSBFTPPortal
 		protected async override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
-			
+
 			ConfigureLogger();
 
 			Log.Information($"\nProgram Started\n***************************");
 
 			InitializeLocalAppDataFolder();
 			ConfigureAppSettings();
-			
+
 			await InitializeCountyDataBaseAsync();
+			ConfigureTheme();
+
+			if (string.IsNullOrEmpty(Settings.Default.LastSelectedCounty))
+			{
+				Settings.Default.LastSelectedCounty = "Ada";
+				Settings.Default.Save();
+			}
 
 			if (Configuration != null)
 			{
-				Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-				{
-					Source = new Uri("/Themes/LightTheme.xaml", UriKind.Relative)
-				});
+				
 				Window selectCountyView = new SelectCountyView(Configuration);
 				selectCountyView.Show();
 			}
@@ -55,6 +58,32 @@ namespace TSBFTPPortal
 			}
 
 			Current.Exit += Current_Exit;
+		}
+
+		private void ConfigureTheme()
+		{
+			string selectedTheme = Settings.Default.Theme;
+
+			if (string.IsNullOrEmpty(selectedTheme))
+			{
+				selectedTheme = "Light";
+			}
+
+			ApplyTheme(selectedTheme);
+		}
+
+		public void ApplyTheme(string themeName)
+		{
+			string themeResource = $"/Themes/{themeName}Theme.xaml";
+
+			// Clear existing theme resources
+			Application.Current.Resources.MergedDictionaries.Clear();
+
+			// Load and apply the selected theme
+			Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+			{
+				Source = new Uri(themeResource, UriKind.Relative)
+			});
 		}
 
 		private static void ConfigureLogger()
