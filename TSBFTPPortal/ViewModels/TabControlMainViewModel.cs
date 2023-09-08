@@ -66,8 +66,6 @@ namespace TSBFTPPortal.ViewModels
 			string? username = configuration["FtpSettings:Username"];
 			string? password = configuration["FtpSettings:Password"];
 
-
-
 			if (ftpServer != null && username != null && password != null)
 			{
 				FtpService ftpService = new(ftpServer, username, password);
@@ -88,8 +86,6 @@ namespace TSBFTPPortal.ViewModels
 			{
 				Log.Error("FTP Service parameters are null");
 			}
-
-
 		}
 	}
 }
