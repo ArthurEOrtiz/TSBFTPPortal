@@ -134,8 +134,6 @@ namespace TSBFTPPortal
 					// Create the scripts folder 
 					Directory.CreateDirectory(ScriptsFolderPath);
 					Log.Information("Created scripts directory.");
-
-
 				}
 				catch (Exception ex)
 				{
