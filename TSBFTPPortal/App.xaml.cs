@@ -31,25 +31,22 @@ namespace TSBFTPPortal
 		protected async override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
-			
+
 			ConfigureLogger();
 
 			Log.Information($"\nProgram Started\n***************************");
 
 			InitializeLocalAppDataFolder();
 			ConfigureAppSettings();
-			
+
 			await InitializeCountyDataBaseAsync();
+			ConfigureTheme();
 
-			string selectedTheme = Settings.Default.Theme;
-
-			if (string.IsNullOrEmpty( selectedTheme ) )
+			if (string.IsNullOrEmpty(Settings.Default.LastSelectedCounty))
 			{
-				selectedTheme = "Light";
+				Settings.Default.LastSelectedCounty = "Ada";
+				Settings.Default.Save();
 			}
-
-			ApplyTheme(selectedTheme);
-
 
 			if (Configuration != null)
 			{
@@ -66,6 +63,18 @@ namespace TSBFTPPortal
 			}
 
 			Current.Exit += Current_Exit;
+		}
+
+		private void ConfigureTheme()
+		{
+			string selectedTheme = Settings.Default.Theme;
+
+			if (string.IsNullOrEmpty(selectedTheme))
+			{
+				selectedTheme = "Light";
+			}
+
+			ApplyTheme(selectedTheme);
 		}
 
 		public void ApplyTheme(string themeName)
