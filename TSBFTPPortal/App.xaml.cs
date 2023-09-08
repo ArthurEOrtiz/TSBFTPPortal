@@ -210,7 +210,7 @@ namespace TSBFTPPortal
 
 		public async Task<string> ReadJsonFileAsync(string path)
 		{
-			string jsonContent = string.Empty;
+			string? jsonContent = string.Empty;
 
 			if (_ftpService != null)
 			{
