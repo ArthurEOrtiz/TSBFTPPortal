@@ -16,6 +16,14 @@ namespace TSBFTPPortal.ViewModels
 					_isDarkTheme = value;
 					OnPropertyChanged(nameof(IsDarkTheme));
 					ApplySelectedTheme();
+
+					// Save the selected theme in application settings
+					string selectedTheme = value ? "Dark" : "Light";
+					Properties.Settings.Default.Theme = selectedTheme;
+					Properties.Settings.Default.Save();
+
+					// Apply the selected theme
+					((App)Application.Current).ApplyTheme(selectedTheme);
 				}
 			}
 		}
