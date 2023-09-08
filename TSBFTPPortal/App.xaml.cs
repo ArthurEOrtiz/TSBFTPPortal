@@ -12,7 +12,6 @@ using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
 
-
 namespace TSBFTPPortal
 {
 	/// <summary>
@@ -30,16 +29,15 @@ namespace TSBFTPPortal
 			base.OnStartup(e);
 
 			ConfigureLogger();
+
 			Log.Information($"\nProgram Started\n***************************");
+
 			ConfigureAppSettings();
 			InitializeLocalAppDataFolder();
 			await InitializeCountyDataBaseAsync();
-			
-			
 
 			if (Configuration != null)
 			{
-				
 				Window selectCountyView = new SelectCountyView(Configuration);
 				selectCountyView.Show();
 			}
@@ -47,7 +45,6 @@ namespace TSBFTPPortal
 			{
 				Log.Error($"Configuration is null");
 			}
-
 
 			Application.Current.Exit += Current_Exit;
 		}
@@ -62,6 +59,24 @@ namespace TSBFTPPortal
 				.MinimumLevel.Debug()
 				.WriteTo.File(loggerFilePath, rollingInterval: RollingInterval.Day)
 				.CreateLogger();
+		}
+
+		private void ConfigureAppSettings()
+		{
+			Log.Information("Configuring App settings.");
+			Configuration = new ConfigurationBuilder()
+					.SetBasePath(Directory.GetCurrentDirectory())
+					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+					.Build();
+
+			string? ftpServer = Configuration["FtpSettings:Server"];
+			string? userName = Configuration["FtpSettings:UserName"];
+			string? password = Configuration["FtpSettings:Password"];
+
+			if (ftpServer != null && userName != null && password != null)
+			{
+				_ftpService = new FtpService(ftpServer, userName, password);
+			}
 		}
 
 		private void InitializeLocalAppDataFolder()
@@ -119,7 +134,7 @@ namespace TSBFTPPortal
 				if (expectedJsonData != existingJsonData)
 				{
 					Log.Information("Database content does not match the expected JSON data. Re-populating the database.");
-					await PopulateDataBase(dbPath, expectedJsonData);
+					PopulateDataBase(dbPath, expectedJsonData);
 				}
 				else
 				{
@@ -145,7 +160,7 @@ namespace TSBFTPPortal
 				}
 
 				// Populate the table with data from the JSON file
-				await PopulateDataBase(dbPath, await ReadJsonFileAsync("/FTP_DASHBOARD/countyData.json"));
+				PopulateDataBase(dbPath, await ReadJsonFileAsync("/FTP_DASHBOARD/countyData.json"));
 			}
 		}
 
@@ -154,7 +169,7 @@ namespace TSBFTPPortal
 			return new string(input.Where(c => !char.IsWhiteSpace(c)).ToArray());
 		}
 
-		private async Task<string> ReadDataFromDatabase(string dbPath)
+		private static Task<string> ReadDataFromDatabase(string dbPath)
 		{
 			using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
 			{
@@ -175,8 +190,7 @@ namespace TSBFTPPortal
 						CAMASystem = reader.GetString(2)
 					});
 				}
-
-				// Create a custom data structure matching the desired format
+				
 				var customData = counties.Select(c => new
 				{
 					Name = c.Name,
@@ -184,15 +198,24 @@ namespace TSBFTPPortal
 					CAMASystem = c.CAMASystem
 				}).ToList();
 
-				// Serialize the data into the desired JSON format
 				string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(customData, Newtonsoft.Json.Formatting.Indented);
-				return jsonData;
+				return Task.FromResult(jsonData);
 			}
 		}
 
 		public async Task<string> ReadJsonFileAsync(string path)
 		{
-			string jsonContent = await _ftpService.ReadJsonFileFromFTPAsync(path);
+			string jsonContent = string.Empty;
+
+			if (_ftpService != null)
+			{
+				 jsonContent = await _ftpService.ReadJsonFileFromFTPAsync(path);
+			}
+			else
+			{
+				Log.Error("FTP Service in App.xaml.cs is null");
+			}
+			
 			if (jsonContent != null)
 			{
 				// Process the JSON content as needed
@@ -200,14 +223,14 @@ namespace TSBFTPPortal
 			}
 			else
 			{
-				// Handle the case where reading the JSON file failed
-				return "Error reading JSON file.";
+				Log.Error("Error reading JSON file!");
+				return string.Empty;
 			}
 		}
 
-		private async Task PopulateDataBase(string dbPath, string jsonData)
+		private void PopulateDataBase(string dbPath, string jsonData)
 		{
-			List<County> counties = JsonConvert.DeserializeObject<List<County>>(jsonData);
+			List<County>? counties = JsonConvert.DeserializeObject<List<County>>(jsonData);
 
 			using (var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;"))
 			{
@@ -232,24 +255,6 @@ namespace TSBFTPPortal
 						insertCommand.ExecuteNonQuery();
 					}
 				}
-			}
-		}
-
-		private void ConfigureAppSettings()
-		{
-			Log.Information("Configuring App settings.");
-			Configuration = new ConfigurationBuilder()
-					.SetBasePath(Directory.GetCurrentDirectory())
-					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-					.Build();
-
-			string? ftpServer = Configuration["FtpSettings:Server"];
-			string? userName = Configuration["FtpSettings:UserName"];
-			string? password = Configuration["FtpSettings:Password"];
-
-			if(ftpServer != null && userName != null && password != null)
-			{
-				_ftpService = new FtpService(ftpServer, userName, password);
 			}
 		}
 
