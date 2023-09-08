@@ -50,10 +50,7 @@ namespace TSBFTPPortal
 
 			if (Configuration != null)
 			{
-				//Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-				//{
-				//	Source = new Uri("/Themes/LightTheme.xaml", UriKind.Relative)
-				//});
+				
 				Window selectCountyView = new SelectCountyView(Configuration);
 				selectCountyView.Show();
 			}
