@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 
 namespace TSBFTPPortal.ViewModels
@@ -26,6 +27,11 @@ namespace TSBFTPPortal.ViewModels
 					((App)Application.Current).ApplyTheme(selectedTheme);
 				}
 			}
+		}
+
+		public ToggleThemeViewModel()
+		{
+			IsDarkTheme = IsDarkThemeActive();
 		}
 
 		private void ApplySelectedTheme()
@@ -56,6 +62,17 @@ namespace TSBFTPPortal.ViewModels
 			{
 				Source = new Uri("/Themes/DarkTheme.xaml", UriKind.Relative)
 			});
+		}
+
+		private bool IsDarkThemeActive()
+		{
+			// Check the application resources for the theme
+			var appTheme = Application.Current.Resources.MergedDictionaries
+					.OfType<ResourceDictionary>()
+					.FirstOrDefault(rd => rd.Source != null && rd.Source.OriginalString.Contains("DarkTheme.xaml"));
+
+			// If the DarkTheme resource is found, it means dark mode is active
+			return appTheme != null;
 		}
 	}
 }
