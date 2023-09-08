@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Models;
@@ -22,18 +24,20 @@ namespace TSBFTPPortal
 		private IConfiguration? Configuration;
 		private readonly string ReportsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Reports");
 		private readonly string ScriptsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Scripts");
+		private readonly string LogFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Log");
 		private FtpService? _ftpService;
 
 		protected async override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
-
+			
 			ConfigureLogger();
 
 			Log.Information($"\nProgram Started\n***************************");
 
-			ConfigureAppSettings();
 			InitializeLocalAppDataFolder();
+			ConfigureAppSettings();
+			
 			await InitializeCountyDataBaseAsync();
 
 			if (Configuration != null)
@@ -94,31 +98,63 @@ namespace TSBFTPPortal
 
 			if (!Directory.Exists(dataFolderPath))
 			{
+				Log.Error("App Folder does not exist, creating directories!");
 				try
 				{
-					Directory.CreateDirectory(dataFolderPath);
 
 					// Create the root directory "FTPDashboard"
 					Directory.CreateDirectory(dataFolderPath);
-
-					// Create the reports folder 
-					Directory.CreateDirectory(ReportsFolderPath);
-
-					// Create the scripts folder 
-					Directory.CreateDirectory(ScriptsFolderPath);
-
-					// Create the Log Folder 
-					string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
-					Directory.CreateDirectory(reportsFolderPath);
-
-					Log.Information("App folders created");
+					Log.Information($"Created root directory at : {dataFolderPath}");
 
 				}
 				catch (Exception ex)
 				{
-					Log.Error($"Failed to create directory: {ex.Message}");
+					Log.Error($"Failed to create root directory: {ex.Message}");
+				}			
+			}
+
+			if (!Directory.Exists(ReportsFolderPath))
+			{
+				try
+				{
+					// Create the reports folder 
+					Directory.CreateDirectory(ReportsFolderPath);
+					Log.Information("Created reports directory");
+				}
+				catch (Exception ex)
+				{
+					Log.Error($"Failed to create reports directory: {ex.Message}");
 				}
 			}
+
+			if(!Directory.Exists(ScriptsFolderPath))
+			{
+				try
+				{
+					// Create the scripts folder 
+					Directory.CreateDirectory(ScriptsFolderPath);
+					Log.Information("Created scripts directory.");
+				}
+				catch (Exception ex)
+				{
+					Log.Error($"Failed to create scripts directory: {ex.Message}");
+				}
+			}
+			
+			if (!Directory.Exists(LogFolderPath))
+			{
+				try
+				{
+					// Create the Log Folder 
+					Directory.CreateDirectory(LogFolderPath);
+					Log.Information("Created log directory.");
+				}
+				catch (Exception ex)
+				{
+					Log.Error($"Failed to create log directory: {ex.Message}");
+				}
+			}
+		
 		}
 
 		private async Task InitializeCountyDataBaseAsync()
@@ -210,7 +246,7 @@ namespace TSBFTPPortal
 
 		public async Task<string> ReadJsonFileAsync(string path)
 		{
-			string jsonContent = string.Empty;
+			string? jsonContent = string.Empty;
 
 			if (_ftpService != null)
 			{
@@ -268,12 +304,40 @@ namespace TSBFTPPortal
 
 			DeleteDirectoryContents(ReportsFolderPath);
 			DeleteDirectoryContents(ScriptsFolderPath);
+			DeleteOldLogs(LogFolderPath);
+
 
 			// Close and flush the logger
 			Log.Information($"\nProgram Closed\n***************************");
 			Log.CloseAndFlush();
 
 			Current.Shutdown();
+		}
+
+		private void DeleteOldLogs(string logFolderPath)
+		{
+			try
+			{
+				DirectoryInfo directoryInfo = new DirectoryInfo(logFolderPath);
+
+				FileInfo[] files = directoryInfo.GetFiles();
+
+				DateTime cutoffDate = DateTime.Now.AddDays(-7);
+
+				foreach (FileInfo file in files)
+				{
+					if (file.LastWriteTime < cutoffDate)
+					{
+						// File is older than a week, so delete it
+						file.Delete();
+						Log.Information($"Deleted old log file: {file.Name}");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Error deleting old log files: {ex.Message}");
+			}
 		}
 
 		private static void DeleteDirectoryContents(string directoryPath)
