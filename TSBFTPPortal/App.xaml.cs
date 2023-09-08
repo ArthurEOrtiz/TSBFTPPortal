@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Models;
@@ -22,6 +24,7 @@ namespace TSBFTPPortal
 		private IConfiguration? Configuration;
 		private readonly string ReportsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Reports");
 		private readonly string ScriptsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Scripts");
+		private readonly string LogFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Log");
 		private FtpService? _ftpService;
 
 		protected async override void OnStartup(StartupEventArgs e)
@@ -108,8 +111,9 @@ namespace TSBFTPPortal
 					Directory.CreateDirectory(ScriptsFolderPath);
 
 					// Create the Log Folder 
-					string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
-					Directory.CreateDirectory(reportsFolderPath);
+					//string reportsFolderPath = Path.Combine(dataFolderPath, "Log");
+					//Directory.CreateDirectory(reportsFolderPath);
+					Directory.CreateDirectory(LogFolderPath);
 
 					Log.Information("App folders created");
 
@@ -268,12 +272,40 @@ namespace TSBFTPPortal
 
 			DeleteDirectoryContents(ReportsFolderPath);
 			DeleteDirectoryContents(ScriptsFolderPath);
+			DeleteOldLogs(LogFolderPath);
+
 
 			// Close and flush the logger
 			Log.Information($"\nProgram Closed\n***************************");
 			Log.CloseAndFlush();
 
 			Current.Shutdown();
+		}
+
+		private void DeleteOldLogs(string logFolderPath)
+		{
+			try
+			{
+				DirectoryInfo directoryInfo = new DirectoryInfo(logFolderPath);
+
+				FileInfo[] files = directoryInfo.GetFiles();
+
+				DateTime cutoffDate = DateTime.Now.AddDays(-7);
+
+				foreach (FileInfo file in files)
+				{
+					if (file.LastWriteTime < cutoffDate)
+					{
+						// File is older than a week, so delete it
+						file.Delete();
+						Log.Information($"Deleted old log file: {file.Name}");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Error deleting old log files: {ex.Message}");
+			}
 		}
 
 		private static void DeleteDirectoryContents(string directoryPath)
