@@ -8,6 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 	<UserControl.Resources>
+		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 		<Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
 			<Setter Property="Focusable" Value="False" />
 			<Setter Property="Template">
@@ -156,11 +157,11 @@
                                   Visibility="Collapsed" />
 								</Grid>
 								<ControlTemplate.Triggers>
-									<Trigger Property="HasItems" Value="false">
+									<!--<Trigger Property="HasItems" Value="false">
 										<Setter TargetName="Expander"
                             Property="Visibility"
                             Value="Hidden" />
-									</Trigger>
+									</Trigger>-->
 									<MultiTrigger>
 										<MultiTrigger.Conditions>
 											<Condition Property="HasHeader" Value="false" />
