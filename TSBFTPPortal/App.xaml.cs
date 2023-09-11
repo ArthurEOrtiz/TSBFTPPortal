@@ -12,6 +12,8 @@ using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
 using TSBFTPPortal.Properties;
+using System.Reflection;
+using System.Text.Json;
 
 namespace TSBFTPPortal
 {
@@ -191,20 +193,28 @@ namespace TSBFTPPortal
 			Log.Information("Initializing County Data Base");
 			string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TSBFTPPortal", "Counties.db");
 
+			string expectedJsonData = await ReadJsonFileAsync("/FTP_DASHBOARD/countyData.json");
+
+			//Validate
+			List<County>? expectedCounties = JsonConvert.DeserializeObject<List<County>>(expectedJsonData);
+			bool isExpectedDataValid = ValidateCountyData(expectedCounties);
+
 			if (File.Exists(dbPath))
 			{
-				// Check if the database content matches the expected JSON data
-				string expectedJsonData = await ReadJsonFileAsync("/FTP_DASHBOARD/countyData.json");
 				string existingJsonData = await ReadDataFromDatabase(dbPath);
 
 				// Normalize JSON strings by removing spaces and tabs
 				expectedJsonData = RemoveWhitespace(expectedJsonData);
 				existingJsonData = RemoveWhitespace(existingJsonData);
 
-				if (expectedJsonData != existingJsonData)
+				if (expectedJsonData != existingJsonData && isExpectedDataValid)
 				{
 					Log.Information("Database content does not match the expected JSON data. Re-populating the database.");
 					PopulateDataBase(dbPath, expectedJsonData);
+				}
+				else if (!isExpectedDataValid)
+				{
+					Log.Error("There is an error in the expected county data!");
 				}
 				else
 				{
@@ -229,9 +239,136 @@ namespace TSBFTPPortal
 					command.ExecuteNonQuery();
 				}
 
-				// Populate the table with data from the JSON file
-				PopulateDataBase(dbPath, await ReadJsonFileAsync("/FTP_DASHBOARD/countyData.json"));
+				if (isExpectedDataValid)
+				{
+					// Populate the table with data from the JSON file
+					PopulateDataBase(dbPath, await ReadJsonFileAsync("/FTP_DASHBOARD/countyData.json"));
+				}
+				else
+				{
+					Log.Error("Could not populate county data! Expected data is invalid!");
+				}
+				
 			}
+		}
+
+		private bool ValidateCountyData(List<County>? expectedCounties)
+		{
+			bool isValid = true; // Initialize as true, and set to false if any issues are found
+
+			if (expectedCounties == null)
+			{
+				Log.Error("Expected counties data is null.");
+				return false; // Return false if expectedCounties is null
+			}
+
+			List<County> countiesDefault = LoadDefaultCountyData();
+			List<string> validAdminSystems = new List<string>
+			{
+				"Aumentum",
+				"UAD Web",
+				"AS400",
+				"CAI",
+				"Custom"
+			};
+			List<string> validCamaSystems = new List<string>
+			{
+				"Custom",
+				"Proval",
+				"CAI",
+				"AS400",
+				"UAD Web"
+			};
+
+			foreach (County county in expectedCounties)
+			{
+				string? countyName = county.Name;
+				string? adminSystem = county.AdminSystem;
+				string? camaSystem = county.CAMASystem;
+
+				if (string.IsNullOrWhiteSpace(countyName))
+				{
+					isValid = false;
+					Log.Error("County name is null or empty!");
+					continue; // Skip further checks if countyName is null or empty
+				}
+
+				bool countyNameExistsInDefault = countiesDefault.Any(defaultCounty => defaultCounty.Name == countyName);
+
+				if (!countyNameExistsInDefault)
+				{
+					isValid = false;
+					Log.Error($"County name '{countyName}' not found in default counties data.");
+					continue;
+				}
+
+				if (string.IsNullOrWhiteSpace(adminSystem))
+				{
+					isValid = false;
+					Log.Error("Admin System is null or empty!");
+					continue;
+				}
+
+				if (!validAdminSystems.Contains(adminSystem))
+				{
+					isValid = false;
+					Log.Error($"Admin System '{adminSystem}' is not valid!");
+					continue;
+				}
+
+				if (string.IsNullOrWhiteSpace(camaSystem))
+				{
+					isValid = false;
+					Log.Error("Cama System name is null or empty!");
+					continue;
+				}
+
+				if(!validCamaSystems.Contains(camaSystem))
+				{
+					isValid = false;
+					Log.Error($"Cama System '{camaSystem} is not valid!");
+					continue;
+				}
+			
+			}
+
+			if (isValid)
+			{
+				Log.Information("Expected data is valid.");
+			}
+			else
+			{
+				Log.Error("Unexpected value in expected county data!");
+			}
+
+			return isValid;
+		}
+
+
+		private static List<County> LoadDefaultCountyData()
+		{
+			List<County>? counties = new List<County>(); // Initialize as an empty list
+
+			string initialCountyDataJsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "countiesInitialData.json");
+
+			if (File.Exists(initialCountyDataJsonFilePath))
+			{
+				string jsonData = File.ReadAllText(initialCountyDataJsonFilePath);
+
+				counties = System.Text.Json.JsonSerializer.Deserialize<List<County>>(jsonData);
+
+				if (counties == null)
+				{
+					Log.Error("Failed to deserialize default county data.");
+					return new List<County>(); // Return an empty list if deserialization fails
+				}
+			}
+			else
+			{
+				Log.Error("Could not locate initialCountyData.json.");
+			}
+
+			return counties;
 		}
 
 		private string RemoveWhitespace(string input)
