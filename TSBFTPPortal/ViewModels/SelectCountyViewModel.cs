@@ -23,6 +23,9 @@ namespace TSBFTPPortal.ViewModels
       {
         _selectedCounty = value;
         OnPropertyChanged(nameof(SelectedCounty));
+
+        Properties.Settings.Default.LastSelectedCounty = value;
+        Properties.Settings.Default.Save();
       }
     }
 
@@ -37,7 +40,9 @@ namespace TSBFTPPortal.ViewModels
       CountyNames = new ObservableCollection<string>();
       ContinueToMainPageCommand = new RelayCommand(ContinueToMainPage);
       LoadCountyNames();
-    }
+
+			SelectedCounty = Properties.Settings.Default.LastSelectedCounty;
+		}
 
 		private void ContinueToMainPage(object obj)
 		{
