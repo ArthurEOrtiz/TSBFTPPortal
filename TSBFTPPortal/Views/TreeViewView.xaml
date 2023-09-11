@@ -8,29 +8,23 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 	<UserControl.Resources>
-		<Style x:Key="ExpandCollapseToggleStyle"
-       TargetType="ToggleButton">
-			<Setter Property="Focusable"
-          Value="False" />
+		<Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
+			<Setter Property="Focusable" Value="False" />
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="ToggleButton">
 						<Grid Width="15"
-              Height="13"
-              Background="Transparent">
+                  Height="13"
+                  Background="Transparent">
 							<VisualStateManager.VisualStateGroups>
 								<VisualStateGroup x:Name="CheckStates">
 									<VisualState x:Name="Checked">
 										<Storyboard>
-											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
-                                                 Storyboard.TargetName="Collapsed">
-												<DiscreteObjectKeyFrame KeyTime="0"
-                                            Value="{x:Static Visibility.Hidden}" />
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="Collapsed">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}" />
 											</ObjectAnimationUsingKeyFrames>
-											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
-                                                 Storyboard.TargetName="Expanded">
-												<DiscreteObjectKeyFrame KeyTime="0"
-                                            Value="{x:Static Visibility.Visible}" />
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="Expanded">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
 											</ObjectAnimationUsingKeyFrames>
 										</Storyboard>
 									</VisualState>
@@ -39,20 +33,20 @@
 								</VisualStateGroup>
 							</VisualStateManager.VisualStateGroups>
 							<Path x:Name="Collapsed"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Margin="1,1,1,1"
-                Data="M 4 0 L 8 4 L 4 8 Z">
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Margin="1,1,1,1"
+                    Data="M 4 0 L 8 4 L 4 8 Z">
 								<Path.Fill>
 									<SolidColorBrush Color="{DynamicResource ToggleButtonDynamicColor}" />
 								</Path.Fill>
 							</Path>
 							<Path x:Name="Expanded"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Margin="1,1,1,1"
-                Data="M 0 4 L 8 4 L 4 8 Z"
-                Visibility="Hidden">
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Margin="1,1,1,1"
+                    Data="M 0 4 L 8 4 L 4 8 Z"
+                    Visibility="Hidden">
 								<Path.Fill>
 									<SolidColorBrush Color="{DynamicResource ToggleButtonDynamicColor}" />
 								</Path.Fill>
@@ -68,10 +62,10 @@
 					<ControlTemplate>
 						<Border>
 							<Rectangle Margin="0,0,0,0"
-                     StrokeThickness="5"
-                     Stroke="Black"
-                     StrokeDashArray="1 2"
-                     Opacity="0" />
+                         StrokeThickness="5"
+                         Stroke="Black"
+                         StrokeDashArray="1 2"
+                         Opacity="0" />
 						</Border>
 					</ControlTemplate>
 				</Setter.Value>
@@ -99,7 +93,6 @@
 							</Style>
 						</TextBlock.Style>
 					</TextBlock>
-					
 					
 				</HierarchicalDataTemplate>
 			</TreeView.Resources>
@@ -133,10 +126,8 @@
 										<VisualStateGroup x:Name="ExpansionStates">
 											<VisualState x:Name="Expanded">
 												<Storyboard>
-													<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
-                                                 Storyboard.TargetName="ItemsHost">
-														<DiscreteObjectKeyFrame KeyTime="0"
-                                            Value="{x:Static Visibility.Visible}" />
+													<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ItemsHost">
+														<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
 													</ObjectAnimationUsingKeyFrames>
 												</Storyboard>
 											</VisualState>
@@ -144,54 +135,49 @@
 										</VisualStateGroup>
 									</VisualStateManager.VisualStateGroups>
 									<ToggleButton x:Name="Expander"
-                        Style="{DynamicResource ExpandCollapseToggleStyle}"
-                        ClickMode="Press"
-                        IsChecked="{Binding IsExpanded, 
-            RelativeSource={RelativeSource TemplatedParent}}"/>
+                                Style="{DynamicResource ExpandCollapseToggleStyle}"
+                                ClickMode="Press"
+                                IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+																Visibility="{Binding IsDirectory, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 									<Border x:Name="Bd"
-                  Grid.Column="1"
-                  Background="{TemplateBinding Background}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  Padding="{TemplateBinding Padding}">
+											    Grid.Column="1"
+													Background="{TemplateBinding Background}"
+												  BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          Padding="{TemplateBinding Padding}">
 										<ContentPresenter x:Name="PART_Header"
-                              ContentSource="Header"
-                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                                      ContentSource="Header"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
 									</Border>
 									<ItemsPresenter x:Name="ItemsHost"
-                          Grid.Row="1"
-                          Grid.Column="1"
-                          Grid.ColumnSpan="2"
-                          Visibility="Collapsed" />
+                                  Grid.Row="1"
+                                  Grid.Column="1"
+                                  Grid.ColumnSpan="2"
+                                  Visibility="Collapsed" />
 								</Grid>
 								<ControlTemplate.Triggers>
-									<Trigger Property="HasItems"
-                   Value="false">
+									<Trigger Property="HasItems" Value="false">
 										<Setter TargetName="Expander"
-                    Property="Visibility"
-                    Value="Hidden" />
+                            Property="Visibility"
+                            Value="Hidden" />
 									</Trigger>
 									<MultiTrigger>
 										<MultiTrigger.Conditions>
-											<Condition Property="HasHeader"
-                         Value="false" />
-											<Condition Property="Width"
-                         Value="Auto" />
+											<Condition Property="HasHeader" Value="false" />
+											<Condition Property="Width" Value="Auto" />
 										</MultiTrigger.Conditions>
 										<Setter TargetName="PART_Header"
-                    Property="MinWidth"
-                    Value="75" />
+                            Property="MinWidth"
+                            Value="75" />
 									</MultiTrigger>
 									<MultiTrigger>
 										<MultiTrigger.Conditions>
-											<Condition Property="HasHeader"
-                         Value="false" />
-											<Condition Property="Height"
-                         Value="Auto" />
+											<Condition Property="HasHeader" Value="false" />
+											<Condition Property="Height" Value="Auto" />
 										</MultiTrigger.Conditions>
 										<Setter TargetName="PART_Header"
-                    Property="MinHeight"
-                    Value="19" />
+                            Property="MinHeight"
+                            Value="19" />
 									</MultiTrigger>
 								</ControlTemplate.Triggers>
 							</ControlTemplate>
