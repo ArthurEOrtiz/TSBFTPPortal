@@ -191,6 +191,7 @@
 						<DataTrigger Binding="{Binding IsVisible}" Value="False">
 							<Setter Property="Visibility" Value="Collapsed" />
 						</DataTrigger>
+						<!-- Disabled feature, keeping code in case we need it again. -->
 						<!--<DataTrigger Binding="{Binding IsHighlighted}" Value="True">
 							<Setter Property="Background" Value="#9E9EBA" />
 						</DataTrigger>-->
