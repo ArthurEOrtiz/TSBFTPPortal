@@ -157,11 +157,6 @@
                                   Visibility="Collapsed" />
 								</Grid>
 								<ControlTemplate.Triggers>
-									<!--<Trigger Property="HasItems" Value="false">
-										<Setter TargetName="Expander"
-                            Property="Visibility"
-                            Value="Hidden" />
-									</Trigger>-->
 									<MultiTrigger>
 										<MultiTrigger.Conditions>
 											<Condition Property="HasHeader" Value="false" />
