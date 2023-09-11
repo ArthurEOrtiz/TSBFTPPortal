@@ -150,5 +150,7 @@
 	</Style>
 
 	<Color x:Key="ToggleButtonDynamicColor">White</Color>
-
+	
+	<SolidColorBrush x:Key="TreeViewTextBlockColor">White</SolidColorBrush>
+	
 </ResourceDictionary>

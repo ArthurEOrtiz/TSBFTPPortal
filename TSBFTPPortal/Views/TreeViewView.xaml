@@ -86,7 +86,19 @@
 				<HierarchicalDataTemplate 
 					DataType="{x:Type viewmodels:DirectoryItemViewModel}" 
 					ItemsSource="{Binding Items}">
-					<TextBlock Text="{Binding Name}" />
+					<TextBlock Text="{Binding Name}" >
+						<TextBlock.Style>
+							<Style TargetType="TextBlock">
+								<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor}" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
+										<Setter Property="TextDecorations" Value="Underline"/>
+										<Setter Property="Background" Value="Transparent"/>
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</TextBlock.Style>
+					</TextBlock>
 				</HierarchicalDataTemplate>
 			</TreeView.Resources>
 			<TreeView.ItemContainerStyle>
@@ -108,7 +120,7 @@
 									</Grid.RowDefinitions>
 									<VisualStateManager.VisualStateGroups>
 										<VisualStateGroup x:Name="SelectionStates">
-											<VisualState x:Name="Selected">
+											<!--<VisualState x:Name="Selected">
 												<Storyboard>
 													<ColorAnimationUsingKeyFrames Storyboard.TargetName="Bd"
                                                 Storyboard.TargetProperty="(Panel.Background).
@@ -118,7 +130,7 @@
                                          Value="#9E9EBA" />
 													</ColorAnimationUsingKeyFrames>
 												</Storyboard>
-											</VisualState>
+											</VisualState>-->
 											<VisualState x:Name="Unselected" />
 											<VisualState x:Name="SelectedInactive">
 												<Storyboard>
