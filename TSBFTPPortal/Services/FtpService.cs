@@ -148,7 +148,33 @@ namespace TSBFTPPortal.Services
 			{
 				await Task.Run(() =>
 				{
-					DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath);
+					bool fileExists = File.Exists(targetFilePath);
+
+					if (fileExists)
+					{
+						MessageBoxResult result = MessageBox.Show(
+								"File already exists. Do you want to overwrite it?",
+								"File Exists",
+								MessageBoxButton.YesNoCancel,
+								MessageBoxImage.Question);
+
+						if (result == MessageBoxResult.Yes)
+						{
+							// Overwrite the existing file
+							DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath, FtpLocalExists.Overwrite);
+						}
+						else if (result == MessageBoxResult.No)
+						{
+							// Create a copy of the existing file
+							string newFilePath = GetUniqueFileName(targetFilePath);
+							DownloadFileFromFtp(ftpClient, newFilePath, remoteFilePath);
+						}
+						// If the user selects Cancel, do nothing
+					}
+					else
+					{
+						DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath);
+					}
 				});
 			}
 			catch (Exception ex)
@@ -157,14 +183,14 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private void DownloadFileFromFtp(FtpClient ftpClient, string targetFilePath, string remoteFilePath)
+		private void DownloadFileFromFtp(FtpClient ftpClient, string targetFilePath, string remoteFilePath, FtpLocalExists localExists = FtpLocalExists.Skip)
 		{
 			try
 			{
 				ftpClient.DownloadFile(
 						targetFilePath,
 						remoteFilePath,
-						FtpLocalExists.Overwrite,
+						localExists,
 						FtpVerify.None,
 						progressInfo => UpdateProgress(progressInfo));
 
@@ -188,6 +214,25 @@ namespace TSBFTPPortal.Services
 			{
 				HandleFtpException(ex, targetFilePath);
 			}
+		}
+
+		private string GetUniqueFileName(string filePath)
+		{
+			string directory = Path.GetDirectoryName(filePath);
+			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+			string fileExtension = Path.GetExtension(filePath);
+
+			int counter = 1;
+			string newFilePath = filePath;
+
+			while (File.Exists(newFilePath))
+			{
+				string newFileName = $"{fileNameWithoutExtension} ({counter}){fileExtension}";
+				newFilePath = Path.Combine(directory, newFileName);
+				counter++;
+			}
+
+			return newFilePath;
 		}
 
 		private void LogInformation(string targetFilePath)
