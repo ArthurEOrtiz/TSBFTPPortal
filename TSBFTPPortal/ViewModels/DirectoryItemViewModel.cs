@@ -1,7 +1,6 @@
 ﻿using Serilog;
 using System;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.Services;
@@ -56,7 +55,6 @@ namespace TSBFTPPortal.ViewModels
 				{
 					Name = "No items in this directory!",
 					IsDirectory = false,
-					
 				});
 			}
 			else
