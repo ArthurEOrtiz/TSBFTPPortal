@@ -8,7 +8,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 	<UserControl.Resources>
+		
 		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+		
 		<Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
 			<Setter Property="Focusable" Value="False" />
 			<Setter Property="Template">
@@ -57,6 +59,7 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+		
 		<Style x:Key="TreeViewItemFocusVisual">
 			<Setter Property="Control.Template">
 				<Setter.Value>
@@ -72,11 +75,14 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+		
 	</UserControl.Resources>
 	
 	<Grid>
 		<TreeView x:Name="MainTreeView" ItemsSource="{Binding Directories}"  >
+			
 			<TreeView.Resources>
+				
 				<HierarchicalDataTemplate 
 					DataType="{x:Type viewmodels:DirectoryItemViewModel}" 
 					ItemsSource="{Binding Items}">
@@ -100,14 +106,19 @@
 					</TextBlock>
 					
 				</HierarchicalDataTemplate>
+				
 			</TreeView.Resources>
+			
 			<TreeView.ItemContainerStyle>
 				<Style TargetType="TreeViewItem">
 
 					<Setter Property="Template">
 						<Setter.Value>
+							
 							<ControlTemplate TargetType="{x:Type TreeViewItem}">
+								
 								<Grid>
+									
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition MinWidth="19" Width="Auto" />
 										<ColumnDefinition Width="Auto" />
@@ -117,6 +128,7 @@
 										<RowDefinition Height="Auto" />
 										<RowDefinition />
 									</Grid.RowDefinitions>
+									
 									<VisualStateManager.VisualStateGroups>
 										<VisualStateGroup x:Name="SelectionStates">
 											<VisualState x:Name="Unselected" />
@@ -139,6 +151,7 @@
 											<VisualState x:Name="Collapsed" />
 										</VisualStateGroup>
 									</VisualStateManager.VisualStateGroups>
+									
 									<ToggleButton x:Name="Expander"
                                 Style="{DynamicResource ExpandCollapseToggleStyle}"
                                 ClickMode="Press"
@@ -160,7 +173,9 @@
                                   Grid.ColumnSpan="2"
                                   Visibility="Collapsed" />
 								</Grid>
+								
 								<ControlTemplate.Triggers>
+									
 									<MultiTrigger>
 										<MultiTrigger.Conditions>
 											<Condition Property="HasHeader" Value="false" />
@@ -170,6 +185,7 @@
                             Property="MinWidth"
                             Value="75" />
 									</MultiTrigger>
+									
 									<MultiTrigger>
 										<MultiTrigger.Conditions>
 											<Condition Property="HasHeader" Value="false" />
@@ -179,25 +195,36 @@
                             Property="MinHeight"
                             Value="19" />
 									</MultiTrigger>
+									
 								</ControlTemplate.Triggers>
+								
 							</ControlTemplate>
+							
 						</Setter.Value>
+						
 					</Setter>
 
 					<Setter Property="IsExpanded" Value="True" />
+					
 					<Setter Property="IsSelected" Value="False" />
+					
 					<Setter Property="behaviors:DoubleClickBehavior.Command" Value="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource Self}}" />
+					
 					<Style.Triggers>
+						
 						<DataTrigger Binding="{Binding IsVisible}" Value="False">
 							<Setter Property="Visibility" Value="Collapsed" />
 						</DataTrigger>
+						
 						<!-- Disabled feature, keeping code in case we need it again. -->
 						<!--<DataTrigger Binding="{Binding IsHighlighted}" Value="True">
 							<Setter Property="Background" Value="#9E9EBA" />
 						</DataTrigger>-->
 						
 					</Style.Triggers>
+					
 				</Style>
+				
 			</TreeView.ItemContainerStyle>
 		</TreeView>
 
@@ -232,5 +259,6 @@
 				</Style>
 			</TextBlock.Style>
 		</TextBlock>
+		
 	</Grid>
 </UserControl>
