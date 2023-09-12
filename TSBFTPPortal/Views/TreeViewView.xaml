@@ -200,19 +200,25 @@
 		<TextBlock Text="No items match search parameters." HorizontalAlignment="Center" VerticalAlignment="Center">
 			<TextBlock.Style>
 				<Style TargetType="TextBlock">
-					<Setter Property="Visibility" Value="Collapsed"/>
+					<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor }" />
+					<Setter Property="Visibility" Value="Collapsed" />
 					<Style.Triggers>
 						<DataTrigger Binding="{Binding SearchBarViewModel.HasVisibleItems}" Value="False">
-							<Setter Property="Visibility" Value="Visible"/>
+							<Setter Property="Visibility" Value="Visible" />
+						</DataTrigger>
+						<DataTrigger Binding="{Binding Directories.Count}" Value="0">
+							<Setter Property="Visibility" Value="Collapsed" />
 						</DataTrigger>
 					</Style.Triggers>
 				</Style>
 			</TextBlock.Style>
 		</TextBlock>
 
-		<TextBlock Text="No items match search parameters." HorizontalAlignment="Center" VerticalAlignment="Center">
+
+		<TextBlock Text="No items are aviable in this tab." HorizontalAlignment="Center" VerticalAlignment="Center">
 			<TextBlock.Style>
 				<Style TargetType="TextBlock">
+					<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor }" />
 					<Setter Property="Visibility" Value="Collapsed"/>
 					<Style.Triggers>
 						<DataTrigger Binding="{Binding Directories.Count}" Value="0">
