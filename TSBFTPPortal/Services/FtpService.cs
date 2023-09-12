@@ -143,68 +143,66 @@ namespace TSBFTPPortal.Services
 
 		private async Task PerformFileDownload(FtpClient ftpClient, string targetFilePath, string remoteFilePath)
 		{
-			FtpStatus status = await Task.Run(() => ftpClient.DownloadFile(
-					targetFilePath,
-					remoteFilePath,
-					FtpLocalExists.Overwrite,
-					FtpVerify.None,
-					progressInfo => UpdateProgress(progressInfo)),
-					_cancellationTokenSource.Token);
-
-			if (status == FtpStatus.Success)
+			try
 			{
-				Log.Information($"File downloaded to: {targetFilePath}");
-				string fileExtension = Path.GetExtension(targetFilePath);
-
-				if (fileExtension != ".rpt" && fileExtension != ".sql")
+				await Task.Run(() =>
 				{
 					try
 					{
-						Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
-						Log.Information($"Download successful: {fileExtension}");
-					}
-					catch (Exception ex)
-					{
-						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
-					}
-				}
+						ftpClient.DownloadFile(
+										targetFilePath,
+										remoteFilePath,
+										FtpLocalExists.Overwrite,
+										FtpVerify.None,
+										progressInfo => UpdateProgress(progressInfo));
 
-				if (fileExtension == ".rpt")
-				{
-					try
-					{
-						_ = Task.Run(() =>
+						Log.Information($"File downloaded to: {targetFilePath}");
+						string fileExtension = Path.GetExtension(targetFilePath);
+
+						if (fileExtension != ".rpt" && fileExtension != ".sql")
 						{
-							new CrystalReportsViewerService(targetFilePath).ExecuteProgram();
-							Log.Information($"Report successfully downloaded : {targetFilePath}");
-						});
-
-					}
-					catch (Exception ex)
-					{
-						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
-					}
-				}
-
-				if (fileExtension == ".sql")
-				{
-					try
-					{
-						_ = Task.Run(() =>
+							Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
+							Log.Information($"Download successful: {fileExtension}");
+						}
+						else if (fileExtension == ".rpt")
 						{
-							new ScriptRunnerService(targetFilePath).ExecuteProgram();
-							Log.Information($"Script successfully downloaded: {targetFilePath}");
-						});
+							Task.Run(() =>
+							{
+								new CrystalReportsViewerService(targetFilePath).ExecuteProgram();
+								Log.Information($"Report successfully downloaded : {targetFilePath}");
+							});
+						}
+						else if (fileExtension == ".sql")
+						{
+							Task.Run(() =>
+							{
+								new ScriptRunnerService(targetFilePath).ExecuteProgram();
+								Log.Information($"Script successfully downloaded: {targetFilePath}");
+							});
+						}
 					}
-					catch (Exception ex)
+					catch (FluentFTP.Exceptions.FtpCommandException ex)
 					{
-						Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
+						if (ex.Message.Contains("Failed to open file"))
+						{
+							// Handle the specific exception here
+							Log.Error($"FtpCommandException: {ex.Message}");
+						}
+						else
+						{
+							Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
+						}
 					}
-				}
+					catch (FluentFTP.Exceptions.FtpMissingObjectException ex)
+					{
+						// Handle the FtpMissingObjectException here
+						Log.Error($"FtpMissingObjectException: {ex.Message}");
+					}
+				});
 			}
-			else
+			catch (Exception ex)
 			{
-				Log.Error($"Error downloading file. Status: {status}");
+				Log.Error($"An unexpected error occurred: {ex.Message}");
 			}
 		}
 
