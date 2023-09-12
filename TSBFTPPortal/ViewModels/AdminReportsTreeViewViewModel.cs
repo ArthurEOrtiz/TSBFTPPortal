@@ -35,6 +35,7 @@ namespace TSBFTPPortal.ViewModels
 					if (fileExtension == ".rpt" || item.IsDirectory)
 					{
 						Directories.Add(item);
+						item.AddDefaultChildIfEmpty();
 					}
 					else
 					{

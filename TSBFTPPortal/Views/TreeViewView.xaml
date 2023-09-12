@@ -84,11 +84,15 @@
 					<TextBlock Text="{Binding Name}" >
 						<TextBlock.Style>
 							<Style TargetType="TextBlock">
+								
 								<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor}" />
 								<Style.Triggers>
 									<DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
 										<Setter Property="TextDecorations" Value="Underline"/>
 										<Setter Property="Background" Value="Transparent"/>
+									</DataTrigger>
+									<DataTrigger Binding="{Binding Name}" Value="No items in this directory!">
+										<Setter Property="FontStyle" Value="Italic" />
 									</DataTrigger>
 								</Style.Triggers>
 							</Style>

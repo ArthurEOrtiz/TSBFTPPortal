@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using System;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.Services;
@@ -44,6 +45,30 @@ namespace TSBFTPPortal.ViewModels
 			_ftpService = ftpService;
 			DownloadCommand = new RelayCommand(Download);
 		}
+
+		public void AddDefaultChildIfEmpty()
+		{
+			// Check if this directory has no items
+			if (IsDirectory && Items.Count == 0)
+			{
+				// Add a default child item
+				Items.Add(new DirectoryItemViewModel(_ftpService)
+				{
+					Name = "No items in this directory!",
+					IsDirectory = false,
+					
+				});
+			}
+			else
+			{
+				// Check child items recursively
+				foreach (var childItem in Items)
+				{
+					childItem.AddDefaultChildIfEmpty();
+				}
+			}
+		}
+
 
 		private async void Download(object obj)
 		{

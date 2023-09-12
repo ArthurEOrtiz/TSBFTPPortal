@@ -30,6 +30,7 @@ namespace TSBFTPPortal.ViewModels
 			foreach (DirectoryItemViewModel item in items)
 			{
 				Directories.Add(item);
+				item.AddDefaultChildIfEmpty();
 			}
 		}
 

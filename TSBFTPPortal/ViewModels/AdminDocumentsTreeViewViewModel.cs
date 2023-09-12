@@ -35,6 +35,7 @@ namespace TSBFTPPortal.ViewModels
 					if (fileExtension != ".rpt" && fileExtension != ".sql")
 					{
 						Directories.Add(item);
+						item.AddDefaultChildIfEmpty();
 					}
 					else
 					{

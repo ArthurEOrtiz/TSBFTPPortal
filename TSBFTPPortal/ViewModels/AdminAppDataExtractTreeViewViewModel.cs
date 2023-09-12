@@ -35,6 +35,7 @@ namespace TSBFTPPortal.ViewModels
 					if (fileExtension == ".sql" || fileExtension == "")
 					{
 						Directories.Add(item);
+						item.AddDefaultChildIfEmpty();
 					}
 					else
 					{
