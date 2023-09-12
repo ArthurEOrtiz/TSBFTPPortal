@@ -75,7 +75,7 @@
 	</UserControl.Resources>
 	
 	<Grid>
-		<TreeView ItemsSource="{Binding Directories}"  >
+		<TreeView x:Name="MainTreeView" ItemsSource="{Binding Directories}"  >
 			<TreeView.Resources>
 				<HierarchicalDataTemplate 
 					DataType="{x:Type viewmodels:DirectoryItemViewModel}" 
@@ -191,9 +191,23 @@
 						<!--<DataTrigger Binding="{Binding IsHighlighted}" Value="True">
 							<Setter Property="Background" Value="#9E9EBA" />
 						</DataTrigger>-->
+						
 					</Style.Triggers>
 				</Style>
 			</TreeView.ItemContainerStyle>
 		</TreeView>
+
+		<TextBlock Text="No items match search parameters." HorizontalAlignment="Center" VerticalAlignment="Center">
+			<TextBlock.Style>
+				<Style TargetType="TextBlock">
+					<Setter Property="Visibility" Value="Collapsed"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding SearchBarViewModel.HasVisibleItems}" Value="False">
+							<Setter Property="Visibility" Value="Visible"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</TextBlock.Style>
+		</TextBlock>
 	</Grid>
 </UserControl>

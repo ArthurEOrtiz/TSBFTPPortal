@@ -19,6 +19,21 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
+		private bool _hasVisibleItems = true; // Initialize it as true since initially, all items are visible.
+		public bool HasVisibleItems
+		{
+			get => _hasVisibleItems;
+			set
+			{
+				_hasVisibleItems = value;
+				OnPropertyChanged(nameof(HasVisibleItems));
+			}
+		}
+
+
+
+
+
 		public ObservableCollection<DirectoryItemViewModel> AllDirectories { get; set; }
 
 		public SearchBarViewModel()
@@ -37,6 +52,8 @@ namespace TSBFTPPortal.ViewModels
 
 		private void PerformSearch()
 		{
+			bool anyVisibleItem = false; // Initialize it as false.
+
 			foreach (var d in AllDirectories)
 			{
 				// Check if the item matches the search criteria
@@ -44,8 +61,15 @@ namespace TSBFTPPortal.ViewModels
 
 				// Set the IsVisible property
 				d.IsVisible = matchesSearch;
+
+				// Update the visibility flag
+				anyVisibleItem |= matchesSearch;
 			}
+
+			// Update the HasVisibleItems property based on the flag
+			HasVisibleItems = anyVisibleItem;
 		}
+
 
 		private void ResetAllItems(DirectoryItemViewModel item)
 		{
