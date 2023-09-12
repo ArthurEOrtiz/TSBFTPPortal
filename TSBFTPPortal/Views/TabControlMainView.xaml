@@ -28,10 +28,10 @@
 				</Grid>
 				
 			</TabItem>
-			<TabItem Header="Admin System" Style="{DynamicResource TabItemStyling}" Visibility="{Binding IsAdminSystemTabVisible,Converter={StaticResource BooleanToVisibilityConverter}}" >
+			<TabItem Header="{Binding SelectedCounty.AdminSystem}" Style="{DynamicResource TabItemStyling}" Visibility="{Binding IsAdminSystemTabVisible,Converter={StaticResource BooleanToVisibilityConverter}}" >
 				<views:TabControlAdminView DataContext="{Binding TabControlAdminViewModel}" />
 			</TabItem>
-			<TabItem Header="Cama System" Style="{DynamicResource TabItemStyling}" Visibility="{Binding IsCamaSystemTabVisible, Converter={StaticResource BooleanToVisibilityConverter}}"> 
+			<TabItem Header="{Binding SelectedCounty.CAMASystem}" Style="{DynamicResource TabItemStyling}" Visibility="{Binding IsCamaSystemTabVisible, Converter={StaticResource BooleanToVisibilityConverter}}"> 
 				<views:TabControlCamaView DataContext="{Binding TabControlCamaViewModel}"/>
 			</TabItem>
 			<TabItem Header="PAB" Style="{DynamicResource TabItemStyling}">

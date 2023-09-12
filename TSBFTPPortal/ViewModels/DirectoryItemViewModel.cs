@@ -45,6 +45,29 @@ namespace TSBFTPPortal.ViewModels
 			DownloadCommand = new RelayCommand(Download);
 		}
 
+		public void AddDefaultChildIfEmpty()
+		{
+			// Check if this directory has no items
+			if (IsDirectory && Items.Count == 0)
+			{
+				// Add a default child item
+				Items.Add(new DirectoryItemViewModel(_ftpService)
+				{
+					Name = "No items in this directory!",
+					IsDirectory = false,
+				});
+			}
+			else
+			{
+				// Check child items recursively
+				foreach (var childItem in Items)
+				{
+					childItem.AddDefaultChildIfEmpty();
+				}
+			}
+		}
+
+
 		private async void Download(object obj)
 		{
 			if (IsFile && !string.IsNullOrEmpty(Path)) 

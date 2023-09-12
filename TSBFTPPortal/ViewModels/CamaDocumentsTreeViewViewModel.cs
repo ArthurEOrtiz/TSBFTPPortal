@@ -1,12 +1,6 @@
 ﻿using Serilog;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.Entity.Core.Common.CommandTrees;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -16,12 +10,14 @@ namespace TSBFTPPortal.ViewModels
 	{
 		public County SelectedCounty { get; }
 		public readonly FtpService _ftpService;
+		public SearchBarViewModel SearchBarViewModel { get; }
 
-		public CamaDocumentsTreeViewViewModel(County selectedCounty, FtpService ftpService)
+		public CamaDocumentsTreeViewViewModel(County selectedCounty, FtpService ftpService, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
+			SearchBarViewModel = searchBarViewModel;
 			LoadDirectoriesAndFoldersFromFTP();
 		}
 
@@ -39,6 +35,7 @@ namespace TSBFTPPortal.ViewModels
 					if (fileExtension != ".rpt" && fileExtension != ".sql")
 					{
 						Directories.Add(item);
+						item.AddDefaultChildIfEmpty();
 					}
 					else
 					{

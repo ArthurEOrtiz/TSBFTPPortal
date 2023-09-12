@@ -70,9 +70,9 @@ namespace TSBFTPPortal.ViewModels
 			{
 				FtpService ftpService = new(ftpServer, username, password);
 				CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService, FilterTreeViewViewModel, SearchBarViewModel);
-				PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty, ftpService);
-				GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService);
-				PTRTreeViewViewModel = new PTRTreeViewViewModel(SelectedCounty, ftpService);
+				PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty, ftpService, SearchBarViewModel);
+				GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService, SearchBarViewModel);
+				PTRTreeViewViewModel = new PTRTreeViewViewModel(SelectedCounty, ftpService, SearchBarViewModel);
 				TabControlCamaViewModel = new TabControlCamaViewModel(SelectedCounty, ftpService, SearchBarViewModel);
 				TabControlAdminViewModel = new TabControlAdminViewModel(SelectedCounty, ftpService, SearchBarViewModel);
 

@@ -18,8 +18,8 @@ namespace TSBFTPPortal.ViewModels
 			_ftpService = ftpService;
 			SearchBarViewModel = searchBarViewModel;
 
-			AdminAppTimberTreeViewViewModel = new AdminAppTimberTreeViewViewModel(selectedCounty, _ftpService);
-			AdminAppDataExtractTreeViewViewModel = new AdminAppDataExtractTreeViewViewModel(selectedCounty, _ftpService);
+			AdminAppTimberTreeViewViewModel = new AdminAppTimberTreeViewViewModel(selectedCounty, _ftpService, SearchBarViewModel);
+			AdminAppDataExtractTreeViewViewModel = new AdminAppDataExtractTreeViewViewModel(selectedCounty, _ftpService, SearchBarViewModel);
 
 			SearchBarViewModel.SetAllDirectories(AdminAppTimberTreeViewViewModel.Directories
 				.Concat(AdminAppDataExtractTreeViewViewModel.Directories));

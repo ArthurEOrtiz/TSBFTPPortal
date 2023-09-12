@@ -54,6 +54,7 @@ namespace TSBFTPPortal.ViewModels
 			foreach (var item in items)
 			{
 				Directories.Add(item);
+				item.AddDefaultChildIfEmpty();
 			}
 		}
 

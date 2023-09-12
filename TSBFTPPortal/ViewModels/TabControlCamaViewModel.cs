@@ -19,9 +19,9 @@ namespace TSBFTPPortal.ViewModels
 			_ftpService = ftpService;
 			SearchBarViewModel = searchBarViewModel;
 
-			CamaReportsTreeViewViewModel = new CamaReportsTreeViewViewModel(selectedCounty, ftpService);
-			CamaScriptsTreeViewViewModel = new CamaScriptsTreeViewViewModel(selectedCounty, ftpService);
-			CamaDocumentsTreeViewViewModel = new CamaDocumentsTreeViewViewModel(selectedCounty, ftpService);
+			CamaReportsTreeViewViewModel = new CamaReportsTreeViewViewModel(selectedCounty, ftpService, SearchBarViewModel);
+			CamaScriptsTreeViewViewModel = new CamaScriptsTreeViewViewModel(selectedCounty, ftpService, SearchBarViewModel);
+			CamaDocumentsTreeViewViewModel = new CamaDocumentsTreeViewViewModel(selectedCounty, ftpService, SearchBarViewModel);
 
 			SearchBarViewModel.SetAllDirectories(CamaScriptsTreeViewViewModel.Directories
 			 .Concat(CamaReportsTreeViewViewModel.Directories)

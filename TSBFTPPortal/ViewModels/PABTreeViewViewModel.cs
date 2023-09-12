@@ -9,12 +9,14 @@ namespace TSBFTPPortal.ViewModels
 	{
 		public County SelectedCounty { get; }
 		public readonly FtpService _ftpService;
+		public SearchBarViewModel SearchBarViewModel { get; }
 
-		public PABTreeViewViewModel(County selectedCounty, FtpService ftpService)
+		public PABTreeViewViewModel(County selectedCounty, FtpService ftpService, SearchBarViewModel searchBarViewModel )
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
+			SearchBarViewModel = searchBarViewModel;
 			LoadDirectoriesAndFoldersFromFTP();
 
 		}
@@ -28,6 +30,7 @@ namespace TSBFTPPortal.ViewModels
 			foreach (DirectoryItemViewModel item in items)
 			{
 				Directories.Add(item);
+				item.AddDefaultChildIfEmpty();
 			}
 		}
 

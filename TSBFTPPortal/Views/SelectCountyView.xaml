@@ -50,7 +50,7 @@
 		<Button
 			x:Name="ButtonCountiueToMainPage"
 			Command="{Binding ContinueToMainPageCommand}"
-			Content="Main Window"
+			Content="Open Dashboard"
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
 			Grid.Row="3"

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TSBFTPPortal" 
 				xmlns:views="clr-namespace:TSBFTPPortal.Views"
 				mc:Ignorable="d"
-        Title="Main Workspace" 
+        Title="Dashboard" 
 				Icon="{StaticResource AppIcon}"
 				Height="450" 
 				Width="600"
