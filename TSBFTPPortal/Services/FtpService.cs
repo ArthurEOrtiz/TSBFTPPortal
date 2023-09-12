@@ -11,6 +11,7 @@ using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
 using System.Net;
 using System.Text;
+using System.Windows;
 
 namespace TSBFTPPortal.Services
 {
@@ -187,21 +188,25 @@ namespace TSBFTPPortal.Services
 						{
 							// Handle the specific exception here
 							Log.Error($"FtpCommandException: {ex.Message}");
+							MessageBox.Show($"Error downloading file: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
 						}
 						else
 						{
 							Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
+							MessageBox.Show($"Error downloading file: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
 						}
 					}
 					catch (FluentFTP.Exceptions.FtpMissingObjectException ex)
 					{
 						// Handle the FtpMissingObjectException here
 						Log.Error($"FtpMissingObjectException: {ex.Message}");
+						MessageBox.Show($"Error downloading file: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
 					}
 				});
 			}
 			catch (Exception ex)
 			{
+				MessageBox.Show($"Error downloading file: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
 				Log.Error($"An unexpected error occurred: {ex.Message}");
 			}
 		}
