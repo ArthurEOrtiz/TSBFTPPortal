@@ -9,12 +9,14 @@ namespace TSBFTPPortal.ViewModels
 	{
 		public County SelectedCounty { get; }
 		public readonly FtpService _ftpService;
+		public SearchBarViewModel SearchBarViewModel { get; }
 
-		public GISTreeViewViewModel(County selectedCounty, FtpService ftpService)
+		public GISTreeViewViewModel(County selectedCounty, FtpService ftpService, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
 			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
+			SearchBarViewModel = searchBarViewModel;
 			LoadDirectoriesAndFoldersFromFTP();
 
 		}

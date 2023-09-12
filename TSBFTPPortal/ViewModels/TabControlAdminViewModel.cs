@@ -20,9 +20,9 @@ namespace TSBFTPPortal.ViewModels
 			_ftpService = ftpService;
 			SearchBarViewModel = searchBarViewModel;
 
-			AdminReportsTreeViewViewModel = new AdminReportsTreeViewViewModel(selectedCounty, _ftpService);
-			AdminScriptsTreeViewViewModel = new AdminScriptsTreeViewViewModel(selectedCounty, _ftpService);
-			AdminDocumentsTreeViewViewModel = new AdminDocumentsTreeViewViewModel(selectedCounty, _ftpService);
+			AdminReportsTreeViewViewModel = new AdminReportsTreeViewViewModel(selectedCounty, _ftpService, SearchBarViewModel);
+			AdminScriptsTreeViewViewModel = new AdminScriptsTreeViewViewModel(selectedCounty, _ftpService, SearchBarViewModel);
+			AdminDocumentsTreeViewViewModel = new AdminDocumentsTreeViewViewModel(selectedCounty, _ftpService, SearchBarViewModel);
 			TabControlAdminAppsViewModel = new TabControlAdminAppsViewModel(selectedCounty, _ftpService, SearchBarViewModel);
 
 			SearchBarViewModel.SetAllDirectories(AdminReportsTreeViewViewModel.Directories

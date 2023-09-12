@@ -10,6 +10,7 @@ namespace TSBFTPPortal.ViewModels
 		public County SelectedCounty { get; }
 		public readonly FtpService _ftpService;
 		public SearchBarViewModel SearchBarViewModel { get; }
+
 		public PABTreeViewViewModel(County selectedCounty, FtpService ftpService, SearchBarViewModel searchBarViewModel )
 		{
 			SelectedCounty = selectedCounty;
