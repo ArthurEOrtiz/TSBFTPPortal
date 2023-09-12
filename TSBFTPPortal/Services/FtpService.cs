@@ -148,68 +148,130 @@ namespace TSBFTPPortal.Services
 			{
 				await Task.Run(() =>
 				{
-					try
-					{
-						ftpClient.DownloadFile(
-										targetFilePath,
-										remoteFilePath,
-										FtpLocalExists.Overwrite,
-										FtpVerify.None,
-										progressInfo => UpdateProgress(progressInfo));
-
-						Log.Information($"File downloaded to: {targetFilePath}");
-						string fileExtension = Path.GetExtension(targetFilePath);
-
-						if (fileExtension != ".rpt" && fileExtension != ".sql")
-						{
-							Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
-							Log.Information($"Download successful: {fileExtension}");
-						}
-						else if (fileExtension == ".rpt")
-						{
-							Task.Run(() =>
-							{
-								new CrystalReportsViewerService(targetFilePath).ExecuteProgram();
-								Log.Information($"Report successfully downloaded : {targetFilePath}");
-							});
-						}
-						else if (fileExtension == ".sql")
-						{
-							Task.Run(() =>
-							{
-								new ScriptRunnerService(targetFilePath).ExecuteProgram();
-								Log.Information($"Script successfully downloaded: {targetFilePath}");
-							});
-						}
-					}
-					catch (FluentFTP.Exceptions.FtpCommandException ex)
-					{
-						if (ex.Message.Contains("Failed to open file"))
-						{
-							// Handle the specific exception here
-							Log.Error($"FtpCommandException: {ex.Message}");
-							MessageBox.Show($"Error downloading file: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-						}
-						else
-						{
-							Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
-							MessageBox.Show($"Error downloading file: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-						}
-					}
-					catch (FluentFTP.Exceptions.FtpMissingObjectException ex)
-					{
-						// Handle the FtpMissingObjectException here
-						Log.Error($"FtpMissingObjectException: {ex.Message}");
-						MessageBox.Show($"Error downloading file: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-					}
+					DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath);
 				});
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show($"Error downloading file: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-				Log.Error($"An unexpected error occurred: {ex.Message}");
+				HandleError(ex);
 			}
 		}
+
+		private void DownloadFileFromFtp(FtpClient ftpClient, string targetFilePath, string remoteFilePath)
+		{
+			try
+			{
+				ftpClient.DownloadFile(
+						targetFilePath,
+						remoteFilePath,
+						FtpLocalExists.Overwrite,
+						FtpVerify.None,
+						progressInfo => UpdateProgress(progressInfo));
+
+				LogInformation(targetFilePath);
+				string fileExtension = Path.GetExtension(targetFilePath);
+
+				if (fileExtension != ".rpt" && fileExtension != ".sql")
+				{
+					OpenFileWithShellExecute(targetFilePath, fileExtension);
+				}
+				else if (fileExtension == ".rpt")
+				{
+					RunCrystalReportsViewer(targetFilePath);
+				}
+				else if (fileExtension == ".sql")
+				{
+					RunScriptRunner(targetFilePath);
+				}
+			}
+			catch (Exception ex)
+			{
+				HandleFtpException(ex, targetFilePath);
+			}
+		}
+
+		private void LogInformation(string targetFilePath)
+		{
+			Log.Information($"File downloaded to: {targetFilePath}");
+		}
+
+		private void OpenFileWithShellExecute(string targetFilePath, string fileExtension)
+		{
+			try
+			{
+				Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
+				Log.Information($"Download successful: {fileExtension}");
+			}
+			catch (Exception ex)
+			{
+				HandleError(ex, targetFilePath);
+			}
+		}
+
+		private void RunCrystalReportsViewer(string targetFilePath)
+		{
+			try
+			{
+				Task.Run(() =>
+				{
+					new CrystalReportsViewerService(targetFilePath).ExecuteProgram();
+					Log.Information($"Report successfully downloaded : {targetFilePath}");
+				});
+			}
+			catch (Exception ex)
+			{
+				HandleError(ex, targetFilePath);
+			}
+		}
+
+		private void RunScriptRunner(string targetFilePath)
+		{
+			try
+			{
+				Task.Run(() =>
+				{
+					new ScriptRunnerService(targetFilePath).ExecuteProgram();
+					Log.Information($"Script successfully downloaded: {targetFilePath}");
+				});
+			}
+			catch (Exception ex)
+			{
+				HandleError(ex, targetFilePath);
+			}
+		}
+
+		private void HandleFtpException(Exception ex, string targetFilePath)
+		{
+			if (ex is FluentFTP.Exceptions.FtpCommandException commandException)
+			{
+				if (commandException.Message.Contains("Failed to open file"))
+				{
+					Log.Error($"FtpCommandException: {ex.Message}");
+				}
+				else
+				{
+					Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
+				}
+			}
+			else if (ex is FluentFTP.Exceptions.FtpMissingObjectException missingObjectException)
+			{
+				Log.Error($"FtpMissingObjectException: {ex.Message}");
+			}
+
+			ShowErrorMessage(ex.Message);
+		}
+
+		private void HandleError(Exception ex, string targetFilePath = null)
+		{
+			Log.Error($"An unexpected error occurred: {ex.Message}");
+			ShowErrorMessage($"Error downloading file: {ex.Message}");
+		}
+
+		private void ShowErrorMessage(string message)
+		{
+			MessageBox.Show(message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+		}
+
 
 		private void UpdateProgress(FtpProgress progressInfo)
 		{
