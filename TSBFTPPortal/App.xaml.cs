@@ -59,6 +59,9 @@ namespace TSBFTPPortal
 			{
 
 				Window selectCountyView = new SelectCountyView(Configuration);
+
+				selectCountyView.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
 				selectCountyView.Show();
 			}
 			else
