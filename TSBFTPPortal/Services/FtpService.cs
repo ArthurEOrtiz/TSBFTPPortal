@@ -119,6 +119,15 @@ namespace TSBFTPPortal.Services
 		private void InitializeProgressWindow()
 		{
 			_progressWindow.DataContext = new ProgressWindowViewModel();
+
+
+			var mainWindow = Application.Current.MainWindow;
+			_progressWindow.Owner = mainWindow;
+
+			// Center the ProgressWindow on the main window
+			_progressWindow.Left = mainWindow.Left;
+			_progressWindow.Top = mainWindow.Top;
+
 			_progressWindow.Show();
 			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
 			viewModel.CancelCommand = new RelayCommand(Cancel);
@@ -157,7 +166,18 @@ namespace TSBFTPPortal.Services
 							var fileActionViewModel = new FileActionDialogViewModel();
 
 							// Create and set up the custom dialog window
-							var fileActionDialog = new FileActionDialog { DataContext = fileActionViewModel };
+							var fileActionDialog = new FileActionDialog 
+							{ DataContext = fileActionViewModel };
+
+							// Set the Owner property to the main window
+							fileActionDialog.Owner = Application.Current.MainWindow;
+
+							// Set the Topmost property to true
+							fileActionDialog.Topmost = true;
+
+							fileActionDialog.Top = Application.Current.MainWindow.Top;
+							fileActionDialog.Left = Application.Current.MainWindow.Left;
+						
 
 							// Set the CloseAction to close the dialog
 							fileActionViewModel.CloseAction = (result) => fileActionDialog.DialogResult = result;

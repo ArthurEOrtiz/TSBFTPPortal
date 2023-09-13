@@ -52,9 +52,13 @@ namespace TSBFTPPortal.ViewModels
 			var mainWindow = new MainWindow { DataContext = mainWindowViewModel };
 
 			var currentWindow = Application.Current.MainWindow; // Get a reference to the current window
-			currentWindow.Close(); // Close the current window
-			mainWindow.Show();
 
+			currentWindow.Close(); // Close the current window
+			mainWindow.Owner = Application.Current.MainWindow;
+			mainWindow.Left = currentWindow.Left;
+			mainWindow.Top = currentWindow.Top;
+			mainWindow.Show();
+			
 		}
 
 		private static County FindCountyModel(string countyName)
