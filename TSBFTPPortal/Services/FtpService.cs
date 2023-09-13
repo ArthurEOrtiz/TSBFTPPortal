@@ -120,13 +120,12 @@ namespace TSBFTPPortal.Services
 		{
 			_progressWindow.DataContext = new ProgressWindowViewModel();
 
-
 			var mainWindow = Application.Current.MainWindow;
 			_progressWindow.Owner = mainWindow;
 
-			// Center the ProgressWindow on the main window
-			_progressWindow.Left = mainWindow.Left;
-			_progressWindow.Top = mainWindow.Top;
+			// Set the location of the progress window 
+			_progressWindow.Left = mainWindow.Left + (mainWindow.Width - _progressWindow.Width) / 2;
+			_progressWindow.Top = mainWindow.Top + (mainWindow.Height - _progressWindow.Height) / 2;
 
 			_progressWindow.Show();
 			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
@@ -175,9 +174,9 @@ namespace TSBFTPPortal.Services
 							// Set the Topmost property to true
 							fileActionDialog.Topmost = true;
 
+							// Set the location of the dialog window
 							fileActionDialog.Top = Application.Current.MainWindow.Top;
 							fileActionDialog.Left = Application.Current.MainWindow.Left;
-						
 
 							// Set the CloseAction to close the dialog
 							fileActionViewModel.CloseAction = (result) => fileActionDialog.DialogResult = result;
