@@ -232,6 +232,7 @@
 		<TextBlock Text="No items match search parameters." HorizontalAlignment="Center" VerticalAlignment="Center">
 			<TextBlock.Style>
 				<Style TargetType="TextBlock">
+					<Setter Property="FontSize" Value="13" />
 					<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor }" />
 					<Setter Property="Visibility" Value="Collapsed" />
 					<Style.Triggers>
@@ -250,6 +251,7 @@
 		<TextBlock Text="No items are aviable in this tab." HorizontalAlignment="Center" VerticalAlignment="Center">
 			<TextBlock.Style>
 				<Style TargetType="TextBlock">
+					<Setter Property="FontSize" Value="13" />
 					<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor }" />
 					<Setter Property="Visibility" Value="Collapsed"/>
 					<Style.Triggers>
