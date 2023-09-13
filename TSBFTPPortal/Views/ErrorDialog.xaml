@@ -9,7 +9,8 @@
 				Height="200" 
 				Width="400"
 				ResizeMode="NoResize"
-				Background="{DynamicResource WindowBlack}">
+				
+				>
     <Grid>
 			
 		<Grid.ColumnDefinitions>
