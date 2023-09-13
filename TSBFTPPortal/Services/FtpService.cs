@@ -77,10 +77,10 @@ namespace TSBFTPPortal.Services
 
 		public async Task DownloadFileAsync(string path)
 		{
-			if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+			if (!IsInternetAvailable())
 			{
-				// Handle the case where there is no internet connection
-				ShowErrorMessage("No internet connection!");
+				Log.Error($"Internet connection lost.");
+				ShowErrorMessage("No internet connection.");
 				return;
 			}
 
@@ -114,6 +114,7 @@ namespace TSBFTPPortal.Services
 				catch (Exception ex)
 				{
 					Log.Error($"Error downloading file: {ex.Message}");
+					ShowErrorMessage($"Error downloading file: {ex.Message}");
 				}
 				finally
 				{
@@ -444,6 +445,22 @@ namespace TSBFTPPortal.Services
 					Log.Error($"Error reading JSON file from FTP: {ex.Message}");
 					return null;
 				}
+			}
+		}
+
+		private bool IsInternetAvailable()
+		{
+			try
+			{
+				using (var ping = new System.Net.NetworkInformation.Ping())
+				{
+					var reply = ping.Send("8.8.8.8"); // Ping Google's DNS server
+					return reply.Status == System.Net.NetworkInformation.IPStatus.Success;
+				}
+			}
+			catch
+			{
+				return false; // Exception occurred, probably no internet
 			}
 		}
 	}
