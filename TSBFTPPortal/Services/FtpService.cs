@@ -4,14 +4,14 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
-using System.Net;
-using System.Text;
-using System.Windows;
 
 namespace TSBFTPPortal.Services
 {
@@ -77,7 +77,7 @@ namespace TSBFTPPortal.Services
 
 		public async Task DownloadFileAsync(string path)
 		{
-		
+
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
 			{
 				_cancellationTokenSource = new CancellationTokenSource();
@@ -152,24 +152,34 @@ namespace TSBFTPPortal.Services
 
 					if (fileExists)
 					{
-						MessageBoxResult result = MessageBox.Show(
-								"File already exists. Do you want to overwrite it?",
-								"File Exists",
-								MessageBoxButton.YesNoCancel,
-								MessageBoxImage.Question);
+						Application.Current.Dispatcher.Invoke(() =>
+						{
+							var fileActionViewModel = new FileActionDialogViewModel();
 
-						if (result == MessageBoxResult.Yes)
-						{
-							// Overwrite the existing file
-							DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath, FtpLocalExists.Overwrite);
-						}
-						else if (result == MessageBoxResult.No)
-						{
-							// Create a copy of the existing file
-							string newFilePath = GetUniqueFileName(targetFilePath);
-							DownloadFileFromFtp(ftpClient, newFilePath, remoteFilePath);
-						}
-						// If the user selects Cancel, do nothing
+							// Create and set up the custom dialog window
+							var fileActionDialog = new FileActionDialog { DataContext = fileActionViewModel };
+
+							// Set the CloseAction to close the dialog
+							fileActionViewModel.CloseAction = (result) => fileActionDialog.DialogResult = result;
+
+							// Show the custom dialog
+							fileActionDialog.ShowDialog();
+
+							// Handle the user's choice
+							switch (fileActionViewModel.SelectedAction)
+							{
+								case "Overwrite":
+									DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath, FtpLocalExists.Overwrite);
+									break;
+								case "CreateCopy":
+									string newFilePath = GetUniqueFileName(targetFilePath);
+									DownloadFileFromFtp(ftpClient, newFilePath, remoteFilePath);
+									break;
+								case "Cancel":
+									// User canceled the operation, do nothing
+									break;
+							}
+						});
 					}
 					else
 					{
@@ -182,6 +192,7 @@ namespace TSBFTPPortal.Services
 				HandleError(ex);
 			}
 		}
+
 
 		private void DownloadFileFromFtp(FtpClient ftpClient, string targetFilePath, string remoteFilePath, FtpLocalExists localExists = FtpLocalExists.Skip)
 		{

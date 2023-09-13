@@ -1,0 +1,32 @@
+﻿<Window x:Class="TSBFTPPortal.Views.FileActionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TSBFTPPortal.Views"
+        mc:Ignorable="d"
+        Title="FileActionDialog" Height="200" Width="400">
+    <Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition />
+			<ColumnDefinition />
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+		<Button Content="Overwrite"
+						Command="{Binding OverwriteCommand}"
+						CommandParameter="Overwrite"/>
+		<Button Content="Create Copy"
+						Command="{Binding CreateCopyCommand}"
+						CommandParameter="CreateCopy"
+						Grid.Column="1"/>
+		<Button Content="Cancel"
+						Command="{Binding CancelCommand}"
+						CommandParameter="Cancel"
+						Grid.Column="2" />
+
+	</Grid>
+</Window>

@@ -13,18 +13,17 @@ namespace TSBFTPPortal.Commands
 		public RelayCommand(Action<object> execute, Predicate<object>? canExecute = null)
 		{
 			this.execute = execute;
-			this.canExecute = canExecute; 
+			this.canExecute = canExecute;
 		}
 
 		public bool CanExecute(object? parameter)
 		{
-
 			return canExecute == null || canExecute(parameter ?? throw new ArgumentNullException(nameof(parameter)));
 		}
 
 		public void Execute(object? parameter)
 		{
-				execute(parameter);
+			execute?.Invoke(parameter);
 		}
 
 		public void RaiseCanExecuteChanged()
