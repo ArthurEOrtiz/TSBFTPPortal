@@ -360,8 +360,26 @@ namespace TSBFTPPortal.Services
 
 		private void ShowErrorMessage(string message)
 		{
-			MessageBox.Show(message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+			//MessageBox.Show(message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				var errorDialog = new ErrorDialog();
+				var viewModel = new ErrorDialogViewModel(message);
+				errorDialog.DataContext = viewModel;
+
+				// Subscribe to the CloseAction to close the dialog
+				viewModel.CloseAction = (result) =>
+				{
+					errorDialog.DialogResult = result;
+					errorDialog.Close();
+				};
+
+				errorDialog.ShowDialog();
+			});
 		}
+
+
 
 		private void UpdateProgress(FtpProgress progressInfo)
 		{
