@@ -19,6 +19,7 @@
 						<!-- Placeholder TextBlock -->
 						<TextBlock Text="Search FTP files . . " 
 											 Foreground="Gray"
+											 FontSize="13"
 											 Margin="5,0"
                        Visibility="Collapsed"
                        x:Name="PlaceholderTextBlock" />
