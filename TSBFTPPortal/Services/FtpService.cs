@@ -165,39 +165,13 @@ namespace TSBFTPPortal.Services
 							var fileActionViewModel = new FileActionDialogViewModel();
 
 							// Create and set up the custom dialog window
-							var fileActionDialog = new FileActionDialog 
-							{ DataContext = fileActionViewModel };
-
-							// Set the Owner property to the main window
-							fileActionDialog.Owner = Application.Current.MainWindow;
-
-							// Set the Topmost property to true
-							fileActionDialog.Topmost = true;
-
-							// Set the location of the dialog window
-							fileActionDialog.Top = Application.Current.MainWindow.Top;
-							fileActionDialog.Left = Application.Current.MainWindow.Left;
-
-							// Set the CloseAction to close the dialog
-							fileActionViewModel.CloseAction = (result) => fileActionDialog.DialogResult = result;
+							var fileActionDialog = CreateFileActionDialog(fileActionViewModel);
 
 							// Show the custom dialog
-							fileActionDialog.ShowDialog();
+							bool? dialogResult = ShowDialog(fileActionDialog);
 
 							// Handle the user's choice
-							switch (fileActionViewModel.SelectedAction)
-							{
-								case "Overwrite":
-									DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath, FtpLocalExists.Overwrite);
-									break;
-								case "CreateCopy":
-									string newFilePath = GetUniqueFileName(targetFilePath);
-									DownloadFileFromFtp(ftpClient, newFilePath, remoteFilePath);
-									break;
-								case "Cancel":
-									// User canceled the operation, do nothing
-									break;
-							}
+							HandleUserChoice(ftpClient, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult);
 						});
 					}
 					else
@@ -212,6 +186,48 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
+		private FileActionDialog CreateFileActionDialog(FileActionDialogViewModel fileActionViewModel)
+		{
+			var fileActionDialog = new FileActionDialog
+			{
+				DataContext = fileActionViewModel,
+				Owner = Application.Current.MainWindow,
+				Topmost = true,
+				Top = Application.Current.MainWindow.Top,
+				Left = Application.Current.MainWindow.Left
+			};
+
+			// Set the CloseAction to close the dialog
+			fileActionViewModel.CloseAction = (result) => fileActionDialog.DialogResult = result;
+
+			return fileActionDialog;
+		}
+
+		private bool? ShowDialog(FileActionDialog fileActionDialog)
+		{
+			// Show the custom dialog and await the user's choice
+			return fileActionDialog.ShowDialog();
+		}
+
+		private void HandleUserChoice(FtpClient ftpClient, string targetFilePath, string remoteFilePath, string selectedAction, bool? dialogResult)
+		{
+			if (dialogResult.HasValue && dialogResult.Value)
+			{
+				switch (selectedAction)
+				{
+					case "Overwrite":
+						DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath, FtpLocalExists.Overwrite);
+						break;
+					case "CreateCopy":
+						string newFilePath = GetUniqueFileName(targetFilePath);
+						DownloadFileFromFtp(ftpClient, newFilePath, remoteFilePath);
+						break;
+					case "Cancel":
+						// User canceled the operation, do nothing
+						break;
+				}
+			}
+		}
 
 		private void DownloadFileFromFtp(FtpClient ftpClient, string targetFilePath, string remoteFilePath, FtpLocalExists localExists = FtpLocalExists.Skip)
 		{
@@ -347,7 +363,6 @@ namespace TSBFTPPortal.Services
 			MessageBox.Show(message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 
-
 		private void UpdateProgress(FtpProgress progressInfo)
 		{
 			try
@@ -402,6 +417,5 @@ namespace TSBFTPPortal.Services
 				}
 			}
 		}
-
 	}
 }
