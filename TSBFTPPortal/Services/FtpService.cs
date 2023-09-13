@@ -366,13 +366,22 @@ namespace TSBFTPPortal.Services
 				var viewModel = new ErrorDialogViewModel(message);
 				errorDialog.DataContext = viewModel;
 
-				// Subscribe to the CloseAction to close the dialog
+				errorDialog.Owner = Application.Current.MainWindow;
+
+				double dialogLeft = Application.Current.MainWindow.Left + (Application.Current.MainWindow.Width - errorDialog.Width) / 2;
+				double dialogTop = Application.Current.MainWindow.Top + (Application.Current.MainWindow.Height - errorDialog.Height) / 2;
+
+				errorDialog.Left = dialogLeft;
+				errorDialog.Top = dialogTop;
+
+				errorDialog.Topmost = true;
+				
 				viewModel.CloseAction = (result) =>
 				{
 					errorDialog.DialogResult = result;
 					errorDialog.Close();
 				};
-
+				
 				errorDialog.ShowDialog();
 			});
 		}
