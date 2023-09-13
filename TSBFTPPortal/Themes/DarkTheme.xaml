@@ -6,6 +6,8 @@
 	<Style TargetType="Window">
 		<Setter Property="Background" Value="#1C1C21" />
 	</Style>
+	
+	
 
 	<Style TargetType="local:MainWindow" BasedOn="{StaticResource {x:Type Window}}"/>
 	<Style TargetType="views:SelectCountyView" BasedOn="{StaticResource {x:Type Window}}" />
@@ -152,5 +154,7 @@
 	<Color x:Key="ToggleButtonDynamicColor">White</Color>
 	
 	<SolidColorBrush x:Key="TreeViewTextBlockColor">White</SolidColorBrush>
+
+	<SolidColorBrush x:Key="WindowBlack">#1C1C21</SolidColorBrush>
 	
 </ResourceDictionary>
