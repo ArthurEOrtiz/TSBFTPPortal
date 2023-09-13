@@ -9,11 +9,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using TSBFTPPortal.Models;
-using TSBFTPPortal.Services;
-using TSBFTPPortal.Views;
 using TSBFTPPortal.Properties;
-using System.Reflection;
-using System.Text.Json;
+using TSBFTPPortal.Services;
+using TSBFTPPortal.ViewModels;
+using TSBFTPPortal.Views;
 
 namespace TSBFTPPortal
 {
@@ -31,6 +30,14 @@ namespace TSBFTPPortal
 		protected async override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
+			ConfigureTheme();
+			if (!IsInternetAvailable())
+			{
+				// Display an error message using your error dialog
+				ShowErrorMessage("No internet connection.");
+				Shutdown(); // Close the application
+				return;
+			}
 
 			ConfigureLogger();
 
@@ -40,7 +47,7 @@ namespace TSBFTPPortal
 			ConfigureAppSettings();
 
 			await InitializeCountyDataBaseAsync();
-			ConfigureTheme();
+			
 
 			if (string.IsNullOrEmpty(Settings.Default.LastSelectedCounty))
 			{
@@ -50,7 +57,7 @@ namespace TSBFTPPortal
 
 			if (Configuration != null)
 			{
-				
+
 				Window selectCountyView = new SelectCountyView(Configuration);
 				selectCountyView.Show();
 			}
@@ -60,6 +67,26 @@ namespace TSBFTPPortal
 			}
 
 			Current.Exit += Current_Exit;
+		}
+
+		private void ShowErrorMessage(string message)
+		{
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				var errorDialog = new ErrorDialog();
+				var viewModel = new ErrorDialogViewModel(message);
+				errorDialog.DataContext = viewModel;
+
+				errorDialog.Topmost = true;
+
+				viewModel.CloseAction = (result) =>
+				{
+					errorDialog.DialogResult = result;
+					errorDialog.Close();
+				};
+
+				errorDialog.ShowDialog();
+			});
 		}
 
 		private void ConfigureTheme()
@@ -141,7 +168,7 @@ namespace TSBFTPPortal
 				catch (Exception ex)
 				{
 					Log.Error($"Failed to create root directory: {ex.Message}");
-				}			
+				}
 			}
 
 			if (!Directory.Exists(ReportsFolderPath))
@@ -158,7 +185,7 @@ namespace TSBFTPPortal
 				}
 			}
 
-			if(!Directory.Exists(ScriptsFolderPath))
+			if (!Directory.Exists(ScriptsFolderPath))
 			{
 				try
 				{
@@ -171,7 +198,7 @@ namespace TSBFTPPortal
 					Log.Error($"Failed to create scripts directory: {ex.Message}");
 				}
 			}
-			
+
 			if (!Directory.Exists(LogFolderPath))
 			{
 				try
@@ -185,7 +212,7 @@ namespace TSBFTPPortal
 					Log.Error($"Failed to create log directory: {ex.Message}");
 				}
 			}
-		
+
 		}
 
 		private async Task InitializeCountyDataBaseAsync()
@@ -248,7 +275,7 @@ namespace TSBFTPPortal
 				{
 					Log.Error("Could not populate county data! Expected data is invalid!");
 				}
-				
+
 			}
 		}
 
@@ -323,13 +350,13 @@ namespace TSBFTPPortal
 					continue;
 				}
 
-				if(!validCamaSystems.Contains(camaSystem))
+				if (!validCamaSystems.Contains(camaSystem))
 				{
 					isValid = false;
 					Log.Error($"Cama System '{camaSystem} is not valid!");
 					continue;
 				}
-			
+
 			}
 
 			if (isValid)
@@ -397,7 +424,7 @@ namespace TSBFTPPortal
 						CAMASystem = reader.GetString(2)
 					});
 				}
-				
+
 				var customData = counties.Select(c => new
 				{
 					Name = c.Name,
@@ -422,7 +449,7 @@ namespace TSBFTPPortal
 			{
 				Log.Error("Ftp Service is null!");
 			}
-		
+
 			if (jsonContent != null)
 			{
 				return jsonContent;
@@ -526,6 +553,22 @@ namespace TSBFTPPortal
 					Directory.Delete(directory, true);
 					Log.Information($"Deleted: {directory}");
 				}
+			}
+		}
+
+		private bool IsInternetAvailable()
+		{
+			try
+			{
+				using (System.Net.NetworkInformation.Ping ping = new System.Net.NetworkInformation.Ping())
+				{
+					var reply = ping.Send("8.8.8.8"); // Ping Google's DNS server
+					return reply.Status == System.Net.NetworkInformation.IPStatus.Success;
+				}
+			}
+			catch
+			{
+				return false; // Exception occurred, probably no internet
 			}
 		}
 	}

@@ -4,14 +4,14 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
-using System.Net;
-using System.Text;
-using System.Windows;
 
 namespace TSBFTPPortal.Services
 {
@@ -77,7 +77,13 @@ namespace TSBFTPPortal.Services
 
 		public async Task DownloadFileAsync(string path)
 		{
-		
+			if (!IsInternetAvailable())
+			{
+				Log.Error($"Internet connection lost.");
+				ShowErrorMessage("No internet connection!");
+				return;
+			}
+
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
 			{
 				_cancellationTokenSource = new CancellationTokenSource();
@@ -108,6 +114,7 @@ namespace TSBFTPPortal.Services
 				catch (Exception ex)
 				{
 					Log.Error($"Error downloading file: {ex.Message}");
+					ShowErrorMessage($"Error downloading file: {ex.Message}");
 				}
 				finally
 				{
@@ -119,6 +126,14 @@ namespace TSBFTPPortal.Services
 		private void InitializeProgressWindow()
 		{
 			_progressWindow.DataContext = new ProgressWindowViewModel();
+
+			var mainWindow = Application.Current.MainWindow;
+			_progressWindow.Owner = mainWindow;
+
+			// Set the location of the progress window 
+			_progressWindow.Left = mainWindow.Left + (mainWindow.Width - _progressWindow.Width) / 2;
+			_progressWindow.Top = mainWindow.Top + (mainWindow.Height - _progressWindow.Height) / 2;
+
 			_progressWindow.Show();
 			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
 			viewModel.CancelCommand = new RelayCommand(Cancel);
@@ -152,24 +167,19 @@ namespace TSBFTPPortal.Services
 
 					if (fileExists)
 					{
-						MessageBoxResult result = MessageBox.Show(
-								"File already exists. Do you want to overwrite it?",
-								"File Exists",
-								MessageBoxButton.YesNoCancel,
-								MessageBoxImage.Question);
+						Application.Current.Dispatcher.Invoke(() =>
+						{
+							var fileActionViewModel = new FileActionDialogViewModel();
 
-						if (result == MessageBoxResult.Yes)
-						{
-							// Overwrite the existing file
-							DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath, FtpLocalExists.Overwrite);
-						}
-						else if (result == MessageBoxResult.No)
-						{
-							// Create a copy of the existing file
-							string newFilePath = GetUniqueFileName(targetFilePath);
-							DownloadFileFromFtp(ftpClient, newFilePath, remoteFilePath);
-						}
-						// If the user selects Cancel, do nothing
+							// Create and set up the custom dialog window
+							var fileActionDialog = CreateFileActionDialog(fileActionViewModel);
+
+							// Show the custom dialog
+							bool? dialogResult = ShowDialog(fileActionDialog);
+
+							// Handle the user's choice
+							HandleUserChoice(ftpClient, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult);
+						});
 					}
 					else
 					{
@@ -180,6 +190,49 @@ namespace TSBFTPPortal.Services
 			catch (Exception ex)
 			{
 				HandleError(ex);
+			}
+		}
+
+		private FileActionDialog CreateFileActionDialog(FileActionDialogViewModel fileActionViewModel)
+		{
+			var fileActionDialog = new FileActionDialog
+			{
+				DataContext = fileActionViewModel,
+				Owner = Application.Current.MainWindow,
+				Topmost = true,
+				Top = Application.Current.MainWindow.Top,
+				Left = Application.Current.MainWindow.Left
+			};
+
+			// Set the CloseAction to close the dialog
+			fileActionViewModel.CloseAction = (result) => fileActionDialog.DialogResult = result;
+
+			return fileActionDialog;
+		}
+
+		private bool? ShowDialog(FileActionDialog fileActionDialog)
+		{
+			// Show the custom dialog and await the user's choice
+			return fileActionDialog.ShowDialog();
+		}
+
+		private void HandleUserChoice(FtpClient ftpClient, string targetFilePath, string remoteFilePath, string selectedAction, bool? dialogResult)
+		{
+			if (dialogResult.HasValue && dialogResult.Value)
+			{
+				switch (selectedAction)
+				{
+					case "Overwrite":
+						DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath, FtpLocalExists.Overwrite);
+						break;
+					case "CreateCopy":
+						string newFilePath = GetUniqueFileName(targetFilePath);
+						DownloadFileFromFtp(ftpClient, newFilePath, remoteFilePath);
+						break;
+					case "Cancel":
+						// User canceled the operation, do nothing
+						break;
+				}
 			}
 		}
 
@@ -314,9 +367,31 @@ namespace TSBFTPPortal.Services
 
 		private void ShowErrorMessage(string message)
 		{
-			MessageBox.Show(message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-		}
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				var errorDialog = new ErrorDialog();
+				var viewModel = new ErrorDialogViewModel(message);
+				errorDialog.DataContext = viewModel;
 
+				errorDialog.Owner = Application.Current.MainWindow;
+
+				double dialogLeft = Application.Current.MainWindow.Left + (Application.Current.MainWindow.Width - errorDialog.Width) / 2;
+				double dialogTop = Application.Current.MainWindow.Top + (Application.Current.MainWindow.Height - errorDialog.Height) / 2;
+
+				errorDialog.Left = dialogLeft;
+				errorDialog.Top = dialogTop;
+
+				errorDialog.Topmost = true;
+				
+				viewModel.CloseAction = (result) =>
+				{
+					errorDialog.DialogResult = result;
+					errorDialog.Close();
+				};
+				
+				errorDialog.ShowDialog();
+			});
+		}
 
 		private void UpdateProgress(FtpProgress progressInfo)
 		{
@@ -373,5 +448,20 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
+		private bool IsInternetAvailable()
+		{
+			try
+			{
+				using (var ping = new System.Net.NetworkInformation.Ping())
+				{
+					var reply = ping.Send("8.8.8.8"); // Ping Google's DNS server
+					return reply.Status == System.Net.NetworkInformation.IPStatus.Success;
+				}
+			}
+			catch
+			{
+				return false; // Exception occurred, probably no internet
+			}
+		}
 	}
 }
