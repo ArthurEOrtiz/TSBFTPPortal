@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.Models;
+using TSBFTPPortal.Views;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -55,10 +56,14 @@ namespace TSBFTPPortal.ViewModels
 
 			currentWindow.Close(); // Close the current window
 			mainWindow.Owner = Application.Current.MainWindow;
-			mainWindow.Left = currentWindow.Left;
-			mainWindow.Top = currentWindow.Top;
+
+			double windowLeft = currentWindow.Left + (currentWindow.Width - mainWindow.Width) / 2;
+			double windowTop = currentWindow.Top + (currentWindow.Height - mainWindow.Height) / 2;
+
+			mainWindow.Left = windowLeft;
+			mainWindow.Top = windowTop;
+
 			mainWindow.Show();
-			
 		}
 
 		private static County FindCountyModel(string countyName)
