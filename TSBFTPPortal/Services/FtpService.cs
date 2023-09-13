@@ -80,7 +80,7 @@ namespace TSBFTPPortal.Services
 			if (!IsInternetAvailable())
 			{
 				Log.Error($"Internet connection lost.");
-				ShowErrorMessage("No internet connection.");
+				ShowErrorMessage("No internet connection!");
 				return;
 			}
 
