@@ -77,6 +77,12 @@ namespace TSBFTPPortal.Services
 
 		public async Task DownloadFileAsync(string path)
 		{
+			if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+			{
+				// Handle the case where there is no internet connection
+				ShowErrorMessage("No internet connection!");
+				return;
+			}
 
 			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
 			{
