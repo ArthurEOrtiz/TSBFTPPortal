@@ -4,5 +4,6 @@
 										xmlns:views="clr-namespace:TSBFTPPortal.Views">
 
 	<Color x:Key="ToggleButtonDynamicColor">Black</Color>
+	<SolidColorBrush x:Key="WindowColor">White</SolidColorBrush>
 
 </ResourceDictionary>

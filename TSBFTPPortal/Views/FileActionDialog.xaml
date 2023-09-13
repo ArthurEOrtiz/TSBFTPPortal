@@ -6,13 +6,13 @@
         xmlns:local="clr-namespace:TSBFTPPortal.Views"
         mc:Ignorable="d"
         Title="File Action Dialog" 
+				Icon="{StaticResource AppIcon}"
 				Height="200" 
 				Width="400"
 				ResizeMode="NoResize"
-				
+				Background="{DynamicResource WindowColor}"
 				>
     <Grid>
-			
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition />
 			<ColumnDefinition />
