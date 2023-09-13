@@ -360,8 +360,6 @@ namespace TSBFTPPortal.Services
 
 		private void ShowErrorMessage(string message)
 		{
-			//MessageBox.Show(message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-
 			Application.Current.Dispatcher.Invoke(() =>
 			{
 				var errorDialog = new ErrorDialog();
@@ -378,8 +376,6 @@ namespace TSBFTPPortal.Services
 				errorDialog.ShowDialog();
 			});
 		}
-
-
 
 		private void UpdateProgress(FtpProgress progressInfo)
 		{
