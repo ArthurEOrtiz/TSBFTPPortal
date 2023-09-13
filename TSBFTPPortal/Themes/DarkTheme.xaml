@@ -21,7 +21,7 @@
 				<ControlTemplate TargetType="{x:Type TabItem}">
 					<Grid>
 						<Border Name="Border"
-                      BorderBrush="#5B5B6E" 
+                      BorderBrush="#33333D" 
 								      BorderThickness="1">
 
 							<ContentPresenter VerticalAlignment="Center"
