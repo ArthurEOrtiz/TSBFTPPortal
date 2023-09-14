@@ -53,7 +53,7 @@ namespace TSBFTPPortal.ViewModels
 
 			var currentWindow = Application.Current.MainWindow; // Get a reference to the current window
 
-			currentWindow.Close(); // Close the current window
+			currentWindow.Hide(); // Close the current window
 			mainWindow.Owner = Application.Current.MainWindow;
 
 			double windowLeft = currentWindow.Left + ((currentWindow.Width - mainWindow.Width) / 2);
@@ -62,8 +62,10 @@ namespace TSBFTPPortal.ViewModels
 			mainWindow.Left = windowLeft;
 			mainWindow.Top = windowTop;
 
-			Application.Current.MainWindow = mainWindow;
 			mainWindow.Show();
+			mainWindow.Owner = null;
+			Application.Current.MainWindow = mainWindow;
+			currentWindow.Close();
 		}
 
 		private static County FindCountyModel(string countyName)
