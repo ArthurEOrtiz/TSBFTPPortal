@@ -30,7 +30,6 @@ namespace TSBFTPPortal.ViewModels
 			selectCountyView.Left = currentWindow.Left + ((currentWindow.Width - selectCountyView.Width) / 2);
 			selectCountyView.Top = currentWindow.Top + ((currentWindow.Height - selectCountyView.Height) / 2);
 
-
 			selectCountyView.Show();
 			selectCountyView.Owner = null;
 			Application.Current.MainWindow = selectCountyView;
