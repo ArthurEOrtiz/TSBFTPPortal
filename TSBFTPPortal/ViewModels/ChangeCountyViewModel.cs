@@ -24,15 +24,18 @@ namespace TSBFTPPortal.ViewModels
 
 			var currentWindow = App.Current.MainWindow;
 
-			selectCountyView.Left = currentWindow.Left;
-			selectCountyView.Top = currentWindow.Top;
+			currentWindow.Hide();
+			selectCountyView.Owner= Application.Current.MainWindow;
 
+			selectCountyView.Left = currentWindow.Left + ((currentWindow.Width - selectCountyView.Width) / 2);
+			selectCountyView.Top = currentWindow.Top + ((currentWindow.Height - selectCountyView.Height) / 2);
+
+
+			selectCountyView.Show();
+			selectCountyView.Owner = null;
+			Application.Current.MainWindow = selectCountyView;
 			currentWindow.Close();
 
-			Application.Current.MainWindow = selectCountyView;
-
-			// Show the new window
-			selectCountyView.Show();
 		}
 	}
 }
