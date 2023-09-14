@@ -23,8 +23,6 @@ namespace TSBFTPPortal.ViewModels
 			var selectCountyView = new SelectCountyView(_configuration);
 
 			var currentWindow = App.Current.MainWindow;
-
-			currentWindow.Hide();
 			selectCountyView.Owner= Application.Current.MainWindow;
 
 			selectCountyView.Left = currentWindow.Left + ((currentWindow.Width - selectCountyView.Width) / 2);
@@ -32,9 +30,10 @@ namespace TSBFTPPortal.ViewModels
 
 			selectCountyView.Show();
 			selectCountyView.Owner = null;
-			Application.Current.MainWindow = selectCountyView;
-			currentWindow.Close();
 
+			Application.Current.MainWindow = selectCountyView;
+
+			currentWindow.Close();
 		}
 	}
 }
