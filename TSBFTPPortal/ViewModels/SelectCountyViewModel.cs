@@ -57,8 +57,8 @@ namespace TSBFTPPortal.ViewModels
 			currentWindow.Close(); // Close the current window
 			mainWindow.Owner = Application.Current.MainWindow;
 
-			double windowLeft = currentWindow.Left + (currentWindow.Width - mainWindow.Width) / 2;
-			double windowTop = currentWindow.Top + (currentWindow.Height - mainWindow.Height) / 2;
+			double windowLeft = currentWindow.Left + ((currentWindow.Width - mainWindow.Width) / 2);
+			double windowTop = currentWindow.Top + ((currentWindow.Height - mainWindow.Height) / 2);
 
 			mainWindow.Left = windowLeft;
 			mainWindow.Top = windowTop;
