@@ -65,6 +65,7 @@
 
 	<Style TargetType="Button">
 		<Setter Property="Background" Value="#5B5B6E" />
+		<Setter Property="BorderThickness" Value="0" />
 	</Style>
 
 	<Style TargetType="{x:Type ComboBox}">

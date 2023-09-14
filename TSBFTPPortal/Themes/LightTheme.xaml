@@ -39,4 +39,9 @@
 		</Setter>
 	</Style>
 
+	<Style TargetType="Button">
+		<Setter Property="Background" Value="LightGray" />
+		<Setter Property="BorderThickness" Value="0" />
+	</Style>
+
 </ResourceDictionary>

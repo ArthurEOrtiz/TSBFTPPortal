@@ -6,20 +6,11 @@
              xmlns:local="clr-namespace:TSBFTPPortal.Views"
              mc:Ignorable="d" 
              >
-    <Grid>
+   <Grid>
 		<Button x:Name="ChangeCountyButton"
 							Command="{Binding ChangeCountyCommand}"
 							Content="Change County"
 							Width="100"
-							Height="25">
-			<Button.Style>
-				<Style TargetType="Button">
-					<Setter Property="Background" Value="LightGray" />
-					<Setter Property="BorderThickness" Value="0" />
-				</Style>
-			</Button.Style>
-
-		</Button>
-            
-    </Grid>
+							Height="25"/>
+	</Grid>
 </UserControl>
