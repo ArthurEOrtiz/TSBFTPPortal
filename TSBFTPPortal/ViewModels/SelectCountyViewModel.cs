@@ -3,7 +3,6 @@ using Serilog;
 using System;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
