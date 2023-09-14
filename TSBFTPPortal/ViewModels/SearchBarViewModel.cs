@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-
 namespace TSBFTPPortal.ViewModels
 {
 	public class SearchBarViewModel : ViewModelBase
@@ -29,10 +28,6 @@ namespace TSBFTPPortal.ViewModels
 				OnPropertyChanged(nameof(HasVisibleItems));
 			}
 		}
-
-
-
-
 
 		public ObservableCollection<DirectoryItemViewModel> AllDirectories { get; set; }
 
@@ -70,18 +65,16 @@ namespace TSBFTPPortal.ViewModels
 			HasVisibleItems = anyVisibleItem;
 		}
 
-
 		private void ResetAllItems(DirectoryItemViewModel item)
 		{
 			item.IsVisible = true;
-			item.IsHighlighted = false;
+			//item.IsHighlighted = false;
 
 			foreach (var childItem in item.Items)
 			{
 				ResetAllItems(childItem);
 			}
 		}
-
 
 		private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
 		{
@@ -101,22 +94,22 @@ namespace TSBFTPPortal.ViewModels
 
 				// Set visibility and highlight for the child item
 				childItem.IsVisible = childMatches;
-				childItem.IsHighlighted = childMatches;
+				//childItem.IsHighlighted = childMatches;
 			}
 
 			// Check if the parent item matches the search text
 			bool parentMatches = item.Name?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true;
 
-			if (parentMatches)
-			{
-				// If the parent item matches, highlight it
-				item.IsHighlighted = true;
-			}
-			else
-			{
-				// If the parent item doesn't match, set highlight based on child matches
-				item.IsHighlighted = hasMatchingChild;
-			}
+			//if (parentMatches)
+			//{
+			//	// If the parent item matches, highlight it
+			//	//item.IsHighlighted = true;
+			//}
+			//else
+			//{
+			//	// If the parent item doesn't match, set highlight based on child matches
+			//	//item.IsHighlighted = hasMatchingChild;
+			//}
 
 			// Return whether the parent or any child matches the search text
 			return parentMatches || hasMatchingChild;
