@@ -10,7 +10,7 @@
 	<Grid>
 		<TextBox Style="{DynamicResource PlaceholderTextBoxStyle}" 
 						 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-						 
+						 FontSize="13"
 						 HorizontalAlignment="Stretch" 
 						 VerticalAlignment="Center">
 			<TextBox.Template>
