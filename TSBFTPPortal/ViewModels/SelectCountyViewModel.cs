@@ -40,7 +40,6 @@ namespace TSBFTPPortal.ViewModels
 			CountyNames = new ObservableCollection<string>();
 			ContinueToMainPageCommand = new RelayCommand(ContinueToMainPage);
 			LoadCountyNames();
-
 			SelectedCounty = Properties.Settings.Default.LastSelectedCounty;
 		}
 
