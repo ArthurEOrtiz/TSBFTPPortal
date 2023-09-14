@@ -22,7 +22,7 @@
 					<Grid>
 						<Border Name="Border"
                       BorderBrush="#33333D" 
-								      BorderThickness="1">
+								      BorderThickness=".5">
 
 							<ContentPresenter VerticalAlignment="Center"
                                           Margin="7"
