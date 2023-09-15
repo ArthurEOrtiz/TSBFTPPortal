@@ -32,12 +32,10 @@ namespace TSBFTPPortal.ViewModels
 				}
 			};
 
-			// Attempting to have filtering apply to search output here
+			// Attempting to have filtering apply to the directories return from search
 			SearchBarViewModel.PropertyChanged += (sender, e) =>
 			{
-				if (e.PropertyName == nameof(FilterTreeViewViewModel.IsReportsSelected) ||
-							 e.PropertyName == nameof(FilterTreeViewViewModel.IsScriptsSelected) ||
-							 e.PropertyName == nameof(FilterTreeViewViewModel.IsDocumentsSelected))
+				if (e.PropertyName == nameof(SearchBarViewModel.SearchText))
 				{
 					ApplyFiltering();
 				}
@@ -70,8 +68,6 @@ namespace TSBFTPPortal.ViewModels
 
 		public void ApplyFiltering()
 		{
-			ObservableCollection<DirectoryItemViewModel> visibleDirectories = new ObservableCollection<DirectoryItemViewModel>();
-
 			foreach (var directory in Directories)
 			{
 				if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
@@ -82,12 +78,7 @@ namespace TSBFTPPortal.ViewModels
 				{
 					if (directory.IsVisible)
 					{
-						visibleDirectories.Add(directory);
-					}
-
-					foreach (var visibleDirectory in visibleDirectories)
-					{
-						foreach (var item in visibleDirectory.Items)
+						foreach (var item in directory.Items)
 						{
 							if (item.Name.Contains(SearchBarViewModel.SearchText, StringComparison.OrdinalIgnoreCase))
 							{
