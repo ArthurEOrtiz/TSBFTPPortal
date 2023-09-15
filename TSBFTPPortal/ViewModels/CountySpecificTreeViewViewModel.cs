@@ -32,6 +32,17 @@ namespace TSBFTPPortal.ViewModels
 				}
 			};
 
+			// Attempting to have filtering apply to search output here
+			SearchBarViewModel.PropertyChanged += (sender, e) =>
+			{
+				if (e.PropertyName == nameof(FilterTreeViewViewModel.IsReportsSelected) ||
+							 e.PropertyName == nameof(FilterTreeViewViewModel.IsScriptsSelected) ||
+							 e.PropertyName == nameof(FilterTreeViewViewModel.IsDocumentsSelected))
+				{
+					ApplyFiltering();
+				}
+			};
+
 			LoadDirectoriesAndFoldersFromFTP();
 		}
 
@@ -59,6 +70,8 @@ namespace TSBFTPPortal.ViewModels
 
 		public void ApplyFiltering()
 		{
+			ObservableCollection<DirectoryItemViewModel> visibleDirectories = new ObservableCollection<DirectoryItemViewModel>();
+
 			foreach (var directory in Directories)
 			{
 				if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
@@ -67,9 +80,20 @@ namespace TSBFTPPortal.ViewModels
 				}
 				else
 				{
-					if (directory.IsHighlighted)
+					if (directory.IsVisible)
 					{
-						UpdateDirectoryVisibilitySearchedDirectories(directory);
+						visibleDirectories.Add(directory);
+					}
+
+					foreach (var visibleDirectory in visibleDirectories)
+					{
+						foreach (var item in visibleDirectory.Items)
+						{
+							if (item.Name.Contains(SearchBarViewModel.SearchText, StringComparison.OrdinalIgnoreCase))
+							{
+								UpdateDirectoryVisibility(item);
+							}
+						}
 					}
 				}
 			}
@@ -87,24 +111,6 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-		private void UpdateDirectoryVisibilitySearchedDirectories(DirectoryItemViewModel directory)
-		{
-			bool isVisible = IsVisibleRecursive(directory);
-			directory.IsVisible = isVisible;
-
-			// Update child items recursively
-			foreach (var subDirectory in directory.Items)
-			{
-				if (subDirectory.IsHighlighted)
-				{
-					UpdateDirectoryVisibilitySearchedDirectories(subDirectory);
-				}
-				else
-				{
-					subDirectory.IsVisible = false;
-				}
-			}
-		}
 
 		private bool IsVisibleRecursive(DirectoryItemViewModel directory)
 		{
