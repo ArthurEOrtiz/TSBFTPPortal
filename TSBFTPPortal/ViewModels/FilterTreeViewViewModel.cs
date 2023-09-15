@@ -46,6 +46,20 @@ namespace TSBFTPPortal.Views
 			}
 		}
 
+		private bool _isFileSelected = true;
+		public bool IsFileSelected
+		{
+			get => _isFileSelected;
+			set
+			{
+				if(_isFileSelected != value)
+				{
+					_isFileSelected = value;
+					OnPropertyChanged(nameof(IsFileSelected));
+				}
+			}
+		}
+
 		public FilterTreeViewViewModel()
 		{
 

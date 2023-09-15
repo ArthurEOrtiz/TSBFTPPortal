@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
@@ -26,7 +27,8 @@ namespace TSBFTPPortal.ViewModels
 			{
 				if (e.PropertyName == nameof(FilterTreeViewViewModel.IsReportsSelected) ||
 							 e.PropertyName == nameof(FilterTreeViewViewModel.IsScriptsSelected) ||
-							 e.PropertyName == nameof(FilterTreeViewViewModel.IsDocumentsSelected))
+							 e.PropertyName == nameof(FilterTreeViewViewModel.IsDocumentsSelected) ||
+							 e.PropertyName == nameof(FilterTreeViewViewModel.IsFileSelected))
 				{
 					ApplyFiltering();
 				}
@@ -157,6 +159,11 @@ namespace TSBFTPPortal.ViewModels
 				isVisible = true;
 			}
 
+			if (FilterTreeViewViewModel.IsFileSelected && IsFileDirectory(directory))
+			{
+				isVisible = true;
+			}
+
 			if (directory.IsDirectory)
 			{
 				isVisible = true;
@@ -199,8 +206,19 @@ namespace TSBFTPPortal.ViewModels
 
 		private static bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
-			return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true &&
-						 !directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
+			// List of document file extensions
+			string[] documentExtensions = { ".doc", ".docx", ".pdf", ".txt", ".rtf", ".odt", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".html", ".xml", ".json", ".md", ".epub", ".tex", ".pages", ".numbers", ".key" };
+
+			// Check if the file extension is not in the list of document extensions
+			string fileExtension = System.IO.Path.GetExtension(directory.Name);
+			return documentExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
+		}
+
+		private static bool IsFileDirectory(DirectoryItemViewModel directory)
+		{
+			return !IsReportsDirectory(directory) &&
+						 !IsScriptsDirectory(directory) &&
+						 !IsDocumentsDirectory(directory);
 		}
 	}
 }

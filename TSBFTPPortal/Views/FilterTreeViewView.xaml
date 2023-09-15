@@ -21,13 +21,19 @@
         HorizontalAlignment="Left"
 				IsChecked="{Binding IsScriptsSelected}"
       />
-			
+
 			<CheckBox
 				Content="Documents"
 				HorizontalAlignment="Left"
 				IsChecked="{Binding IsDocumentsSelected}"
 		  />
-			
+
+			<CheckBox
+				Content="Files"
+				HorizontalAlignment="Left"
+				IsChecked="{Binding IsFileSelected}"
+				/>
+
 		</StackPanel>
 
 	</Grid>
