@@ -65,17 +65,6 @@ namespace TSBFTPPortal.ViewModels
 			HasVisibleItems = anyVisibleItem;
 		}
 
-		private void ResetAllItems(DirectoryItemViewModel item)
-		{
-			item.IsVisible = true;
-			//item.IsHighlighted = false;
-
-			foreach (var childItem in item.Items)
-			{
-				ResetAllItems(childItem);
-			}
-		}
-
 		private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
 		{
 			if (string.IsNullOrEmpty(searchText))
@@ -115,5 +104,15 @@ namespace TSBFTPPortal.ViewModels
 			return parentMatches || hasMatchingChild;
 		}
 
+		private void ResetAllItems(DirectoryItemViewModel item)
+		{
+			item.IsVisible = true;
+			//item.IsHighlighted = false;
+
+			foreach (var childItem in item.Items)
+			{
+				ResetAllItems(childItem);
+			}
+		}
 	}
 }
