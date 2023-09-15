@@ -136,7 +136,6 @@ namespace TSBFTPPortal.ViewModels
 				if (isSubVisible)
 				{
 					isVisible = true;
-
 				}
 				else
 				{
