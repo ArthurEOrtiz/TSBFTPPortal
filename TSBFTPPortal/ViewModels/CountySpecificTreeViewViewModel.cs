@@ -35,14 +35,16 @@ namespace TSBFTPPortal.ViewModels
 			// Attempting to have filtering apply to the directories return from search
 			SearchBarViewModel.PropertyChanged += (sender, e) =>
 			{
-				if (e.PropertyName == nameof(SearchBarViewModel.SearchText))
+				if (e.PropertyName == nameof(SearchBarViewModel.IsSearchComplete))
 				{
-					ApplyFiltering();
+					ApplyFilteringForSearchedDirectories();
 				}
 			};
 
 			LoadDirectoriesAndFoldersFromFTP();
 		}
+
+
 
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
@@ -97,6 +99,30 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
+		private void ApplyFilteringForSearchedDirectories()
+		{
+			foreach (var directory in Directories)
+			{
+				if (directory.IsDirectory)
+				{
+					foreach (var item in directory.Items)
+					{
+						if (item.IsVisible)
+						{
+							UpdateDirectoryVisibility(item);
+						}
+					}
+				}
+				else
+				{
+					if (directory.IsVisible)
+					{
+						UpdateDirectoryVisibility(directory);
+					}
+				}
+			}
+		}
+
 		private void UpdateDirectoryVisibility(DirectoryItemViewModel directory)
 		{
 			bool isVisible = IsVisibleRecursive(directory);
@@ -130,6 +156,11 @@ namespace TSBFTPPortal.ViewModels
 			}
 
 			if (directory.IsDirectory)
+			{
+				isVisible = true;
+			}
+
+			if (directory.Name == "No items in this directory!")
 			{
 				isVisible = true;
 			}

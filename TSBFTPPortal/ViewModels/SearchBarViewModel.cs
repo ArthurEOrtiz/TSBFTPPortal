@@ -29,6 +29,18 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
+		private bool _isSearchComplete = false;
+		public bool IsSearchComplete
+		{
+			get => _isSearchComplete;
+			set
+			{
+				_isSearchComplete = value;
+				OnPropertyChanged(nameof(IsSearchComplete));
+			}
+		}
+
+
 		public ObservableCollection<DirectoryItemViewModel> AllDirectories { get; set; }
 
 		public SearchBarViewModel()
@@ -63,6 +75,7 @@ namespace TSBFTPPortal.ViewModels
 
 			// Update the HasVisibleItems property based on the flag
 			HasVisibleItems = anyVisibleItem;
+			IsSearchComplete = true;
 		}
 
 		private bool IsItemVisible(DirectoryItemViewModel item, string searchText)
