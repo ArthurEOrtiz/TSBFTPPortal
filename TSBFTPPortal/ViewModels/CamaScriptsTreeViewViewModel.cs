@@ -76,11 +76,6 @@ namespace TSBFTPPortal.ViewModels
 
 		private bool IsScriptFile(string? filePath)
 		{
-			//if (string.IsNullOrEmpty(filePath))
-			//{
-			//	return false;
-			//}
-
 			string fileExtension = Path.GetExtension(filePath);
 			string[] scriptExtensions = { ".sql" };
 			return scriptExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
