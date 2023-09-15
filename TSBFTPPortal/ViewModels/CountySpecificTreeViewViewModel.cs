@@ -70,28 +70,32 @@ namespace TSBFTPPortal.ViewModels
 		{
 			foreach (var directory in Directories)
 			{
-				if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
+				ApplyFilteringRecursive(directory);
+			}
+		}
+
+		private void ApplyFilteringRecursive(DirectoryItemViewModel directory)
+		{
+			if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
+			{
+				UpdateDirectoryVisibility(directory);
+			}
+			else
+			{
+				if (directory.IsDirectory)
 				{
-					UpdateDirectoryVisibility(directory);
+					// This is a directory, apply UpdateDirectoryVisibility recursively
+					foreach (var item in directory.Items)
+					{
+						ApplyFilteringRecursive(item);
+					}
 				}
 				else
 				{
-					if (directory.IsDirectory)
+					// This is a file, check if it matches the search text
+					if (directory.Name.Contains(SearchBarViewModel.SearchText, StringComparison.OrdinalIgnoreCase))
 					{
-						foreach (var item in directory.Items)
-						{
-							if (item.Name.Contains(SearchBarViewModel.SearchText, StringComparison.OrdinalIgnoreCase))
-							{
-								UpdateDirectoryVisibility(item);
-							}
-						}
-					}
-					else
-					{
-						if (directory.Name.Contains(SearchBarViewModel.SearchText, StringComparison.OrdinalIgnoreCase))
-						{
-							UpdateDirectoryVisibility(directory);
-						}
+						UpdateDirectoryVisibility(directory);
 					}
 				}
 			}
