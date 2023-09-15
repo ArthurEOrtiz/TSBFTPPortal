@@ -44,8 +44,6 @@ namespace TSBFTPPortal.ViewModels
 			LoadDirectoriesAndFoldersFromFTP();
 		}
 
-
-
 		private void LoadDirectoriesAndFoldersFromFTP()
 		{
 			string rootPath = string.Empty;
