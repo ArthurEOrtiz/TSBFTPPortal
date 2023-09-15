@@ -76,7 +76,7 @@ namespace TSBFTPPortal.ViewModels
 				}
 				else
 				{
-					if (directory.IsVisible)
+					if (directory.IsDirectory)
 					{
 						foreach (var item in directory.Items)
 						{
@@ -84,6 +84,13 @@ namespace TSBFTPPortal.ViewModels
 							{
 								UpdateDirectoryVisibility(item);
 							}
+						}
+					}
+					else
+					{
+						if (directory.Name.Contains(SearchBarViewModel.SearchText, StringComparison.OrdinalIgnoreCase))
+						{
+							UpdateDirectoryVisibility(directory);
 						}
 					}
 				}
