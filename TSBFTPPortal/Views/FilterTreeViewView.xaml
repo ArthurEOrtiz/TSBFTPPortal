@@ -7,7 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="100">
     <Grid>
+			
 		<StackPanel Orientation="Vertical" >
+			
 			<CheckBox 
         Content="Reports"
         HorizontalAlignment="Left"
@@ -19,11 +21,13 @@
         HorizontalAlignment="Left"
 				IsChecked="{Binding IsScriptsSelected}"
       />
+			
 			<CheckBox
 				Content="Documents"
 				HorizontalAlignment="Left"
 				IsChecked="{Binding IsDocumentsSelected}"
 		  />
+			
 		</StackPanel>
 
 	</Grid>
