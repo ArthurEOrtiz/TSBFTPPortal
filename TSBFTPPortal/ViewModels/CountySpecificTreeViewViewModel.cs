@@ -132,7 +132,9 @@ namespace TSBFTPPortal.ViewModels
 
 			foreach (var subDirectory in directory.Items)
 			{
+
 				bool isSubVisible = IsVisibleRecursive(subDirectory);
+
 				if (isSubVisible)
 				{
 					isVisible = true;
@@ -141,9 +143,11 @@ namespace TSBFTPPortal.ViewModels
 				{
 					subDirectory.IsVisible = false;
 				}
+
 			}
 
 			return isVisible;
+
 		}
 
 		private static bool IsReportsDirectory(DirectoryItemViewModel directory)
