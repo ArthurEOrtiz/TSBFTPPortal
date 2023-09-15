@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.ObjectModel;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
-using System.Linq;
-using Serilog;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -47,7 +46,7 @@ namespace TSBFTPPortal.ViewModels
 			{
 				Log.Error("County Specific, SelectCounty is null");
 			}
-			
+
 
 			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
 
@@ -76,6 +75,18 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
+		private void UpdateDirectoryVisibility(DirectoryItemViewModel directory)
+		{
+			bool isVisible = IsVisibleRecursive(directory);
+			directory.IsVisible = isVisible;
+
+			// Update child items recursively
+			foreach (var subDirectory in directory.Items)
+			{
+				UpdateDirectoryVisibility(subDirectory);
+			}
+		}
+
 		private void UpdateDirectoryVisibilitySearchedDirectories(DirectoryItemViewModel directory)
 		{
 			bool isVisible = IsVisibleRecursive(directory);
@@ -92,18 +103,6 @@ namespace TSBFTPPortal.ViewModels
 				{
 					subDirectory.IsVisible = false;
 				}
-			}
-		}
-
-		private void UpdateDirectoryVisibility(DirectoryItemViewModel directory)
-		{
-			bool isVisible = IsVisibleRecursive(directory);
-			directory.IsVisible = isVisible;
-
-			// Update child items recursively
-			foreach (var subDirectory in directory.Items)
-			{
-				UpdateDirectoryVisibility(subDirectory);
 			}
 		}
 
@@ -137,7 +136,7 @@ namespace TSBFTPPortal.ViewModels
 				if (isSubVisible)
 				{
 					isVisible = true;
-					
+
 				}
 				else
 				{
@@ -153,7 +152,6 @@ namespace TSBFTPPortal.ViewModels
 			return directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
 
-
 		private static bool IsScriptsDirectory(DirectoryItemViewModel directory)
 		{
 			return directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true;
@@ -164,6 +162,5 @@ namespace TSBFTPPortal.ViewModels
 			return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true &&
 						 !directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
-
 	}
 }
