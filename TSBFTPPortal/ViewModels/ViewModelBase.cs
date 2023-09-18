@@ -1,5 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -15,6 +19,11 @@ namespace TSBFTPPortal.ViewModels
 				OnPropertyChanged(nameof(Directories));
 			}
 		}
+		public ViewModelBase()
+		{
+			_directories = new ObservableCollection<DirectoryItemViewModel>();
+		}
+
 		public event PropertyChangedEventHandler? PropertyChanged;
 
 		protected void OnPropertyChanged(string? propertyName)
@@ -22,9 +31,30 @@ namespace TSBFTPPortal.ViewModels
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public ViewModelBase()
+		public bool IsScriptFile(string? filePath)
 		{
-			_directories = new ObservableCollection<DirectoryItemViewModel>();
+			string fileExtension = Path.GetExtension(filePath);
+			string[] scriptExtensions = { ".sql" };
+			return scriptExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
 		}
+
+		public void FilterScriptChildItems(DirectoryItemViewModel item)
+		{
+			var copyOfItems = new List<DirectoryItemViewModel>(item.Items);
+
+			foreach (var childItem in copyOfItems)
+			{
+				if (!IsScriptFile(childItem.Name) && childItem.IsFile)
+				{
+					item.Items.Remove(childItem);
+				}
+				else if (childItem.IsDirectory)
+				{
+					FilterScriptChildItems(childItem);
+				}
+			}
+		}
+
+
 	}
 }

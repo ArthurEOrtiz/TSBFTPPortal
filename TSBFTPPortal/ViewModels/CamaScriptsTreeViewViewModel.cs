@@ -37,48 +37,16 @@ namespace TSBFTPPortal.ViewModels
 					
 					if (item.IsDirectory)
 					{
-						// deconstruct the item and only add child items that have 
-						// and extension of `.sql` or are a directory
-						// to add a directory you use `Directories.Add(item);`
-						FilterChildItems(item);
+						FilterScriptChildItems(item);
 						Directories.Add(item);
 						item.AddDefaultChildIfEmpty();
-						
 					}
 					else
 					{
 						Directories.Add(item);
 					}
 				}
-				else
-				{
-					Log.Error($"Cama Scripts, Could not find path for {item.Name}!");
-				}
 			}
-		}
-
-		private void FilterChildItems(DirectoryItemViewModel item)
-		{
-			var copyOfItems = new List<DirectoryItemViewModel>(item.Items);
-
-			foreach (var childItem in copyOfItems)
-			{
-				if (!IsScriptFile(childItem.Name) && childItem.IsFile)
-				{
-					item.Items.Remove(childItem);
-				}
-				else if (childItem.IsDirectory)
-				{
-					FilterChildItems(childItem);
-				}
-			}
-		}
-
-		private bool IsScriptFile(string? filePath)
-		{
-			string fileExtension = Path.GetExtension(filePath);
-			string[] scriptExtensions = { ".sql" };
-			return scriptExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
 		}
 
 		private string GetRootPath()
