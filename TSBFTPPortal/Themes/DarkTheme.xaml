@@ -20,11 +20,14 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type TabItem}">
 					<Grid>
-						<Border Name="Border">
-							<ContentPresenter VerticalAlignment="Center" 
-																	Margin="5"
-																	HorizontalAlignment="Center"
-																	ContentSource="Header" >
+						<Border Name="Border"
+                      BorderBrush="#33333D" 
+								      BorderThickness=".5">
+
+							<ContentPresenter VerticalAlignment="Center"
+                                          Margin="7"
+                                          HorizontalAlignment="Center"
+                                          ContentSource="Header">
 							</ContentPresenter>
 						</Border>
 					</Grid>
@@ -47,6 +50,7 @@
 
 	<Style TargetType="TextBlock">
 		<Setter Property="Foreground" Value="White" />
+		<Setter Property="FontSize" Value="13" />
 	</Style>
 
 	<Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
@@ -61,6 +65,7 @@
 
 	<Style TargetType="Button">
 		<Setter Property="Background" Value="#5B5B6E" />
+		<Setter Property="BorderThickness" Value="0" />
 	</Style>
 
 	<Style TargetType="{x:Type ComboBox}">

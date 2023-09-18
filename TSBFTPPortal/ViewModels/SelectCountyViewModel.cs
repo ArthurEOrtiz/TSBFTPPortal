@@ -40,7 +40,6 @@ namespace TSBFTPPortal.ViewModels
 			CountyNames = new ObservableCollection<string>();
 			ContinueToMainPageCommand = new RelayCommand(ContinueToMainPage);
 			LoadCountyNames();
-
 			SelectedCounty = Properties.Settings.Default.LastSelectedCounty;
 		}
 
@@ -51,18 +50,18 @@ namespace TSBFTPPortal.ViewModels
 			var mainWindowViewModel = new MainWindowViewModel(selectedCountyModel, _configuration);
 			var mainWindow = new MainWindow { DataContext = mainWindowViewModel };
 
-			var currentWindow = Application.Current.MainWindow; // Get a reference to the current window
-
-			currentWindow.Close(); // Close the current window
+			var currentWindow = Application.Current.MainWindow;
 			mainWindow.Owner = Application.Current.MainWindow;
 
-			double windowLeft = currentWindow.Left + (currentWindow.Width - mainWindow.Width) / 2;
-			double windowTop = currentWindow.Top + (currentWindow.Height - mainWindow.Height) / 2;
-
-			mainWindow.Left = windowLeft;
-			mainWindow.Top = windowTop;
+			mainWindow.Left = currentWindow.Left + ((currentWindow.Width - mainWindow.Width) / 2);
+			mainWindow.Top = currentWindow.Top + ((currentWindow.Height - mainWindow.Height) / 2);
 
 			mainWindow.Show();
+			mainWindow.Owner = null;
+
+			Application.Current.MainWindow = mainWindow;
+
+			currentWindow.Close();
 		}
 
 		private static County FindCountyModel(string countyName)

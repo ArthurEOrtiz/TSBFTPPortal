@@ -90,8 +90,9 @@
 					<TextBlock Text="{Binding Name}" >
 						<TextBlock.Style>
 							<Style TargetType="TextBlock">
-								
+								<Setter Property="FontSize" Value="13" />
 								<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor}" />
+								
 								<Style.Triggers>
 									<DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
 										<Setter Property="TextDecorations" Value="Underline"/>
@@ -209,7 +210,9 @@
 					<Setter Property="IsSelected" Value="False" />
 					
 					<Setter Property="behaviors:DoubleClickBehavior.Command" Value="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource Self}}" />
-					
+
+					<Setter Property="behaviors:EnterKeyBehavior.Command" Value="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource Self}}" />
+
 					<Style.Triggers>
 						
 						<DataTrigger Binding="{Binding IsVisible}" Value="False">
@@ -231,6 +234,7 @@
 		<TextBlock Text="No items match search parameters." HorizontalAlignment="Center" VerticalAlignment="Center">
 			<TextBlock.Style>
 				<Style TargetType="TextBlock">
+					<Setter Property="FontSize" Value="13" />
 					<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor }" />
 					<Setter Property="Visibility" Value="Collapsed" />
 					<Style.Triggers>
@@ -249,6 +253,7 @@
 		<TextBlock Text="No items are aviable in this tab." HorizontalAlignment="Center" VerticalAlignment="Center">
 			<TextBlock.Style>
 				<Style TargetType="TextBlock">
+					<Setter Property="FontSize" Value="13" />
 					<Setter Property="Foreground" Value="{DynamicResource TreeViewTextBlockColor }" />
 					<Setter Property="Visibility" Value="Collapsed"/>
 					<Style.Triggers>

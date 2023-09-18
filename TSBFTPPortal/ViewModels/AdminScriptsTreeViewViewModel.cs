@@ -9,44 +9,14 @@ namespace TSBFTPPortal.ViewModels
 	public class AdminScriptsTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly FtpService _ftpService;
 		public SearchBarViewModel SearchBarViewModel { get; }
 
 		public AdminScriptsTreeViewViewModel(County selectedCounty, FtpService ftpService, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
-			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			SearchBarViewModel = searchBarViewModel;
-			LoadDirectoriesAndFoldersFromFTP();
-		}
-
-		private void LoadDirectoriesAndFoldersFromFTP()
-		{
-			string rootPath = GetRootPath();
-
-			ObservableCollection<DirectoryItemViewModel> items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
-
-			foreach (DirectoryItemViewModel item in items)
-			{
-				if (item.Path != null)
-				{
-					string fileExtension = Path.GetExtension(item.Path);
-					if (fileExtension == ".sql" || item.IsDirectory)
-					{
-						Directories.Add(item);
-						item.AddDefaultChildIfEmpty();
-					}
-					else
-					{
-						Log.Error($"Invalid file, {item.Name}, in Admin Scripts!");
-					}
-				}
-				else
-				{
-					Log.Error($"Admin Scripts, Could not find path for {item.Name}!");
-				}
-			}
+			LoadScriptDirectoriesAndFoldersFromFTP(GetRootPath(), ftpService);
 		}
 
 		private string GetRootPath()

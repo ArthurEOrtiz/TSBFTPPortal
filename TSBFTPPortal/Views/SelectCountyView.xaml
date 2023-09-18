@@ -54,8 +54,9 @@
 			Grid.Column="1"
 			Grid.ColumnSpan="3"
 			Grid.Row="3"
-			Height="20"
-			Width="100"
+			VerticalAlignment="Center"
+			Height="30"
+			Width="110"
 			/>
 	</Grid>
 </Window>

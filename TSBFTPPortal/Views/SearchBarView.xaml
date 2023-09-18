@@ -10,7 +10,7 @@
 	<Grid>
 		<TextBox Style="{DynamicResource PlaceholderTextBoxStyle}" 
 						 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-						 
+						 FontSize="13"
 						 HorizontalAlignment="Stretch" 
 						 VerticalAlignment="Center">
 			<TextBox.Template>
@@ -19,6 +19,7 @@
 						<!-- Placeholder TextBlock -->
 						<TextBlock Text="Search FTP files . . " 
 											 Foreground="Gray"
+											 FontSize="13"
 											 Margin="5,0"
                        Visibility="Collapsed"
                        x:Name="PlaceholderTextBlock" />

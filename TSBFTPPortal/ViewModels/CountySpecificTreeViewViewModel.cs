@@ -1,24 +1,22 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 using TSBFTPPortal.Views;
-using System.Linq;
-using Serilog;
 
 namespace TSBFTPPortal.ViewModels
 {
 	public class CountySpecificTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly FtpService _ftpService;
 		public FilterTreeViewViewModel FilterTreeViewViewModel { get; }
 		public SearchBarViewModel SearchBarViewModel { get; }
 
 		public CountySpecificTreeViewViewModel(County selectedCounty, FtpService ftpService, FilterTreeViewViewModel filterTreeViewViewModel, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
-			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			FilterTreeViewViewModel = filterTreeViewViewModel;
 			SearchBarViewModel = searchBarViewModel;
@@ -27,16 +25,26 @@ namespace TSBFTPPortal.ViewModels
 			{
 				if (e.PropertyName == nameof(FilterTreeViewViewModel.IsReportsSelected) ||
 							 e.PropertyName == nameof(FilterTreeViewViewModel.IsScriptsSelected) ||
-							 e.PropertyName == nameof(FilterTreeViewViewModel.IsDocumentsSelected))
+							 e.PropertyName == nameof(FilterTreeViewViewModel.IsDocumentsSelected) ||
+							 e.PropertyName == nameof(FilterTreeViewViewModel.IsFileSelected))
 				{
 					ApplyFiltering();
 				}
 			};
 
-			LoadDirectoriesAndFoldersFromFTP();
+			// Attempting to have filtering apply to the directories return from search
+			SearchBarViewModel.PropertyChanged += (sender, e) =>
+			{
+				if (e.PropertyName == nameof(SearchBarViewModel.IsSearchComplete))
+				{
+					ApplyFilteringForSearchedDirectories();
+				}
+			};
+
+			LoadAllDirectoriesAndFoldersFromFtp(GetRootPath(), ftpService);
 		}
 
-		private void LoadDirectoriesAndFoldersFromFTP()
+		private string GetRootPath()
 		{
 			string rootPath = string.Empty;
 			if (SelectedCounty != null && SelectedCounty.Name != null)
@@ -47,50 +55,65 @@ namespace TSBFTPPortal.ViewModels
 			{
 				Log.Error("County Specific, SelectCounty is null");
 			}
-			
 
-			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
-
-			foreach (var item in items)
-			{
-				Directories.Add(item);
-				item.AddDefaultChildIfEmpty();
-			}
+			return rootPath;
 		}
 
 		public void ApplyFiltering()
 		{
 			foreach (var directory in Directories)
 			{
-				if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
+				ApplyFilteringRecursive(directory);
+			}
+		}
+
+		private void ApplyFilteringRecursive(DirectoryItemViewModel directory)
+		{
+			if (string.IsNullOrEmpty(SearchBarViewModel.SearchText))
+			{
+				UpdateDirectoryVisibility(directory);
+			}
+			else
+			{
+				if (directory.IsDirectory)
 				{
-					UpdateDirectoryVisibility(directory);
+					// This is a directory, apply UpdateDirectoryVisibility recursively
+					foreach (var item in directory.Items)
+					{
+						ApplyFilteringRecursive(item);
+					}
 				}
 				else
 				{
-					if (directory.IsHighlighted)
+					// This is a file, check if it matches the search text
+					if (directory.Name.Contains(SearchBarViewModel.SearchText, StringComparison.OrdinalIgnoreCase))
 					{
-						UpdateDirectoryVisibilitySearchedDirectories(directory);
+						UpdateDirectoryVisibility(directory);
 					}
 				}
 			}
 		}
 
-		private void UpdateDirectoryVisibilitySearchedDirectories(DirectoryItemViewModel directory)
+		private void ApplyFilteringForSearchedDirectories()
 		{
-			bool isVisible = IsVisibleRecursive(directory);
-			directory.IsVisible = isVisible;
-
-			// Update child items recursively
-			foreach (var subDirectory in directory.Items)
+			foreach (var directory in Directories)
 			{
-				if (subDirectory.IsHighlighted)
+				if (directory.IsDirectory)
 				{
-					UpdateDirectoryVisibilitySearchedDirectories(subDirectory);
+					foreach (var item in directory.Items)
+					{
+						if (item.IsVisible)
+						{
+							UpdateDirectoryVisibility(item);
+						}
+					}
 				}
 				else
 				{
-					subDirectory.IsVisible = false;
+					if (directory.IsVisible)
+					{
+						UpdateDirectoryVisibility(directory);
+					}
 				}
 			}
 		}
@@ -106,6 +129,7 @@ namespace TSBFTPPortal.ViewModels
 				UpdateDirectoryVisibility(subDirectory);
 			}
 		}
+
 
 		private bool IsVisibleRecursive(DirectoryItemViewModel directory)
 		{
@@ -126,33 +150,45 @@ namespace TSBFTPPortal.ViewModels
 				isVisible = true;
 			}
 
+			if (FilterTreeViewViewModel.IsFileSelected && IsFileDirectory(directory))
+			{
+				isVisible = true;
+			}
+
 			if (directory.IsDirectory)
+			{
+				isVisible = true;
+			}
+
+			if (directory.Name == "No items in this directory!")
 			{
 				isVisible = true;
 			}
 
 			foreach (var subDirectory in directory.Items)
 			{
+
 				bool isSubVisible = IsVisibleRecursive(subDirectory);
+
 				if (isSubVisible)
 				{
 					isVisible = true;
-					
 				}
 				else
 				{
 					subDirectory.IsVisible = false;
 				}
+
 			}
 
 			return isVisible;
+
 		}
 
 		private static bool IsReportsDirectory(DirectoryItemViewModel directory)
 		{
 			return directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
 		}
-
 
 		private static bool IsScriptsDirectory(DirectoryItemViewModel directory)
 		{
@@ -161,9 +197,19 @@ namespace TSBFTPPortal.ViewModels
 
 		private static bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
-			return !directory.Name?.EndsWith(".sql", StringComparison.OrdinalIgnoreCase) == true &&
-						 !directory.Name?.EndsWith(".rpt", StringComparison.OrdinalIgnoreCase) == true;
+			// List of document file extensions
+			string[] documentExtensions = { ".doc", ".docx", ".pdf", ".txt", ".rtf", ".odt", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".html", ".xml", ".json", ".md", ".epub", ".tex", ".pages", ".numbers", ".key" };
+
+			// Check if the file extension is not in the list of document extensions
+			string fileExtension = System.IO.Path.GetExtension(directory.Name);
+			return documentExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
 		}
 
+		private static bool IsFileDirectory(DirectoryItemViewModel directory)
+		{
+			return !IsReportsDirectory(directory) &&
+						 !IsScriptsDirectory(directory) &&
+						 !IsDocumentsDirectory(directory);
+		}
 	}
 }
