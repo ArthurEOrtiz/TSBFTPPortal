@@ -67,7 +67,6 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-
 		private async void Download(object obj)
 		{
 			if (IsFile && !string.IsNullOrEmpty(Path)) 
