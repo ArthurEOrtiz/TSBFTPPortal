@@ -210,7 +210,9 @@
 					<Setter Property="IsSelected" Value="False" />
 					
 					<Setter Property="behaviors:DoubleClickBehavior.Command" Value="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource Self}}" />
-					
+
+					<Setter Property="behaviors:EnterKeyBehavior.Command" Value="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource Self}}" />
+
 					<Style.Triggers>
 						
 						<DataTrigger Binding="{Binding IsVisible}" Value="False">
