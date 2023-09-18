@@ -1,9 +1,5 @@
 ﻿using Serilog;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using TSBFTPPortal.Models;
 using TSBFTPPortal.Services;
 
@@ -32,20 +28,16 @@ namespace TSBFTPPortal.ViewModels
 
 			foreach (DirectoryItemViewModel item in items)
 			{
-				//if (item.Path != null)
-				//{
-					
-					if (item.IsDirectory)
-					{
-						FilterScriptChildItems(item);
-						Directories.Add(item);
-						item.AddDefaultChildIfEmpty();
-					}
-					else
-					{
-						Directories.Add(item);
-					}
-				//}
+				if (item.IsDirectory)
+				{
+					FilterScriptChildItems(item);
+					Directories.Add(item);
+					item.AddDefaultChildIfEmpty();
+				}
+				else
+				{
+					Directories.Add(item);
+				}
 			}
 		}
 
