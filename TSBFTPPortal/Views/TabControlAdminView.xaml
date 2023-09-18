@@ -14,7 +14,7 @@
 			<TabItem Header="Scripts" Style="{DynamicResource TabItemStyling}">
 				<local:TreeViewView DataContext="{Binding AdminScriptsTreeViewViewModel}" />
 			</TabItem>
-			<TabItem Header="Documents" Style="{DynamicResource TabItemStyling}">
+			<TabItem Header="Documents &amp; Files" Style="{DynamicResource TabItemStyling}">
 				<local:TreeViewView DataContext="{Binding AdminDocumentsTreeViewViewModel}" />
 			</TabItem>
 			<TabItem Header="Apps" Style="{DynamicResource TabItemStyling}">
