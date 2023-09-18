@@ -18,7 +18,6 @@ namespace TSBFTPPortal.ViewModels
 			LoadScriptDirectoriesAndFoldersFromFTP(GetRootPath(), ftpService);
 		}
 
-
 		private string GetRootPath()
 		{
 			string rootPath = string.Empty;
