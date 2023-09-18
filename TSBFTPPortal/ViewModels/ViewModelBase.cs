@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using TSBFTPPortal.Services;
 
 namespace TSBFTPPortal.ViewModels
 {
@@ -51,6 +52,26 @@ namespace TSBFTPPortal.ViewModels
 				else if (childItem.IsDirectory)
 				{
 					FilterScriptChildItems(childItem);
+				}
+			}
+		}
+
+		public void LoadScriptDirectoriesAndFoldersFromFTP(string rootPath, FtpService ftpService)
+		{
+
+			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+
+			foreach (DirectoryItemViewModel item in items)
+			{
+				if (item.IsDirectory)
+				{
+					FilterScriptChildItems(item);
+					Directories.Add(item);
+					item.AddDefaultChildIfEmpty();
+				}
+				else
+				{
+					Directories.Add(item);
 				}
 			}
 		}

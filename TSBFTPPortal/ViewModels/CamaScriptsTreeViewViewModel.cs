@@ -8,37 +8,14 @@ namespace TSBFTPPortal.ViewModels
 	public class CamaScriptsTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly FtpService _ftpService;
 		public SearchBarViewModel SearchBarViewModel { get; }
 
 		public CamaScriptsTreeViewViewModel(County selectedCounty, FtpService ftpService, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
-			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			SearchBarViewModel = searchBarViewModel;
-			LoadDirectoriesAndFoldersFromFTP();
-		}
-
-		private void LoadDirectoriesAndFoldersFromFTP()
-		{
-			string rootPath = GetRootPath();
-
-			ObservableCollection<DirectoryItemViewModel> items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
-
-			foreach (DirectoryItemViewModel item in items)
-			{
-				if (item.IsDirectory)
-				{
-					FilterScriptChildItems(item);
-					Directories.Add(item);
-					item.AddDefaultChildIfEmpty();
-				}
-				else
-				{
-					Directories.Add(item);
-				}
-			}
+			LoadScriptDirectoriesAndFoldersFromFTP(GetRootPath(), ftpService);
 		}
 
 		private string GetRootPath()
