@@ -18,7 +18,7 @@ namespace TSBFTPPortal.ViewModels
 		}
 		public ObservableCollection<DirectoryItemViewModel> Directories
 		{
-			get => _directories; 
+			get => _directories;
 			set
 			{
 				_directories = value;
@@ -44,7 +44,7 @@ namespace TSBFTPPortal.ViewModels
 					Directories.Add(item);
 					item.AddDefaultChildIfEmpty();
 				}
-				else
+				else if (IsScriptFile(item.Name))
 				{
 					Directories.Add(item);
 				}
@@ -63,7 +63,7 @@ namespace TSBFTPPortal.ViewModels
 					Directories.Add(item);
 					item.AddDefaultChildIfEmpty();
 				}
-				else
+				else if (IsReportFile(item.Name))
 				{
 					Directories.Add(item);
 				}
@@ -82,7 +82,21 @@ namespace TSBFTPPortal.ViewModels
 					Directories.Add(item);
 					item.AddDefaultChildIfEmpty();
 				}
-				else { Directories.Add(item); }
+				else if (IsDocumentOrFile(item.Name))
+				{
+					Directories.Add(item);
+				}
+			}
+		}
+
+		public void LoadAllDirectoriesAndFoldersFromFtp(string rootPath, FtpService ftpService)
+		{
+			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+
+			foreach (DirectoryItemViewModel item in items)
+			{
+				Directories.Add(item);
+				item.AddDefaultChildIfEmpty();
 			}
 		}
 
@@ -93,7 +107,7 @@ namespace TSBFTPPortal.ViewModels
 			return scriptExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
 		}
 
-		private bool IsReportFile (string filePath)
+		private bool IsReportFile(string filePath)
 		{
 			string fileExtension = Path.GetExtension(filePath);
 			string[] reportExtensions = { ".rpt" };

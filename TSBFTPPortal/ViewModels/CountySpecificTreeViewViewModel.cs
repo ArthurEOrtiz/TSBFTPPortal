@@ -11,14 +11,12 @@ namespace TSBFTPPortal.ViewModels
 	public class CountySpecificTreeViewViewModel : ViewModelBase
 	{
 		public County SelectedCounty { get; }
-		public readonly FtpService _ftpService;
 		public FilterTreeViewViewModel FilterTreeViewViewModel { get; }
 		public SearchBarViewModel SearchBarViewModel { get; }
 
 		public CountySpecificTreeViewViewModel(County selectedCounty, FtpService ftpService, FilterTreeViewViewModel filterTreeViewViewModel, SearchBarViewModel searchBarViewModel)
 		{
 			SelectedCounty = selectedCounty;
-			_ftpService = ftpService;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			FilterTreeViewViewModel = filterTreeViewViewModel;
 			SearchBarViewModel = searchBarViewModel;
@@ -43,10 +41,10 @@ namespace TSBFTPPortal.ViewModels
 				}
 			};
 
-			LoadDirectoriesAndFoldersFromFTP();
+			LoadAllDirectoriesAndFoldersFromFtp(GetRootPath(), ftpService);
 		}
 
-		private void LoadDirectoriesAndFoldersFromFTP()
+		private string GetRootPath()
 		{
 			string rootPath = string.Empty;
 			if (SelectedCounty != null && SelectedCounty.Name != null)
@@ -58,14 +56,7 @@ namespace TSBFTPPortal.ViewModels
 				Log.Error("County Specific, SelectCounty is null");
 			}
 
-
-			var items = _ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
-
-			foreach (var item in items)
-			{
-				Directories.Add(item);
-				item.AddDefaultChildIfEmpty();
-			}
+			return rootPath;
 		}
 
 		public void ApplyFiltering()
