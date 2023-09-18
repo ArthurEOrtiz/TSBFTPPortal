@@ -70,6 +70,22 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
+		public void LoadDocumentAndFilesDirectoriesAndFoldersFromFtp(string rootPath, FtpService ftpService)
+		{
+			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+
+			foreach (DirectoryItemViewModel item in items)
+			{
+				if (item.IsDirectory)
+				{
+					FilterChildItems(item, IsDocumentOrFile);
+					Directories.Add(item);
+					item.AddDefaultChildIfEmpty();
+				}
+				else { Directories.Add(item); }
+			}
+		}
+
 		private bool IsScriptFile(string filePath)
 		{
 			string fileExtension = Path.GetExtension(filePath);
@@ -82,6 +98,11 @@ namespace TSBFTPPortal.ViewModels
 			string fileExtension = Path.GetExtension(filePath);
 			string[] reportExtensions = { ".rpt" };
 			return reportExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
+		}
+
+		private bool IsDocumentOrFile(string filePath)
+		{
+			return !IsScriptFile(filePath) && !IsReportFile(filePath);
 		}
 
 		private void FilterChildItems(DirectoryItemViewModel item, Func<string?, bool> fileCondition)
@@ -100,11 +121,5 @@ namespace TSBFTPPortal.ViewModels
 				}
 			}
 		}
-
-	
-
-		
-
-
 	}
 }
