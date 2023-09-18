@@ -32,8 +32,8 @@ namespace TSBFTPPortal.ViewModels
 
 			foreach (DirectoryItemViewModel item in items)
 			{
-				if (item.Path != null)
-				{
+				//if (item.Path != null)
+				//{
 					
 					if (item.IsDirectory)
 					{
@@ -45,7 +45,7 @@ namespace TSBFTPPortal.ViewModels
 					{
 						Directories.Add(item);
 					}
-				}
+				//}
 			}
 		}
 
