@@ -8,12 +8,12 @@
 
   <Identity
     Name="bfafc007-d960-417a-9aca-8e9ddfb956c5"
-    Publisher="CN=arortiz"
+    Publisher="CN=Arthur Edward Ortiz"
     Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>TSBFTPPortalInstaller</DisplayName>
-    <PublisherDisplayName>arortiz</PublisherDisplayName>
+    <PublisherDisplayName>Arthur Edward Ortiz</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
@@ -31,13 +31,14 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="TSBFTPPortalInstaller"
-        Description="TSBFTPPortalInstaller"
+        DisplayName="TSB FTP Portal"
+        Description="This application is deisigned to intereact with FTP services for managing and browsing files and directories."
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png"  Square71x71Logo="Images\SmallTile.png" Square310x310Logo="Images\LargeTile.png" ShortName="TSB FTP Portal"/>
         <uap:SplashScreen Image="Images\SplashScreen.png" />
+        <uap:LockScreen BadgeLogo="Images\BadgeLogo.png" Notification="badge"/>
       </uap:VisualElements>
     </Application>
   </Applications>
