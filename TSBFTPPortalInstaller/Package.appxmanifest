@@ -9,7 +9,7 @@
   <Identity
     Name="bfafc007-d960-417a-9aca-8e9ddfb956c5"
     Publisher="CN=State of Idaho, O=State of Idaho, L=Boise, S=Idaho, C=US"
-    Version="1.0.2.0" />
+    Version="1.0.3.0" />
 
   <Properties>
     <DisplayName>TSBFTPPortalInstaller</DisplayName>
