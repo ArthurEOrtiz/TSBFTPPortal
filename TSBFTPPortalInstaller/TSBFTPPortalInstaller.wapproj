@@ -57,7 +57,7 @@
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
     <EntryPointProjectUniqueName>..\TSBFTPPortal\TSBFTPPortal.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>600C296C9886247428A14A50AD6ACBC524BA6421</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>8B1F0017D98B1412F725E0BC93538576B987A8FF</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
