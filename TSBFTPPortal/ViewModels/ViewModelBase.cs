@@ -33,10 +33,10 @@ namespace TSBFTPPortal.ViewModels
 
 		public void LoadScriptDirectoriesAndFoldersFromFTP(string rootPath, FtpService ftpService)
 		{
-
 			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			IOrderedEnumerable<DirectoryItemViewModel> sortedItems = SortByDirectoryAndFileType(items);
 
-			foreach (DirectoryItemViewModel item in items)
+			foreach (DirectoryItemViewModel item in sortedItems)
 			{
 				if (item.IsDirectory)
 				{
@@ -54,8 +54,9 @@ namespace TSBFTPPortal.ViewModels
 		public void LoadReportDirectoriesAndFoldersFromFTP(string rootPath, FtpService ftpService)
 		{
 			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			IOrderedEnumerable<DirectoryItemViewModel> sortedItems = SortByDirectoryAndFileType(items);
 
-			foreach (DirectoryItemViewModel item in items)
+			foreach (DirectoryItemViewModel item in sortedItems)
 			{
 				if (item.IsDirectory)
 				{
@@ -73,8 +74,9 @@ namespace TSBFTPPortal.ViewModels
 		public void LoadDocumentAndFilesDirectoriesAndFoldersFromFtp(string rootPath, FtpService ftpService)
 		{
 			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			IOrderedEnumerable<DirectoryItemViewModel> sortedItems = SortByDirectoryAndFileType(items);
 
-			foreach (DirectoryItemViewModel item in items)
+			foreach (DirectoryItemViewModel item in sortedItems)
 			{
 				if (item.IsDirectory)
 				{
@@ -92,12 +94,20 @@ namespace TSBFTPPortal.ViewModels
 		public void LoadAllDirectoriesAndFoldersFromFtp(string rootPath, FtpService ftpService)
 		{
 			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			IOrderedEnumerable<DirectoryItemViewModel> sortedItems = SortByDirectoryAndFileType(items);
 
-			foreach (DirectoryItemViewModel item in items)
+			foreach (DirectoryItemViewModel item in sortedItems)
 			{
 				Directories.Add(item);
 				item.AddDefaultChildIfEmpty();
 			}
+		}
+
+		private static IOrderedEnumerable<DirectoryItemViewModel> SortByDirectoryAndFileType(ObservableCollection<DirectoryItemViewModel> items)
+		{
+			return items
+				.OrderByDescending(item => item.IsDirectory)
+				.ThenBy(item => item.IsFile ? Path.GetExtension(item.Name) : "");
 		}
 
 		private bool IsScriptFile(string filePath)
