@@ -121,7 +121,6 @@ namespace TSBFTPPortal.ViewModels
 			return sortedItems;
 		}
 
-
 		private bool IsScriptFile(string filePath)
 		{
 			string fileExtension = Path.GetExtension(filePath);
