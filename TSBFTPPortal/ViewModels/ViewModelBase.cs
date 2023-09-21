@@ -107,7 +107,9 @@ namespace TSBFTPPortal.ViewModels
 		{
 			var sortedItems = items
 					.OrderByDescending(item => item.IsDirectory)
-					.ThenBy(item => item.IsFile ? Path.GetExtension(item.Name) : "");
+					.ThenBy(item => item.IsFile ? Path.GetExtension(item.Name) : "")
+					.ThenBy(item => item.Name);
+					
 
 			// Recursively sort child items
 			foreach (var item in sortedItems)
