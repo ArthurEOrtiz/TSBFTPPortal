@@ -165,6 +165,11 @@ namespace TSBFTPPortal.ViewModels
 				isVisible = true;
 			}
 
+			if (directory.IsDirectory && !directory.Items.Any(item => item.IsVisible))
+			{
+				isVisible = false;
+			}
+
 			foreach (var subDirectory in directory.Items)
 			{
 
