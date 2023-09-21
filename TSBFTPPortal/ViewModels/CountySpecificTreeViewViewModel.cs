@@ -130,7 +130,6 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-
 		private bool IsVisibleRecursive(DirectoryItemViewModel directory)
 		{
 			bool isVisible = false;
