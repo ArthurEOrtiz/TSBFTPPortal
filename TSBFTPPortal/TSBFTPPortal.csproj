@@ -12,6 +12,7 @@
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="Resources\countiesInitialData.json" />
+    <None Remove="Resources\TSBIcon.ico" />
     <None Remove="Resources\TSBIcon.png" />
   </ItemGroup>
 
@@ -20,6 +21,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\countiesInitialData.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TSBIcon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\TSBIcon.png">
