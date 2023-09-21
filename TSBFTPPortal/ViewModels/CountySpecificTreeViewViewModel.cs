@@ -130,7 +130,6 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-
 		private bool IsVisibleRecursive(DirectoryItemViewModel directory)
 		{
 			bool isVisible = false;
@@ -163,6 +162,11 @@ namespace TSBFTPPortal.ViewModels
 			if (directory.Name == "No items in this directory!")
 			{
 				isVisible = true;
+			}
+
+			if (directory.IsDirectory && !directory.Items.Any(item => item.IsVisible))
+			{
+				isVisible = false;
 			}
 
 			foreach (var subDirectory in directory.Items)
@@ -198,7 +202,7 @@ namespace TSBFTPPortal.ViewModels
 		private static bool IsDocumentsDirectory(DirectoryItemViewModel directory)
 		{
 			// List of document file extensions
-			string[] documentExtensions = { ".doc", ".docx", ".pdf", ".txt", ".rtf", ".odt", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".html", ".xml", ".json", ".md", ".epub", ".tex", ".pages", ".numbers", ".key" };
+			string[] documentExtensions = { ".doc", ".docx", ".pdf", ".txt", ".rtf", ".odt", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".epub", ".tex", ".pages", ".numbers", ".key" };
 
 			// Check if the file extension is not in the list of document extensions
 			string fileExtension = System.IO.Path.GetExtension(directory.Name);
