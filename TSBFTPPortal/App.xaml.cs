@@ -234,10 +234,10 @@ namespace TSBFTPPortal
 				string existingJsonData = await ReadDataFromDatabase(dbPath);
 
 				// Normalize JSON strings by removing spaces and tabs
-				expectedJsonData = RemoveWhitespace(expectedJsonData);
-				existingJsonData = RemoveWhitespace(existingJsonData);
+				string expectedJsonDataWithOutSpaces = RemoveWhitespace(expectedJsonData);
+				string existingJsonDataWithOutSpaces = RemoveWhitespace(existingJsonData);
 
-				if (expectedJsonData != existingJsonData && isExpectedDataValid)
+				if (expectedJsonDataWithOutSpaces != existingJsonDataWithOutSpaces && isExpectedDataValid)
 				{
 					Log.Information("Database content does not match the expected JSON data. Re-populating the database.");
 					PopulateDataBase(dbPath, expectedJsonData);

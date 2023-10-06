@@ -24,7 +24,7 @@ namespace TSBFTPPortal.ViewModels
 
 			if (SelectedCounty != null && SelectedCounty.Name != null)
 			{
-				rootPath = $"/GIS/{SelectedCounty.Name.ToUpper()}/";
+				rootPath = $"/GIS/{SelectedCounty.Name.ToUpper().Replace(" ", "_")}/";
 			}
 			else
 			{
