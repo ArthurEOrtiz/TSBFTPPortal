@@ -49,7 +49,7 @@ namespace TSBFTPPortal.ViewModels
 			string rootPath = string.Empty;
 			if (SelectedCounty != null && SelectedCounty.Name != null)
 			{
-				rootPath = $"/COUNTIES/{SelectedCounty.Name.ToUpper()}/";
+				rootPath = $"/COUNTIES/{SelectedCounty.Name.ToUpper().Replace(" ", "_")}/";
 			}
 			else
 			{

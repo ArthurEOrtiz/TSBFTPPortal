@@ -24,7 +24,7 @@ namespace TSBFTPPortal.ViewModels
 
 			if (SelectedCounty != null && SelectedCounty.Name != null)
 			{
-				rootPath = $"/PTR/{SelectedCounty.Name.ToUpper()}/";
+				rootPath = $"/PTR/{SelectedCounty.Name.ToUpper().Replace(" ", "_")}/";
 			}
 			else
 			{
