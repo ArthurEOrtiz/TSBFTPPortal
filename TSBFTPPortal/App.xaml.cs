@@ -142,10 +142,11 @@ namespace TSBFTPPortal
 			string? ftpServer = Configuration["FtpSettings:Server"];
 			string? userName = Configuration["FtpSettings:UserName"];
 			string? password = Configuration["FtpSettings:Password"];
+			string? sshHostKeyFingerprint = Configuration["FtpSettings:SshHostKeyFingerprint"];
 
 			if (ftpServer != null && userName != null && password != null)
 			{
-				_ftpService = new FtpService(ftpServer, userName, password);
+				_ftpService = new FtpService(ftpServer, userName, password, sshHostKeyFingerprint);
 			}
 		}
 

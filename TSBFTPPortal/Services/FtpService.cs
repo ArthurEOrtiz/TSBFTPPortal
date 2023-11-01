@@ -1,4 +1,5 @@
 ﻿using FluentFTP;
+using WinSCP;
 using Serilog;
 using System;
 using System.Collections.ObjectModel;
@@ -12,6 +13,7 @@ using System.Windows;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
+using System.Collections.Generic;
 
 namespace TSBFTPPortal.Services
 {
@@ -20,15 +22,17 @@ namespace TSBFTPPortal.Services
 		private readonly string _ftpServer;
 		private readonly string _username;
 		private readonly string _password;
+		private readonly string _sshHostKeyFingerprint;
 		private CancellationTokenSource? _cancellationTokenSource;
 		private bool _isCancellationRequested;
 		private ProgressWindow? _progressWindow;
 
-		public FtpService(string ftpServer, string username, string password)
+		public FtpService(string ftpServer, string username, string password, string SshHostKeyFingerprint)
 		{
 			_ftpServer = ftpServer;
 			_username = username;
 			_password = password;
+			_sshHostKeyFingerprint = SshHostKeyFingerprint;
 		}
 
 
@@ -36,41 +40,55 @@ namespace TSBFTPPortal.Services
 		{
 			var items = new ObservableCollection<DirectoryItemViewModel>();
 
-			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
+			try
 			{
-				try
+				using (var session = new Session())
 				{
-					ftpClient.Connect();
+					session.DisableVersionCheck = true;
 
-					LoadSubDirectoriesAndFiles(ftpClient, rootPath, items);
+					// Connect to the SFTP server
+					session.Open(new SessionOptions
+					{
+						Protocol = Protocol.Sftp,
+						HostName = _ftpServer,
+						UserName = _username,
+						Password = _password,
+						SshHostKeyFingerprint = _sshHostKeyFingerprint,
+					});
+
+					LoadSubDirectoriesAndFiles(session, rootPath, items);
 				}
-				catch (Exception ex)
-				{
-					Log.Error($"Failure to Connect to FTP : {ex.Message}");
-				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Failure to Connect to SFTP : {ex.Message}");
 			}
 
 			return items;
+
 		}
 
-		private void LoadSubDirectoriesAndFiles(FtpClient ftpClient, string path, ObservableCollection<DirectoryItemViewModel> items)
+		private void LoadSubDirectoriesAndFiles(Session session, string path, ObservableCollection<DirectoryItemViewModel> items)
 		{
-			var subItems = ftpClient.GetListing(path);
+			RemoteDirectoryInfo directory = session.ListDirectory(path);
 
-			foreach (var subItem in subItems)
+			foreach (RemoteFileInfo fileInfo in directory.Files)
 			{
-				var subItemViewModel = new DirectoryItemViewModel(this)
+				if (fileInfo.Name != "." && fileInfo.Name != "..") // Skip current and parent directory entries
 				{
-					Name = subItem.Name,
-					Path = subItem.FullName,
-					IsDirectory = subItem.Type == FluentFTP.FtpObjectType.Directory
-				};
+					var subItemViewModel = new DirectoryItemViewModel(this)
+					{
+						Name = fileInfo.Name,
+						Path = fileInfo.FullName,
+						IsDirectory = fileInfo.IsDirectory,
+					};
 
-				items.Add(subItemViewModel);
+					items.Add(subItemViewModel);
 
-				if (subItem.Type == FluentFTP.FtpObjectType.Directory)
-				{
-					LoadSubDirectoriesAndFiles(ftpClient, subItem.FullName, subItemViewModel.Items);
+					if (fileInfo.IsDirectory)
+					{
+						LoadSubDirectoriesAndFiles(session, fileInfo.FullName, subItemViewModel.Items);
+					}
 				}
 			}
 		}
@@ -79,49 +97,52 @@ namespace TSBFTPPortal.Services
 		{
 			if (!IsInternetAvailable())
 			{
-				Log.Error($"Internet connection lost.");
+				Log.Error("Internet connection lost.");
 				ShowErrorMessage("No internet connection!");
 				return;
 			}
 
-			using (var ftpClient = new FtpClient(_ftpServer, new System.Net.NetworkCredential(_username, _password)))
+			try
 			{
-				_cancellationTokenSource = new CancellationTokenSource();
-				_isCancellationRequested = false;
-				_progressWindow = new ProgressWindow();
-				_progressWindow.Show();
-				InitializeProgressWindow();
-
-				try
+				using (Session session = new Session())
 				{
-					ftpClient.Connect();
-					Log.Information("Connected to Ftp Server for download");
+					// Configure session options
+					SessionOptions sessionOptions = new SessionOptions
+					{
+						Protocol = Protocol.Sftp,
+						HostName = _ftpServer,
+						UserName = _username,
+						Password = _password,
+						SshHostKeyFingerprint = _sshHostKeyFingerprint,
+					};
+
+					// Connect to the SFTP server
+					session.Open(sessionOptions);
 
 					string fileName = Path.GetFileName(path);
-					string fileExtension = Path.GetExtension(path);
-
-					string targetFilePath = GetTargetFilePath(fileName, fileExtension);
+					string targetFilePath = GetTargetFilePath(fileName);
 
 					if (targetFilePath != null)
 					{
-						await PerformFileDownload(ftpClient, targetFilePath, path);
+						await PerformFileDownload(session, targetFilePath, path);
 					}
 				}
-				catch (OperationCanceledException)
-				{
-					Log.Information("Download cancelled.");
-				}
-				catch (Exception ex)
-				{
-					Log.Error($"Error downloading file: {ex.Message}");
-					ShowErrorMessage($"Error downloading file: {ex.Message}");
-				}
-				finally
-				{
-					_progressWindow.Close();
-				}
+			}
+			catch (OperationCanceledException)
+			{
+				Log.Information("Download cancelled.");
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Error downloading file: {ex.Message}");
+				ShowErrorMessage($"Error downloading file: {ex.Message}");
+			}
+			finally
+			{
+				_progressWindow?.Close();
 			}
 		}
+
 
 		private void InitializeProgressWindow()
 		{
@@ -139,8 +160,10 @@ namespace TSBFTPPortal.Services
 			viewModel.CancelCommand = new RelayCommand(Cancel);
 		}
 
-		private static string GetTargetFilePath(string fileName, string fileExtension)
+		private static string GetTargetFilePath(string fileName)
 		{
+			string fileExtension = Path.GetExtension(fileName);
+
 			switch (fileExtension)
 			{
 				case ".rpt":
@@ -157,41 +180,44 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private async Task PerformFileDownload(FtpClient ftpClient, string targetFilePath, string remoteFilePath)
+
+		private async Task PerformFileDownload(Session session, string targetFilePath, string remoteFilePath)
 		{
 			try
 			{
-				await Task.Run(() =>
+				// Check if the file exists locally
+				if (File.Exists(targetFilePath))
 				{
-					bool fileExists = File.Exists(targetFilePath);
-
-					if (fileExists)
+					using (var remoteStream = session.GetFile(remoteFilePath))
+					using (var memoryStream = new MemoryStream())
 					{
-						Application.Current.Dispatcher.Invoke(() =>
-						{
-							var fileActionViewModel = new FileActionDialogViewModel();
+						// Download the file contents to a MemoryStream
+						remoteStream.CopyTo(memoryStream);
 
-							// Create and set up the custom dialog window
-							var fileActionDialog = CreateFileActionDialog(fileActionViewModel);
+						// Convert the MemoryStream to a byte array
+						byte[] fileBytes = memoryStream.ToArray();
 
-							// Show the custom dialog
-							bool? dialogResult = ShowDialog(fileActionDialog);
+						var fileActionViewModel = new FileActionDialogViewModel();
+						var fileActionDialog = CreateFileActionDialog(fileActionViewModel);
 
-							// Handle the user's choice
-							HandleUserChoice(ftpClient, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult);
-						});
+						// Show the custom dialog and await the user's choice
+						bool? dialogResult = ShowDialog(fileActionDialog);
+
+						// Handle the user's choice
+						HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, fileBytes);
 					}
-					else
-					{
-						DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath);
-					}
-				});
+				}
+				else
+				{
+					await DownloadFileFromSftp(session, targetFilePath, remoteFilePath);
+				}
 			}
 			catch (Exception ex)
 			{
 				HandleError(ex);
 			}
 		}
+
 
 		private FileActionDialog CreateFileActionDialog(FileActionDialogViewModel fileActionViewModel)
 		{
@@ -216,18 +242,18 @@ namespace TSBFTPPortal.Services
 			return fileActionDialog.ShowDialog();
 		}
 
-		private void HandleUserChoice(FtpClient ftpClient, string targetFilePath, string remoteFilePath, string selectedAction, bool? dialogResult)
+		private async Task HandleUserChoice(Session session, string targetFilePath, string remoteFilePath, string selectedAction, bool? dialogResult, byte[] fileBytes)
 		{
 			if (dialogResult.HasValue && dialogResult.Value)
 			{
 				switch (selectedAction)
 				{
 					case "Overwrite":
-						DownloadFileFromFtp(ftpClient, targetFilePath, remoteFilePath, FtpLocalExists.Overwrite);
+						await DownloadFileFromSftp(session, targetFilePath, remoteFilePath);
 						break;
 					case "CreateCopy":
 						string newFilePath = GetUniqueFileName(targetFilePath);
-						DownloadFileFromFtp(ftpClient, newFilePath, remoteFilePath);
+						await DownloadFileFromSftp(session, newFilePath, remoteFilePath);
 						break;
 					case "Cancel":
 						// User canceled the operation, do nothing
@@ -236,16 +262,22 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private void DownloadFileFromFtp(FtpClient ftpClient, string targetFilePath, string remoteFilePath, FtpLocalExists localExists = FtpLocalExists.Skip)
+
+
+		private async Task DownloadFileFromSftp(Session session, string targetFilePath, string remoteFilePath)
 		{
 			try
 			{
-				ftpClient.DownloadFile(
-						targetFilePath,
-						remoteFilePath,
-						localExists,
-						FtpVerify.None,
-						progressInfo => UpdateProgress(progressInfo));
+				// Download the file using WinSCP
+				TransferOperationResult transferResult = session.GetFiles(remoteFilePath, targetFilePath);
+
+				// Check if the transfer was successful
+				if (!transferResult.IsSuccess)
+				{
+					Log.Error($"Error downloading file: {transferResult.Failures[0].Message}");
+					ShowErrorMessage($"Error downloading file: {transferResult.Failures[0].Message}");
+					return;
+				}
 
 				LogInformation(targetFilePath);
 				string fileExtension = Path.GetExtension(targetFilePath);
@@ -265,9 +297,10 @@ namespace TSBFTPPortal.Services
 			}
 			catch (Exception ex)
 			{
-				HandleFtpException(ex, targetFilePath);
+				HandleError(ex, targetFilePath);
 			}
 		}
+
 
 		private string GetUniqueFileName(string filePath)
 		{
@@ -428,23 +461,43 @@ namespace TSBFTPPortal.Services
 
 		public async Task<string?> ReadJsonFileFromFTPAsync(string path)
 		{
-			using (var ftpClient = new FtpClient(_ftpServer, new NetworkCredential(_username, _password)))
+			try
 			{
-				try
+				// Set up session options
+				SessionOptions sessionOptions = new SessionOptions
 				{
-					ftpClient.Connect();
-					Log.Information("Connected to FTP Server for JSON file reading");
+					Protocol = Protocol.Sftp,
+					HostName = _ftpServer,
+					UserName = _username,
+					Password = _password,
+					SshHostKeyFingerprint = _sshHostKeyFingerprint,
+				};
 
-					using var stream = await Task.Run(() => ftpClient.OpenRead(path));
-					using var memoryStream = new MemoryStream();
-					await stream.CopyToAsync(memoryStream);
-					return Encoding.UTF8.GetString(memoryStream.ToArray());
-				}
-				catch (Exception ex)
+				using (Session session = new Session())
 				{
-					Log.Error($"Error reading JSON file from FTP: {ex.Message}");
-					return null;
+					// Connect to the SFTP server
+					session.Open(sessionOptions);
+
+					// Create a remote file info for the file you want to read
+					RemoteFileInfo remoteFileInfo = session.GetFileInfo(path);
+
+					using (Stream remoteStream = session.GetFile(path))
+					using (MemoryStream memoryStream = new MemoryStream())
+					{
+						// Download the file contents to a MemoryStream
+						remoteStream.CopyTo(memoryStream);
+
+						// Convert the MemoryStream to a string
+						string fileContent = Encoding.UTF8.GetString(memoryStream.ToArray());
+
+						return fileContent;
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Error reading JSON file from SFTP: {ex.Message}");
+				return null;
 			}
 		}
 

@@ -65,10 +65,11 @@ namespace TSBFTPPortal.ViewModels
 			string? ftpServer = configuration["FtpSettings:Server"];
 			string? username = configuration["FtpSettings:Username"];
 			string? password = configuration["FtpSettings:Password"];
+			string? sshHostKeyFingerprint = configuration["FtpSettings:SshHostKeyFingerprint"];
 
 			if (ftpServer != null && username != null && password != null)
 			{
-				FtpService ftpService = new(ftpServer, username, password);
+				FtpService ftpService = new(ftpServer, username, password, sshHostKeyFingerprint);
 				CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService, FilterTreeViewViewModel, SearchBarViewModel);
 				PABTreeViewViewModel = new PABTreeViewViewModel(SelectedCounty, ftpService, SearchBarViewModel);
 				GISTreeViewViewModel = new GISTreeViewViewModel(SelectedCounty, ftpService, SearchBarViewModel);
