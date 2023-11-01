@@ -1,5 +1,4 @@
-﻿using FluentFTP;
-using WinSCP;
+﻿using WinSCP;
 using Serilog;
 using System;
 using System.Collections.ObjectModel;
@@ -14,6 +13,7 @@ using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
 using System.Collections.Generic;
+using FluentFTP;
 
 namespace TSBFTPPortal.Services
 {
@@ -143,7 +143,6 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-
 		private void InitializeProgressWindow()
 		{
 			_progressWindow.DataContext = new ProgressWindowViewModel();
@@ -158,6 +157,30 @@ namespace TSBFTPPortal.Services
 			_progressWindow.Show();
 			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
 			viewModel.CancelCommand = new RelayCommand(Cancel);
+		}
+		private void UpdateProgress(FtpProgress progressInfo)
+		{
+			try
+			{
+				if (_isCancellationRequested)
+				{
+					_cancellationTokenSource.Cancel();
+					return;
+				}
+
+				double progressPercentage = (double)progressInfo.Progress;
+
+				_progressWindow.Dispatcher.Invoke(() =>
+				{
+					var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
+					viewModel.StatusMessage = "Downloading file . . . ";
+					viewModel.ProgressPercentage = progressPercentage;
+				});
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Progress update error: {ex}");
+			}
 		}
 
 		private static string GetTargetFilePath(string fileName)
@@ -371,27 +394,6 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private void HandleFtpException(Exception ex, string targetFilePath)
-		{
-			if (ex is FluentFTP.Exceptions.FtpCommandException commandException)
-			{
-				if (commandException.Message.Contains("Failed to open file"))
-				{
-					Log.Error($"FtpCommandException: {ex.Message}");
-				}
-				else
-				{
-					Log.Error($"Download Error: {targetFilePath}\n{ex.Message}");
-				}
-			}
-			else if (ex is FluentFTP.Exceptions.FtpMissingObjectException missingObjectException)
-			{
-				Log.Error($"FtpMissingObjectException: {ex.Message}");
-			}
-
-			ShowErrorMessage(ex.Message);
-		}
-
 		private void HandleError(Exception ex, string targetFilePath = null)
 		{
 			Log.Error($"An unexpected error occurred: {ex.Message}");
@@ -424,31 +426,6 @@ namespace TSBFTPPortal.Services
 				
 				errorDialog.ShowDialog();
 			});
-		}
-
-		private void UpdateProgress(FtpProgress progressInfo)
-		{
-			try
-			{
-				if (_isCancellationRequested)
-				{
-					_cancellationTokenSource.Cancel();
-					return;
-				}
-
-				double progressPercentage = (double)progressInfo.Progress;
-
-				_progressWindow.Dispatcher.Invoke(() =>
-				{
-					var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
-					viewModel.StatusMessage = "Downloading file . . . ";
-					viewModel.ProgressPercentage = progressPercentage;
-				});
-			}
-			catch (Exception ex)
-			{
-				Log.Error($"Progress update error: {ex}");
-			}
 		}
 
 		private void Cancel(object obj)
