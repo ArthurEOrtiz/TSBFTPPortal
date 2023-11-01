@@ -4,7 +4,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,8 +11,6 @@ using System.Windows;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
-using System.Collections.Generic;
-using FluentFTP;
 
 namespace TSBFTPPortal.Services
 {
@@ -26,6 +23,8 @@ namespace TSBFTPPortal.Services
 		private CancellationTokenSource? _cancellationTokenSource;
 		private bool _isCancellationRequested;
 		private ProgressWindow? _progressWindow;
+		public delegate void ProgressUpdateHandler(double progressPercentage);
+		public event ProgressUpdateHandler ProgressUpdated;
 
 		public FtpService(string ftpServer, string username, string password, string SshHostKeyFingerprint)
 		{
@@ -57,6 +56,7 @@ namespace TSBFTPPortal.Services
 					});
 
 					LoadSubDirectoriesAndFiles(session, rootPath, items);
+
 				}
 			}
 			catch (Exception ex)
@@ -64,6 +64,7 @@ namespace TSBFTPPortal.Services
 				Log.Error($"Failure to Connect to SFTP : {ex.Message}");
 			}
 
+			
 			return items;
 
 		}
@@ -104,6 +105,8 @@ namespace TSBFTPPortal.Services
 
 			try
 			{
+				InitializeProgressWindow();
+
 				using (Session session = new Session())
 				{
 					// Configure session options
@@ -114,6 +117,21 @@ namespace TSBFTPPortal.Services
 						UserName = _username,
 						Password = _password,
 						SshHostKeyFingerprint = _sshHostKeyFingerprint,
+					};
+
+					session.FileTransferProgress += (sender, e) =>
+					{
+						if (e.FileName != null)
+						{
+
+							double progressPercentage = e.FileProgress * 100;
+							UpdateProgress(progressPercentage);
+						}
+						else
+						{
+							// Handle transfer errors here
+							Log.Error($"Error transferring file");
+						}
 					};
 
 					// Connect to the SFTP server
@@ -143,43 +161,41 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private void InitializeProgressWindow()
-		{
-			_progressWindow.DataContext = new ProgressWindowViewModel();
-
-			var mainWindow = Application.Current.MainWindow;
-			_progressWindow.Owner = mainWindow;
-
-			// Set the location of the progress window 
-			_progressWindow.Left = mainWindow.Left + (mainWindow.Width - _progressWindow.Width) / 2;
-			_progressWindow.Top = mainWindow.Top + (mainWindow.Height - _progressWindow.Height) / 2;
-
-			_progressWindow.Show();
-			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
-			viewModel.CancelCommand = new RelayCommand(Cancel);
-		}
-		private void UpdateProgress(FtpProgress progressInfo)
+		private async Task PerformFileDownload(Session session, string targetFilePath, string remoteFilePath)
 		{
 			try
 			{
-				if (_isCancellationRequested)
+				
+				// Check if the file exists locally
+				if (File.Exists(targetFilePath))
 				{
-					_cancellationTokenSource.Cancel();
-					return;
+					using (var remoteStream = session.GetFile(remoteFilePath))
+					using (var memoryStream = new MemoryStream())
+					{
+						// Download the file contents to a MemoryStream
+						remoteStream.CopyTo(memoryStream);
+
+						// Convert the MemoryStream to a byte array
+						byte[] fileBytes = memoryStream.ToArray();
+
+						var fileActionViewModel = new FileActionDialogViewModel();
+						var fileActionDialog = CreateFileActionDialog(fileActionViewModel);
+						
+						// Show the custom dialog and await the user's choice
+						bool? dialogResult = ShowDialog(fileActionDialog);
+
+						// Handle the user's choice
+						HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, fileBytes);
+					}
 				}
-
-				double progressPercentage = (double)progressInfo.Progress;
-
-				_progressWindow.Dispatcher.Invoke(() =>
+				else
 				{
-					var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
-					viewModel.StatusMessage = "Downloading file . . . ";
-					viewModel.ProgressPercentage = progressPercentage;
-				});
+					await DownloadFileFromSftp(session, targetFilePath, remoteFilePath);
+				}
 			}
 			catch (Exception ex)
 			{
-				Log.Error($"Progress update error: {ex}");
+				HandleError(ex);
 			}
 		}
 
@@ -202,45 +218,6 @@ namespace TSBFTPPortal.Services
 					return Path.Combine(downloadsFolder, fileName);
 			}
 		}
-
-
-		private async Task PerformFileDownload(Session session, string targetFilePath, string remoteFilePath)
-		{
-			try
-			{
-				// Check if the file exists locally
-				if (File.Exists(targetFilePath))
-				{
-					using (var remoteStream = session.GetFile(remoteFilePath))
-					using (var memoryStream = new MemoryStream())
-					{
-						// Download the file contents to a MemoryStream
-						remoteStream.CopyTo(memoryStream);
-
-						// Convert the MemoryStream to a byte array
-						byte[] fileBytes = memoryStream.ToArray();
-
-						var fileActionViewModel = new FileActionDialogViewModel();
-						var fileActionDialog = CreateFileActionDialog(fileActionViewModel);
-
-						// Show the custom dialog and await the user's choice
-						bool? dialogResult = ShowDialog(fileActionDialog);
-
-						// Handle the user's choice
-						HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, fileBytes);
-					}
-				}
-				else
-				{
-					await DownloadFileFromSftp(session, targetFilePath, remoteFilePath);
-				}
-			}
-			catch (Exception ex)
-			{
-				HandleError(ex);
-			}
-		}
-
 
 		private FileActionDialog CreateFileActionDialog(FileActionDialogViewModel fileActionViewModel)
 		{
@@ -285,14 +262,14 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-
-
 		private async Task DownloadFileFromSftp(Session session, string targetFilePath, string remoteFilePath)
 		{
 			try
 			{
-				// Download the file using WinSCP
-				TransferOperationResult transferResult = session.GetFiles(remoteFilePath, targetFilePath);
+				// Start the download
+				TransferOptions transferOptions = new TransferOptions { TransferMode = TransferMode.Binary };
+				TransferOperationResult transferResult = session.GetFiles(remoteFilePath, targetFilePath, false, transferOptions);
+
 
 				// Check if the transfer was successful
 				if (!transferResult.IsSuccess)
@@ -301,6 +278,8 @@ namespace TSBFTPPortal.Services
 					ShowErrorMessage($"Error downloading file: {transferResult.Failures[0].Message}");
 					return;
 				}
+
+				session.Dispose();
 
 				LogInformation(targetFilePath);
 				string fileExtension = Path.GetExtension(targetFilePath);
@@ -317,6 +296,8 @@ namespace TSBFTPPortal.Services
 				{
 					RunScriptRunner(targetFilePath);
 				}
+
+				
 			}
 			catch (Exception ex)
 			{
@@ -324,6 +305,45 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
+		private void UpdateProgress(double progressPercentage)
+		{
+			try
+			{
+				if (_isCancellationRequested)
+				{
+					_cancellationTokenSource.Cancel();
+					return;
+				}
+
+				_progressWindow.Dispatcher.Invoke(() =>
+				{
+					var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
+					viewModel.StatusMessage = "Downloading file . . . ";
+					viewModel.ProgressPercentage = progressPercentage;
+				});
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Progress update error: {ex}");
+			}
+		}
+
+		private void InitializeProgressWindow()
+		{
+			_progressWindow = new ProgressWindow();
+			_progressWindow.DataContext = new ProgressWindowViewModel();
+
+			var mainWindow = Application.Current.MainWindow;
+			_progressWindow.Owner = mainWindow;
+
+			// Set the location of the progress window 
+			_progressWindow.Left = mainWindow.Left + (mainWindow.Width - _progressWindow.Width) / 2;
+			_progressWindow.Top = mainWindow.Top + (mainWindow.Height - _progressWindow.Height) / 2;
+
+			_progressWindow.Show();
+			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
+			viewModel.CancelCommand = new RelayCommand(Cancel);
+		}
 
 		private string GetUniqueFileName(string filePath)
 		{
