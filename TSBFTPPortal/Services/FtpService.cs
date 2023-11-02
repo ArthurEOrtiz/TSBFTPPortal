@@ -93,6 +93,7 @@ namespace TSBFTPPortal.Services
 
 		public async Task DownloadFileAsync(string path)
 		{
+			Debug.WriteLine("*******Download Started************");
 			if (!IsInternetAvailable())
 			{
 				Log.Error("Internet connection lost.");
@@ -121,8 +122,17 @@ namespace TSBFTPPortal.Services
 						if (e.FileName != null)
 						{
 
-							double progressPercentage = e.FileProgress * 100;
-							UpdateProgress(progressPercentage);
+							double progressPercentage = (double)(e.FileProgress * 100);
+							//UpdateProgress(progressPercentage);
+							Debug.WriteLine("\r{0} ({1:P0})", e.FileName, e.FileProgress);
+							//Debug.WriteLine($"\r{progressPercentage}");
+
+							_progressWindow.Dispatcher.Invoke(() =>
+							{
+								var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
+								viewModel.StatusMessage = "Downloading file . . . ";
+								viewModel.ProgressPercentage = progressPercentage;
+							});
 						}
 						else
 						{
