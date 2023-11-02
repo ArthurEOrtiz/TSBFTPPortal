@@ -1,5 +1,4 @@
-﻿using WinSCP;
-using Serilog;
+﻿using Serilog;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -11,6 +10,7 @@ using System.Windows;
 using TSBFTPPortal.Commands;
 using TSBFTPPortal.ViewModels;
 using TSBFTPPortal.Views;
+using WinSCP;
 
 namespace TSBFTPPortal.Services
 {
@@ -48,6 +48,7 @@ namespace TSBFTPPortal.Services
 					session.Open(new SessionOptions
 					{
 						Protocol = Protocol.Sftp,
+						PortNumber = 22,
 						HostName = _ftpServer,
 						UserName = _username,
 						Password = _password,
@@ -115,24 +116,17 @@ namespace TSBFTPPortal.Services
 						UserName = _username,
 						Password = _password,
 						SshHostKeyFingerprint = _sshHostKeyFingerprint,
+						PortNumber = 22,
 					};
 
 					session.FileTransferProgress += (sender, e) =>
 					{
 						if (e.FileName != null)
 						{
-
 							double progressPercentage = (double)(e.FileProgress * 100);
-							//UpdateProgress(progressPercentage);
+							UpdateProgress(progressPercentage);
 							Debug.WriteLine("\r{0} ({1:P0})", e.FileName, e.FileProgress);
 							//Debug.WriteLine($"\r{progressPercentage}");
-
-							_progressWindow.Dispatcher.Invoke(() =>
-							{
-								var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
-								viewModel.StatusMessage = "Downloading file . . . ";
-								viewModel.ProgressPercentage = progressPercentage;
-							});
 						}
 						else
 						{
@@ -172,7 +166,7 @@ namespace TSBFTPPortal.Services
 		{
 			try
 			{
-				
+
 				// Check if the file exists locally
 				if (File.Exists(targetFilePath))
 				{
@@ -187,7 +181,7 @@ namespace TSBFTPPortal.Services
 
 						var fileActionViewModel = new FileActionDialogViewModel();
 						var fileActionDialog = CreateFileActionDialog(fileActionViewModel);
-						
+
 						// Show the custom dialog and await the user's choice
 						bool? dialogResult = ShowDialog(fileActionDialog);
 
@@ -304,7 +298,7 @@ namespace TSBFTPPortal.Services
 					RunScriptRunner(targetFilePath);
 				}
 
-				
+
 			}
 			catch (Exception ex)
 			{
@@ -444,13 +438,13 @@ namespace TSBFTPPortal.Services
 				errorDialog.Top = dialogTop;
 
 				errorDialog.Topmost = true;
-				
+
 				viewModel.CloseAction = (result) =>
 				{
 					errorDialog.DialogResult = result;
 					errorDialog.Close();
 				};
-				
+
 				errorDialog.ShowDialog();
 			});
 		}
@@ -465,18 +459,19 @@ namespace TSBFTPPortal.Services
 
 		public async Task<string?> ReadJsonFileFromFTPAsync(string path)
 		{
+
+			// Set up session options
+			SessionOptions sessionOptions = new SessionOptions
+			{
+				Protocol = Protocol.Sftp,
+				HostName = _ftpServer,
+				UserName = _username,
+				Password = _password,
+				SshHostKeyFingerprint = _sshHostKeyFingerprint
+			};
+
 			try
 			{
-				// Set up session options
-				SessionOptions sessionOptions = new SessionOptions
-				{
-					Protocol = Protocol.Sftp,
-					HostName = _ftpServer,
-					UserName = _username,
-					Password = _password,
-					SshHostKeyFingerprint = _sshHostKeyFingerprint,
-				};
-
 				using (Session session = new Session())
 				{
 					// Connect to the SFTP server
