@@ -15,7 +15,7 @@ namespace TSBFTPPortal.ViewModels
 			SelectedCounty = selectedCounty;
 			Directories = new ObservableCollection<DirectoryItemViewModel>();
 			SearchBarViewModel = searchBarViewModel;
-			LoadScriptDirectoriesAndFoldersFromFTP(GetRootPath(), ftpService);
+			LoadScriptDirectoriesAndFoldersFromFTPAsync(GetRootPath(), ftpService);
 		}
 
 		private string GetRootPath()

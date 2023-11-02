@@ -41,7 +41,7 @@ namespace TSBFTPPortal.ViewModels
 				}
 			};
 
-			LoadAllDirectoriesAndFoldersFromFtp(GetRootPath(), ftpService);
+			LoadAllDirectoriesAndFoldersFromFtpAsync(GetRootPath(), ftpService);
 		}
 
 		private string GetRootPath()

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using TSBFTPPortal.Services;
 
 namespace TSBFTPPortal.ViewModels
@@ -31,9 +32,9 @@ namespace TSBFTPPortal.ViewModels
 			_directories = new ObservableCollection<DirectoryItemViewModel>();
 		}
 
-		public void LoadScriptDirectoriesAndFoldersFromFTP(string rootPath, FtpService ftpService)
+		public async Task LoadScriptDirectoriesAndFoldersFromFTPAsync(string rootPath, FtpService ftpService)
 		{
-			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			var items = await ftpService.LoadDirectoriesAndFilesFromFTPAsync(rootPath);
 			IOrderedEnumerable<DirectoryItemViewModel> sortedItems = (IOrderedEnumerable<DirectoryItemViewModel>)SortByDirectoryAndFileType(items);
 
 			foreach (DirectoryItemViewModel item in sortedItems)
@@ -51,9 +52,9 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-		public void LoadReportDirectoriesAndFoldersFromFTP(string rootPath, FtpService ftpService)
+		public async Task LoadReportDirectoriesAndFoldersFromFTPAsync(string rootPath, FtpService ftpService)
 		{
-			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			var items = await ftpService.LoadDirectoriesAndFilesFromFTPAsync(rootPath);
 			IOrderedEnumerable<DirectoryItemViewModel> sortedItems = (IOrderedEnumerable<DirectoryItemViewModel>)SortByDirectoryAndFileType(items);
 
 			foreach (DirectoryItemViewModel item in sortedItems)
@@ -71,9 +72,9 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-		public void LoadDocumentAndFilesDirectoriesAndFoldersFromFtp(string rootPath, FtpService ftpService)
+		public async Task LoadDocumentAndFilesDirectoriesAndFoldersFromFtpAsync(string rootPath, FtpService ftpService)
 		{
-			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			var items = await ftpService.LoadDirectoriesAndFilesFromFTPAsync(rootPath);
 			IOrderedEnumerable<DirectoryItemViewModel> sortedItems = (IOrderedEnumerable<DirectoryItemViewModel>)SortByDirectoryAndFileType(items);
 
 			foreach (DirectoryItemViewModel item in sortedItems)
@@ -91,9 +92,9 @@ namespace TSBFTPPortal.ViewModels
 			}
 		}
 
-		public void LoadAllDirectoriesAndFoldersFromFtp(string rootPath, FtpService ftpService)
+		public async Task LoadAllDirectoriesAndFoldersFromFtpAsync(string rootPath, FtpService ftpService)
 		{
-			ObservableCollection<DirectoryItemViewModel> items = ftpService.LoadDirectoriesAndFilesFromFTP(rootPath);
+			var items = await ftpService.LoadDirectoriesAndFilesFromFTPAsync(rootPath);
 			IOrderedEnumerable<DirectoryItemViewModel> sortedItems = (IOrderedEnumerable<DirectoryItemViewModel>)SortByDirectoryAndFileType(items);
 
 			foreach (DirectoryItemViewModel item in sortedItems)

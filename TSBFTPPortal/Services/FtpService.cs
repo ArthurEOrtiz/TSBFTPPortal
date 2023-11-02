@@ -35,7 +35,7 @@ namespace TSBFTPPortal.Services
 		}
 
 
-		public ObservableCollection<DirectoryItemViewModel> LoadDirectoriesAndFilesFromFTP(string rootPath)
+		public async Task<ObservableCollection<DirectoryItemViewModel>> LoadDirectoriesAndFilesFromFTPAsync(string rootPath)
 		{
 			var items = new ObservableCollection<DirectoryItemViewModel>();
 
@@ -45,7 +45,6 @@ namespace TSBFTPPortal.Services
 				{
 					session.DisableVersionCheck = true;
 
-					// Connect to the SFTP server
 					session.Open(new SessionOptions
 					{
 						Protocol = Protocol.Sftp,
@@ -55,8 +54,7 @@ namespace TSBFTPPortal.Services
 						SshHostKeyFingerprint = _sshHostKeyFingerprint,
 					});
 
-					LoadSubDirectoriesAndFiles(session, rootPath, items);
-
+					await LoadSubDirectoriesAndFilesAsync(session, rootPath, items);
 				}
 			}
 			catch (Exception ex)
@@ -64,18 +62,16 @@ namespace TSBFTPPortal.Services
 				Log.Error($"Failure to Connect to SFTP : {ex.Message}");
 			}
 
-			
 			return items;
-
 		}
 
-		private void LoadSubDirectoriesAndFiles(Session session, string path, ObservableCollection<DirectoryItemViewModel> items)
+		private async Task LoadSubDirectoriesAndFilesAsync(Session session, string path, ObservableCollection<DirectoryItemViewModel> items)
 		{
-			RemoteDirectoryInfo directory = session.ListDirectory(path);
+			RemoteDirectoryInfo directory = await Task.Run(() => session.ListDirectory(path));
 
 			foreach (RemoteFileInfo fileInfo in directory.Files)
 			{
-				if (fileInfo.Name != "." && fileInfo.Name != "..") // Skip current and parent directory entries
+				if (fileInfo.Name != "." && fileInfo.Name != "..")
 				{
 					var subItemViewModel = new DirectoryItemViewModel(this)
 					{
@@ -88,11 +84,12 @@ namespace TSBFTPPortal.Services
 
 					if (fileInfo.IsDirectory)
 					{
-						LoadSubDirectoriesAndFiles(session, fileInfo.FullName, subItemViewModel.Items);
+						await LoadSubDirectoriesAndFilesAsync(session, fileInfo.FullName, subItemViewModel.Items);
 					}
 				}
 			}
 		}
+
 
 		public async Task DownloadFileAsync(string path)
 		{
