@@ -32,6 +32,8 @@ namespace TSBFTPPortal.Services
 			_username = username;
 			_password = password;
 			_sshHostKeyFingerprint = SshHostKeyFingerprint;
+
+			_cancellationTokenSource = new CancellationTokenSource();
 		}
 
 
@@ -94,7 +96,6 @@ namespace TSBFTPPortal.Services
 
 		public async Task DownloadFileAsync(string path)
 		{
-			Debug.WriteLine("*******Download Started************");
 			if (!IsInternetAvailable())
 			{
 				Log.Error("Internet connection lost.");
@@ -128,6 +129,11 @@ namespace TSBFTPPortal.Services
 							{
 								double progressPercentage = (double)(e.FileProgress * 100);
 								UpdateProgress(progressPercentage);
+
+								if (_isCancellationRequested)
+								{
+									e.Cancel = true;
+								}
 							}
 							else
 							{
@@ -144,10 +150,10 @@ namespace TSBFTPPortal.Services
 
 						if (targetFilePath != null)
 						{
-							await PerformFileDownload(session, targetFilePath, path);
+							await PerformFileDownload(session, targetFilePath, path, _cancellationTokenSource.Token);
 						}
 					}
-				});
+				}, _cancellationTokenSource.Token);
 
 			}
 			catch (OperationCanceledException)
@@ -165,10 +171,12 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private async Task PerformFileDownload(Session session, string targetFilePath, string remoteFilePath)
+		private async Task PerformFileDownload(Session session, string targetFilePath, string remoteFilePath, CancellationToken cancellationToken)
 		{
 			try
 			{
+				cancellationToken.ThrowIfCancellationRequested();
+
 				// Check if the file exists locally
 				if (File.Exists(targetFilePath))
 				{
@@ -176,7 +184,7 @@ namespace TSBFTPPortal.Services
 					using (var memoryStream = new MemoryStream())
 					{
 						// Download the file contents to a MemoryStream
-						remoteStream.CopyTo(memoryStream);
+						await remoteStream.CopyToAsync(memoryStream, cancellationToken);
 
 						// Convert the MemoryStream to a byte array
 						byte[] fileBytes = memoryStream.ToArray();
@@ -188,13 +196,17 @@ namespace TSBFTPPortal.Services
 						bool? dialogResult = ShowDialog(fileActionDialog);
 
 						// Handle the user's choice
-						await HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, fileBytes);
+						await HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, cancellationToken);
 					}
 				}
 				else
 				{
-					await DownloadFileFromSftp(session, targetFilePath, remoteFilePath);
+					await DownloadFileFromSftp(session, targetFilePath, remoteFilePath, cancellationToken);
 				}
+			}
+			catch (OperationCanceledException)
+			{
+				Log.Information("Download cancelled.");
 			}
 			catch (Exception ex)
 			{
@@ -245,18 +257,18 @@ namespace TSBFTPPortal.Services
 			return fileActionDialog.ShowDialog();
 		}
 
-		private async Task HandleUserChoice(Session session, string targetFilePath, string remoteFilePath, string selectedAction, bool? dialogResult)
+		private async Task HandleUserChoice(Session session, string targetFilePath, string remoteFilePath, string selectedAction, bool? dialogResult, CancellationToken cancellationToken)
 		{
 			if (dialogResult.HasValue && dialogResult.Value)
 			{
 				switch (selectedAction)
 				{
 					case "Overwrite":
-						await DownloadFileFromSftp(session, targetFilePath, remoteFilePath);
+						await DownloadFileFromSftp(session, targetFilePath, remoteFilePath, cancellationToken);
 						break;
 					case "CreateCopy":
 						string newFilePath = GetUniqueFileName(targetFilePath);
-						await DownloadFileFromSftp(session, newFilePath, remoteFilePath);
+						await DownloadFileFromSftp(session, newFilePath, remoteFilePath, cancellationToken);
 						break;
 					case "Cancel":
 						// User canceled the operation, do nothing
@@ -265,13 +277,18 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private async Task DownloadFileFromSftp(Session session, string targetFilePath, string remoteFilePath)
+		private async Task DownloadFileFromSftp(Session session, string targetFilePath, string remoteFilePath, CancellationToken cancellationToken)
 		{
 			try
 			{
+				cancellationToken.ThrowIfCancellationRequested();
+
 				// Start the download
 				TransferOptions transferOptions = new TransferOptions { TransferMode = TransferMode.Binary };
-				TransferOperationResult transferResult = session.GetFiles(remoteFilePath, targetFilePath, false, transferOptions);
+				TransferOperationResult transferResult = await Task.Run(() =>
+				{
+					return session.GetFiles(remoteFilePath, targetFilePath, false, transferOptions);
+				}, cancellationToken); // Pass the CancellationToken
 
 
 				// Check if the transfer was successful
@@ -302,20 +319,23 @@ namespace TSBFTPPortal.Services
 
 
 			}
+			catch(OperationCanceledException)
+			{
+				Log.Information("Download cancelled.");
+			}
 			catch (Exception ex)
 			{
 				HandleError(ex, targetFilePath);
 			}
 		}
 
-		private void UpdateProgress(double progressPercentage)
+		private void UpdateProgress(double progressPercentage )
 		{
 			try
 			{
 				if (_isCancellationRequested)
 				{
 					_cancellationTokenSource.Cancel();
-					return;
 				}
 
 				_progressWindow.Dispatcher.Invoke(() =>
@@ -334,6 +354,7 @@ namespace TSBFTPPortal.Services
 		public void InitializeProgressWindow()
 		{
 			_progressWindow = new ProgressWindow();
+			_progressWindow.DataContext = new ProgressWindowViewModel();
 
 			var mainWindow = Application.Current.MainWindow;
 			_progressWindow.Owner = mainWindow;
@@ -376,7 +397,7 @@ namespace TSBFTPPortal.Services
 			try
 			{
 				Process.Start(new ProcessStartInfo(targetFilePath) { UseShellExecute = true });
-				Log.Information($"Download successful: {fileExtension}");
+				Log.Information($"Download successful: {targetFilePath}");
 			}
 			catch (Exception ex)
 			{
@@ -453,9 +474,18 @@ namespace TSBFTPPortal.Services
 		private void Cancel(object obj)
 		{
 			_isCancellationRequested = true;
-			_cancellationTokenSource.Cancel();
-			var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
-			viewModel.StatusMessage = "Download cancelled.";
+
+			if (_cancellationTokenSource != null)
+			{
+				_cancellationTokenSource.Cancel();
+			}
+			_cancellationTokenSource = new CancellationTokenSource();
+
+			if (_progressWindow != null )
+			{
+				var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
+				viewModel.StatusMessage = "Download cancelled.";
+			}
 		}
 
 		public async Task<string?> ReadJsonFileFromFTPAsync(string path)
