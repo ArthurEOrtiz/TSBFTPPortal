@@ -104,7 +104,7 @@ namespace TSBFTPPortal.Services
 
 			try
 			{
-				InitializeProgressWindow();
+				
 
 				using (Session session = new Session())
 				{
@@ -125,8 +125,8 @@ namespace TSBFTPPortal.Services
 						{
 							double progressPercentage = (double)(e.FileProgress * 100);
 							UpdateProgress(progressPercentage);
-							Debug.WriteLine("\r{0} ({1:P0})", e.FileName, e.FileProgress);
-							//Debug.WriteLine($"\r{progressPercentage}");
+							//Debug.WriteLine("\r{0} ({1:P0})", e.FileName, e.FileProgress);
+							Debug.WriteLine($"\r{progressPercentage}");
 						}
 						else
 						{
@@ -332,7 +332,7 @@ namespace TSBFTPPortal.Services
 		private void InitializeProgressWindow()
 		{
 			_progressWindow = new ProgressWindow();
-			_progressWindow.DataContext = new ProgressWindowViewModel();
+			//_progressWindow.DataContext = new ProgressWindowViewModel();
 
 			var mainWindow = Application.Current.MainWindow;
 			_progressWindow.Owner = mainWindow;
