@@ -104,54 +104,51 @@ namespace TSBFTPPortal.Services
 
 			try
 			{
-                _progressWindow = new ProgressWindow();
-                //_progressWindow.Show();
-                InitializeProgressWindow();
 
+				InitializeProgressWindow();
 
-				await Task.Run(async () => {
-                    using (Session session = new Session())
-                    {
-                        // Configure session options
-                        SessionOptions sessionOptions = new SessionOptions
-                        {
-                            Protocol = Protocol.Sftp,
-                            HostName = _ftpServer,
-                            UserName = _username,
-                            Password = _password,
-                            SshHostKeyFingerprint = _sshHostKeyFingerprint,
-                            PortNumber = 22,
-                        };
+				await Task.Run(async () =>
+				{
+					using (Session session = new Session())
+					{
+						// Configure session options
+						SessionOptions sessionOptions = new SessionOptions
+						{
+							Protocol = Protocol.Sftp,
+							HostName = _ftpServer,
+							UserName = _username,
+							Password = _password,
+							SshHostKeyFingerprint = _sshHostKeyFingerprint,
+							PortNumber = 22,
+						};
 
-                        session.FileTransferProgress += (sender, e) =>
-                        {
-                            if (e.FileName != null)
-                            {
-                                double progressPercentage = (double)(e.FileProgress * 100);
-                                UpdateProgress(progressPercentage);
-                                //Debug.WriteLine("\r{0} ({1:P0})", e.FileName, e.FileProgress);
-                                Debug.WriteLine($"\r{progressPercentage}");
-                            }
-                            else
-                            {
-                                // Handle transfer errors here
-                                Log.Error($"Error transferring file");
-                            }
-                        };
+						session.FileTransferProgress += (sender, e) =>
+						{
+							if (e.FileName != null)
+							{
+								double progressPercentage = (double)(e.FileProgress * 100);
+								UpdateProgress(progressPercentage);
+							}
+							else
+							{
+								// Handle transfer errors here
+								Log.Error($"Error transferring file");
+							}
+						};
 
-                        // Connect to the SFTP server
-                        session.Open(sessionOptions);
+						// Connect to the SFTP server
+						session.Open(sessionOptions);
 
-                        string fileName = Path.GetFileName(path);
-                        string targetFilePath = GetTargetFilePath(fileName);
+						string fileName = Path.GetFileName(path);
+						string targetFilePath = GetTargetFilePath(fileName);
 
-                        if (targetFilePath != null)
-                        {
-                            await PerformFileDownload(session, targetFilePath, path);
-                        }
-                    }
-                });
-                
+						if (targetFilePath != null)
+						{
+							await PerformFileDownload(session, targetFilePath, path);
+						}
+					}
+				});
+
 			}
 			catch (OperationCanceledException)
 			{
@@ -172,7 +169,6 @@ namespace TSBFTPPortal.Services
 		{
 			try
 			{
-
 				// Check if the file exists locally
 				if (File.Exists(targetFilePath))
 				{
@@ -192,7 +188,7 @@ namespace TSBFTPPortal.Services
 						bool? dialogResult = ShowDialog(fileActionDialog);
 
 						// Handle the user's choice
-						HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, fileBytes);
+						await HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, fileBytes);
 					}
 				}
 				else
@@ -249,7 +245,7 @@ namespace TSBFTPPortal.Services
 			return fileActionDialog.ShowDialog();
 		}
 
-		private async Task HandleUserChoice(Session session, string targetFilePath, string remoteFilePath, string selectedAction, bool? dialogResult, byte[] fileBytes)
+		private async Task HandleUserChoice(Session session, string targetFilePath, string remoteFilePath, string selectedAction, bool? dialogResult)
 		{
 			if (dialogResult.HasValue && dialogResult.Value)
 			{
@@ -338,7 +334,6 @@ namespace TSBFTPPortal.Services
 		public void InitializeProgressWindow()
 		{
 			_progressWindow = new ProgressWindow();
-			//_progressWindow.DataContext = new ProgressWindowViewModel();
 
 			var mainWindow = Application.Current.MainWindow;
 			_progressWindow.Owner = mainWindow;
@@ -474,11 +469,11 @@ namespace TSBFTPPortal.Services
 				UserName = _username,
 				Password = _password,
 				SshHostKeyFingerprint = _sshHostKeyFingerprint,
-				
+
 			};
 
 			sessionOptions.AddRawSettings("FSProtocol", "2");
-			
+
 
 			try
 			{
