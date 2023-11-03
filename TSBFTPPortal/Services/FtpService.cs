@@ -467,8 +467,12 @@ namespace TSBFTPPortal.Services
 				HostName = _ftpServer,
 				UserName = _username,
 				Password = _password,
-				SshHostKeyFingerprint = _sshHostKeyFingerprint
+				SshHostKeyFingerprint = _sshHostKeyFingerprint,
+				
 			};
+
+			sessionOptions.AddRawSettings("FSProtocol", "2");
+			
 
 			try
 			{
