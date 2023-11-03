@@ -24,16 +24,14 @@
 			<RowDefinition />
 		</Grid.RowDefinitions>
 
-		<TextBlock Text="{Binding Message}"
-							 Grid.Column="0"
-							 Grid.ColumnSpan="3"
-							 Grid.Row="0"
-							 VerticalAlignment="Center"
-							 HorizontalAlignment="Center"
-							 TextWrapping="Wrap"
-							 Padding="5"
-							 />
-			
+		<ScrollViewer Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0">
+			<TextBlock Text="{Binding Message}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Padding="5" />
+		</ScrollViewer>
+
 		<Button Content="OK"
 						Command="{Binding Okay}"
 						CommandParameter="Okay"
