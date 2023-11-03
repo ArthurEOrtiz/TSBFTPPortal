@@ -104,12 +104,17 @@ namespace TSBFTPPortal.Services
 
 			try
 			{
-				
+
 
 				using (Session session = new Session())
 				{
-					// Configure session options
-					SessionOptions sessionOptions = new SessionOptions
+
+                    _progressWindow = new ProgressWindow();
+                    //_progressWindow.Show();
+                    InitializeProgressWindow();
+
+                    // Configure session options
+                    SessionOptions sessionOptions = new SessionOptions
 					{
 						Protocol = Protocol.Sftp,
 						HostName = _ftpServer,
@@ -329,7 +334,7 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private void InitializeProgressWindow()
+		public void InitializeProgressWindow()
 		{
 			_progressWindow = new ProgressWindow();
 			//_progressWindow.DataContext = new ProgressWindowViewModel();
