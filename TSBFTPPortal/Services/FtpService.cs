@@ -104,53 +104,54 @@ namespace TSBFTPPortal.Services
 
 			try
 			{
+                _progressWindow = new ProgressWindow();
+                //_progressWindow.Show();
+                InitializeProgressWindow();
 
 
-				using (Session session = new Session())
-				{
+				await Task.Run(async () => {
+                    using (Session session = new Session())
+                    {
+                        // Configure session options
+                        SessionOptions sessionOptions = new SessionOptions
+                        {
+                            Protocol = Protocol.Sftp,
+                            HostName = _ftpServer,
+                            UserName = _username,
+                            Password = _password,
+                            SshHostKeyFingerprint = _sshHostKeyFingerprint,
+                            PortNumber = 22,
+                        };
 
-                    _progressWindow = new ProgressWindow();
-                    //_progressWindow.Show();
-                    InitializeProgressWindow();
+                        session.FileTransferProgress += (sender, e) =>
+                        {
+                            if (e.FileName != null)
+                            {
+                                double progressPercentage = (double)(e.FileProgress * 100);
+                                UpdateProgress(progressPercentage);
+                                //Debug.WriteLine("\r{0} ({1:P0})", e.FileName, e.FileProgress);
+                                Debug.WriteLine($"\r{progressPercentage}");
+                            }
+                            else
+                            {
+                                // Handle transfer errors here
+                                Log.Error($"Error transferring file");
+                            }
+                        };
 
-                    // Configure session options
-                    SessionOptions sessionOptions = new SessionOptions
-					{
-						Protocol = Protocol.Sftp,
-						HostName = _ftpServer,
-						UserName = _username,
-						Password = _password,
-						SshHostKeyFingerprint = _sshHostKeyFingerprint,
-						PortNumber = 22,
-					};
+                        // Connect to the SFTP server
+                        session.Open(sessionOptions);
 
-					session.FileTransferProgress += (sender, e) =>
-					{
-						if (e.FileName != null)
-						{
-							double progressPercentage = (double)(e.FileProgress * 100);
-							UpdateProgress(progressPercentage);
-							//Debug.WriteLine("\r{0} ({1:P0})", e.FileName, e.FileProgress);
-							Debug.WriteLine($"\r{progressPercentage}");
-						}
-						else
-						{
-							// Handle transfer errors here
-							Log.Error($"Error transferring file");
-						}
-					};
+                        string fileName = Path.GetFileName(path);
+                        string targetFilePath = GetTargetFilePath(fileName);
 
-					// Connect to the SFTP server
-					session.Open(sessionOptions);
-
-					string fileName = Path.GetFileName(path);
-					string targetFilePath = GetTargetFilePath(fileName);
-
-					if (targetFilePath != null)
-					{
-						await PerformFileDownload(session, targetFilePath, path);
-					}
-				}
+                        if (targetFilePath != null)
+                        {
+                            await PerformFileDownload(session, targetFilePath, path);
+                        }
+                    }
+                });
+                
 			}
 			catch (OperationCanceledException)
 			{

@@ -10,7 +10,6 @@
 		  <ProgressBar Value="{Binding ProgressPercentage}" 
 									 Minimum="0"
 									 Maximum="100"
-									 IsIndeterminate="True"
 									 Height="30" 
 									 VerticalAlignment="Top" 
 									 Margin="20"/>
