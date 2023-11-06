@@ -25,6 +25,7 @@ namespace TSBFTPPortal.Services
 		private ProgressWindow? _progressWindow;
 		public delegate void ProgressUpdateHandler(double progressPercentage);
 		public event ProgressUpdateHandler ProgressUpdated;
+		private SessionOptions _sessionOptions;
 
 		public FtpService(string ftpServer, string username, string password, string SshHostKeyFingerprint)
 		{
@@ -33,9 +34,17 @@ namespace TSBFTPPortal.Services
 			_password = password;
 			_sshHostKeyFingerprint = SshHostKeyFingerprint;
 
+			_sessionOptions = new SessionOptions 
+			{
+				Protocol = Protocol.Sftp,
+				HostName = _ftpServer,
+				UserName = _username,
+				Password = _password,
+				SshHostKeyFingerprint = _sshHostKeyFingerprint,
+			};
+
 			_cancellationTokenSource = new CancellationTokenSource();
 		}
-
 
 		public async Task<ObservableCollection<DirectoryItemViewModel>> LoadDirectoriesAndFilesFromFTPAsync(string rootPath)
 		{
@@ -45,17 +54,7 @@ namespace TSBFTPPortal.Services
 			{
 				using (var session = new Session())
 				{
-					session.DisableVersionCheck = true;
-
-					session.Open(new SessionOptions
-					{
-						Protocol = Protocol.Sftp,
-						PortNumber = 22,
-						HostName = _ftpServer,
-						UserName = _username,
-						Password = _password,
-						SshHostKeyFingerprint = _sshHostKeyFingerprint,
-					});
+					session.Open(_sessionOptions);
 
 					await LoadSubDirectoriesAndFilesAsync(session, rootPath, items);
 				}
@@ -111,17 +110,6 @@ namespace TSBFTPPortal.Services
 				{
 					using (Session session = new Session())
 					{
-						// Configure session options
-						SessionOptions sessionOptions = new SessionOptions
-						{
-							Protocol = Protocol.Sftp,
-							HostName = _ftpServer,
-							UserName = _username,
-							Password = _password,
-							SshHostKeyFingerprint = _sshHostKeyFingerprint,
-							PortNumber = 22,
-						};
-
 						session.FileTransferProgress += (sender, e) =>
 						{
 							if (e.FileName != null)
@@ -142,7 +130,7 @@ namespace TSBFTPPortal.Services
 						};
 
 						// Connect to the SFTP server
-						session.Open(sessionOptions);
+						session.Open(_sessionOptions);
 
 						string fileName = Path.GetFileName(path);
 						string targetFilePath = GetTargetFilePath(fileName);
@@ -488,26 +476,12 @@ namespace TSBFTPPortal.Services
 		public async Task<string?> ReadJsonFileFromFTPAsync(string path)
 		{
 
-			// Set up session options
-			SessionOptions sessionOptions = new SessionOptions
-			{
-				Protocol = Protocol.Sftp,
-				HostName = _ftpServer,
-				UserName = _username,
-				Password = _password,
-				SshHostKeyFingerprint = _sshHostKeyFingerprint,
-
-			};
-
-			sessionOptions.AddRawSettings("FSProtocol", "2");
-
-
 			try
 			{
 				using (Session session = new Session())
 				{
 					// Connect to the SFTP server
-					session.Open(sessionOptions);
+					session.Open(_sessionOptions);
 
 					// Create a remote file info for the file you want to read
 					RemoteFileInfo remoteFileInfo = session.GetFileInfo(path);
