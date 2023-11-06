@@ -93,7 +93,6 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-
 		public async Task DownloadFileAsync(string path)
 		{
 			if (!IsInternetAvailable())
@@ -180,24 +179,15 @@ namespace TSBFTPPortal.Services
 				// Check if the file exists locally
 				if (File.Exists(targetFilePath))
 				{
-					using (var remoteStream = session.GetFile(remoteFilePath))
-					using (var memoryStream = new MemoryStream())
+					var fileActionViewModel = new FileActionDialogViewModel();
+
+					_progressWindow.Dispatcher.Invoke(() =>
 					{
-						// Download the file contents to a MemoryStream
-						await remoteStream.CopyToAsync(memoryStream, cancellationToken);
-
-						// Convert the MemoryStream to a byte array
-						byte[] fileBytes = memoryStream.ToArray();
-
-						var fileActionViewModel = new FileActionDialogViewModel();
 						var fileActionDialog = CreateFileActionDialog(fileActionViewModel);
-
-						// Show the custom dialog and await the user's choice
 						bool? dialogResult = ShowDialog(fileActionDialog);
+						HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, cancellationToken);
+					});
 
-						// Handle the user's choice
-						await HandleUserChoice(session, targetFilePath, remoteFilePath, fileActionViewModel.SelectedAction, dialogResult, cancellationToken);
-					}
 				}
 				else
 				{
@@ -304,7 +294,7 @@ namespace TSBFTPPortal.Services
 				LogInformation(targetFilePath);
 				string fileExtension = Path.GetExtension(targetFilePath);
 
-				if (transferResult.IsSuccess && !_isCancellationRequested) 
+				if (transferResult.IsSuccess && !_isCancellationRequested)
 				{
 					if (fileExtension != ".rpt" && fileExtension != ".sql")
 					{
@@ -326,7 +316,7 @@ namespace TSBFTPPortal.Services
 				}
 
 			}
-			catch(OperationCanceledException)
+			catch (OperationCanceledException)
 			{
 				Log.Information("Download cancelled.");
 			}
@@ -336,7 +326,7 @@ namespace TSBFTPPortal.Services
 			}
 		}
 
-		private void UpdateProgress(double progressPercentage )
+		private void UpdateProgress(double progressPercentage)
 		{
 			try
 			{
@@ -488,7 +478,7 @@ namespace TSBFTPPortal.Services
 			}
 			_cancellationTokenSource = new CancellationTokenSource();
 
-			if (_progressWindow != null )
+			if (_progressWindow != null)
 			{
 				var viewModel = (ProgressWindowViewModel)_progressWindow.DataContext;
 				viewModel.StatusMessage = "Download cancelled.";
