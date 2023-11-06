@@ -304,19 +304,27 @@ namespace TSBFTPPortal.Services
 				LogInformation(targetFilePath);
 				string fileExtension = Path.GetExtension(targetFilePath);
 
-				if (fileExtension != ".rpt" && fileExtension != ".sql")
+				if (transferResult.IsSuccess) 
 				{
-					OpenFileWithShellExecute(targetFilePath, fileExtension);
+					if (fileExtension != ".rpt" && fileExtension != ".sql")
+					{
+						OpenFileWithShellExecute(targetFilePath, fileExtension);
+					}
+					else if (fileExtension == ".rpt")
+					{
+						RunCrystalReportsViewer(targetFilePath);
+					}
+					else if (fileExtension == ".sql")
+					{
+						RunScriptRunner(targetFilePath);
+					}
 				}
-				else if (fileExtension == ".rpt")
+				else
 				{
-					RunCrystalReportsViewer(targetFilePath);
+					//// The download was not successful, handle the error
+					//Log.Error($"Error downloading file: {transferResult.Failures[0].Message}");
+					//ShowErrorMessage($"Error downloading file: {transferResult.Failures[0].Message}");
 				}
-				else if (fileExtension == ".sql")
-				{
-					RunScriptRunner(targetFilePath);
-				}
-
 
 			}
 			catch(OperationCanceledException)
