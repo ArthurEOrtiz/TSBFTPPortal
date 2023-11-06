@@ -67,7 +67,7 @@ namespace TSBFTPPortal.ViewModels
 			string? password = configuration["FtpSettings:Password"];
 			string? sshHostKeyFingerprint = configuration["FtpSettings:SshHostKeyFingerprint"];
 
-			if (ftpServer != null && username != null && password != null)
+			if (ftpServer != null && username != null && password != null && sshHostKeyFingerprint != null)
 			{
 				FtpService ftpService = new(ftpServer, username, password, sshHostKeyFingerprint);
 				CountySpecificTreeViewViewModel = new CountySpecificTreeViewViewModel(SelectedCounty, ftpService, FilterTreeViewViewModel, SearchBarViewModel);
