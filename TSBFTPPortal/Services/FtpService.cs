@@ -304,7 +304,7 @@ namespace TSBFTPPortal.Services
 				LogInformation(targetFilePath);
 				string fileExtension = Path.GetExtension(targetFilePath);
 
-				if (transferResult.IsSuccess) 
+				if (transferResult.IsSuccess && !_isCancellationRequested) 
 				{
 					if (fileExtension != ".rpt" && fileExtension != ".sql")
 					{
@@ -321,9 +321,8 @@ namespace TSBFTPPortal.Services
 				}
 				else
 				{
-					//// The download was not successful, handle the error
-					//Log.Error($"Error downloading file: {transferResult.Failures[0].Message}");
-					//ShowErrorMessage($"Error downloading file: {transferResult.Failures[0].Message}");
+					_isCancellationRequested = false;
+					_cancellationTokenSource = new CancellationTokenSource();
 				}
 
 			}
