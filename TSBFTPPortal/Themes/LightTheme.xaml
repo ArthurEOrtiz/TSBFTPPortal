@@ -16,13 +16,14 @@
 				<ControlTemplate TargetType="{x:Type TabItem}">
 					<Grid>
 						<Border Name="Border"
-                      BorderBrush="#D3D3D3" 
-								      BorderThickness=".5">
+                    Margin="1"
+										Background="#D3D3D3"
+										>
 
 							<ContentPresenter VerticalAlignment="Center"
-                                          Margin="7"
-                                          HorizontalAlignment="Center"
-                                          ContentSource="Header">
+                                Margin="7"
+                                HorizontalAlignment="Center"
+                                ContentSource="Header">
 							</ContentPresenter>
 						</Border>
 					</Grid>
@@ -42,6 +43,7 @@
 	<Style TargetType="Button">
 		<Setter Property="Background" Value="LightGray" />
 		<Setter Property="BorderThickness" Value="0" />
+		
 	</Style>
 
 </ResourceDictionary>

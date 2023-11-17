@@ -21,13 +21,13 @@
 				<ControlTemplate TargetType="{x:Type TabItem}">
 					<Grid>
 						<Border Name="Border"
-                      BorderBrush="#33333D" 
-								      BorderThickness=".5">
+                    Background="#33333D" 
+								    Margin="1">
 
 							<ContentPresenter VerticalAlignment="Center"
-                                          Margin="7"
-                                          HorizontalAlignment="Center"
-                                          ContentSource="Header">
+                                Margin="7"
+                                HorizontalAlignment="Center"
+                                ContentSource="Header">
 							</ContentPresenter>
 						</Border>
 					</Grid>
